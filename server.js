@@ -20,6 +20,8 @@ app.use(express.json());
 // Routes
 app.use('/api/questions', require('./routes/questions'));
 app.use('/api/admin', require('./routes/admin'));
+// routes for save user data
+app.use('/api/user-submissions', require('./routes/userSubmissions'));
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI, {
