@@ -24,7 +24,7 @@ const generateVastuReport = async (userAnswers) => {
                 }
             ],
             temperature: 0.7,
-            max_tokens: 500,
+            max_completion_tokens: 500,
             response_format: { type: "json_object" } // Force JSON response
         });
 
