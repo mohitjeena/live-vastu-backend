@@ -24,10 +24,11 @@ const generateVastuReport = async (userAnswers) => {
                 }
             ],
             max_completion_tokens: 500,
-            response_format: { type: "json_object" } // Force JSON response
+            // response_format: { type: "json_object" } 
         });
 
         console.log('OpenAI JSON response received');
+        console.log(response.choices[0].message.content)
         const jsonResponse = JSON.parse(response.choices[0].message.content);
         return jsonResponse;
     } catch (error) {
