@@ -25,22 +25,15 @@ router.post('/', async (req, res) => {
             try {
                 console.log('Generating AI Vastu report...');
                 const aiResponse = await generateVastuReport({ session_id, answers });
-                const parsed = parseAIResponse(aiResponse);
-                ai_score = parsed.score;
-                ai_report = parsed.report;
+                ai_score = aiResponse.score  || ai_score;
+                ai_report = aiResponse.report || ai_report;
             } catch (aiError) {
                 console.error('OpenAI error, using default response:', aiError);
                 // Continue with default values if OpenAI fails
             }
         }
 
-        const parseAIResponse = (aiResponse) => {
-    console.log('Structured AI Response:', aiResponse);
-    return {
-        score: aiResponse.score || 75, // Default if missing
-        report: aiResponse.report || "Vastu analysis report will be available soon."
-    };
-};
+ 
 
         // Create new user submission
         const userSubmission = new UserSubmission({
