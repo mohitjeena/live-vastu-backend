@@ -29,6 +29,14 @@ const userSubmissionSchema = new mongoose.Schema({
             default: Date.now
         }
     }],
+     ai_score: {
+        type: Number,
+        min: 0,
+        max: 100
+    },
+    ai_report: {
+        type: String
+    },
     is_verified: {
         type: Boolean,
         default: false

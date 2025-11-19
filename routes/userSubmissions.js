@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const UserSubmission = require('../models/UserSubmission');
+const generateVastuReport = require('../services/openaiService').generateVastuReport;
 
 // Save user submission (after mobile verification)
 router.post('/', async (req, res) => {
@@ -16,12 +17,39 @@ router.post('/', async (req, res) => {
             });
         }
 
+           let ai_score = 0;
+        let ai_report = "Vastu analysis report will be available soon.";
+
+        // Generate AI report only if OpenAI API key is available
+        if (process.env.OPENAI_API_KEY) {
+            try {
+                console.log('Generating AI Vastu report...');
+                const aiResponse = await generateVastuReport({ session_id, answers });
+                const parsed = parseAIResponse(aiResponse);
+                ai_score = parsed.score;
+                ai_report = parsed.report;
+            } catch (aiError) {
+                console.error('OpenAI error, using default response:', aiError);
+                // Continue with default values if OpenAI fails
+            }
+        }
+
+        const parseAIResponse = (aiResponse) => {
+    console.log('Structured AI Response:', aiResponse);
+    return {
+        score: aiResponse.score || 75, // Default if missing
+        report: aiResponse.report || "Vastu analysis report will be available soon."
+    };
+};
+
         // Create new user submission
         const userSubmission = new UserSubmission({
             session_id,
             mobile_number,
             answers,
-            is_verified: true // Since we're saving after OTP verification
+            ai_score,
+            ai_report,
+            is_verified: true 
         });
 
         await userSubmission.save();
