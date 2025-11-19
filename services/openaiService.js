@@ -22,28 +22,9 @@ const generateVastuReport = async (userAnswers) => {
           content: prompt,
         },
       ],
-      max_output_tokens: 500,
     });
 
-    console.log("Full Raw Response:", JSON.stringify(response, null, 2));
-   console.log("response",response)
-    // NEW OUTPUT FORMAT (GPT-5)
-    const text =
-      response.output &&
-      response.output[0] &&
-      response.output[0].content &&
-      response.output[0].content[0] &&
-      response.output[0].content[0].text;
-
-    if (!text) {
-      throw new Error(
-        "OpenAI returned no text output. Check model or input formatting."
-      );
-    }
-
-    console.log("AI Output Text:", text);
-
-    return JSON.parse(text);
+    return JSON.parse(response.output_text);
   } catch (error) {
     console.error("OpenAI API error:", error);
     throw new Error("Failed to generate Vastu report");
