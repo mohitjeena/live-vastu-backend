@@ -28,7 +28,7 @@ const generateVastuReport = async (userAnswers) => {
         });
 
         console.log('OpenAI JSON response received');
-        console.log(response.choices[0].message.content)
+        console.log("response",response)
         const jsonResponse = JSON.parse(response.choices[0].message.content);
         return jsonResponse;
     } catch (error) {
