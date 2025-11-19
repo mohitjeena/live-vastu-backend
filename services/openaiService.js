@@ -28,9 +28,14 @@ const generateVastuReport = async (userAnswers) => {
         });
 
         console.log('OpenAI JSON response received');
-        console.log("response",response)
-        const jsonResponse = JSON.parse(response.choices[0].message.content);
-        return jsonResponse;
+        console.log("response",response.choices[0].message)
+            try {
+            const jsonResponse = JSON.parse(response.choices[0].message.content);
+            return jsonResponse;
+        } catch (parseError) {
+            console.log('Response was not JSON, converting...');
+            // return convertTextToJSON(response.choices[0].message.content);
+        }
     } catch (error) {
         console.error('OpenAI API error:', error);
         throw new Error('Failed to generate Vastu report');
