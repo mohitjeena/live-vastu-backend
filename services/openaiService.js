@@ -1,47 +1,55 @@
-const OpenAI = require('openai');
-
+const OpenAI = require("openai");
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 const generateVastuReport = async (userAnswers) => {
-    try {
-        const prompt = createVastuPrompt(userAnswers);
+  try {
+    const prompt = createVastuPrompt(userAnswers);
 
-        console.log('Sending request to OpenAI for JSON response...');
+    console.log("Sending request to OpenAI for JSON...");
 
-        const response = await client.responses.create({
-            model: "gpt-5-nano",
-            input: [
-                {
-                    role: "system",
-                    content: "You are a Vastu Shastra expert. Return ONLY valid JSON."
-                },
-                {
-                    role: "user",
-                    content: prompt
-                }
-            ],
-            max_output_tokens: 500
-        });
+    const response = await client.responses.create({
+      model: "gpt-5-nano",
+      input: [
+        {
+          role: "system",
+          content:
+            "You are a Vastu Shastra expert. Respond ONLY with valid JSON object.",
+        },
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      max_output_tokens: 500,
+    });
 
-        console.log("AI Raw Output:", response.output[0].content);
+    console.log("Full Raw Response:", JSON.stringify(response, null, 2));
+   console.log("response",response)
+    // NEW OUTPUT FORMAT (GPT-5)
+    const text =
+      response.output &&
+      response.output[0] &&
+      response.output[0].content &&
+      response.output[0].content[0] &&
+      response.output[0].content[0].text;
 
-        const text = response.output[0].content[0].text;
-
-        try {
-            const json = JSON.parse(text);
-            return json;
-        } catch (err) {
-            console.error("JSON parse failed. Received text:", text);
-            throw new Error("Invalid JSON returned by AI");
-        }
-
-    } catch (error) {
-        console.error("OpenAI API error:", error);
-        throw new Error("Failed to generate Vastu report");
+    if (!text) {
+      throw new Error(
+        "OpenAI returned no text output. Check model or input formatting."
+      );
     }
+
+    console.log("AI Output Text:", text);
+
+    return JSON.parse(text);
+  } catch (error) {
+    console.error("OpenAI API error:", error);
+    throw new Error("Failed to generate Vastu report");
+  }
 };
+
 
 
 const createVastuPrompt = (userAnswers) => {
