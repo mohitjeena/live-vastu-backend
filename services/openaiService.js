@@ -6,41 +6,43 @@ const client = new OpenAI({
 
 const generateVastuReport = async (userAnswers) => {
     try {
-        // Prepare the prompt for OpenAI
         const prompt = createVastuPrompt(userAnswers);
-        
+
         console.log('Sending request to OpenAI for JSON response...');
-        
-        const response = await client.chat.completions.create({
+
+        const response = await client.responses.create({
             model: "gpt-5-nano",
-            messages: [
+            input: [
                 {
                     role: "system",
-                    content: `You are a Vastu Shastra expert. Analyze home directions and provide a JSON response with score and report.`
+                    content: "You are a Vastu Shastra expert. Return ONLY valid JSON."
                 },
                 {
                     role: "user",
                     content: prompt
                 }
             ],
-            max_completion_tokens: 500,
-            // response_format: { type: "json_object" } 
+            max_output_tokens: 500
         });
 
-        console.log('OpenAI JSON response received');
-        console.log("response",response.choices[0].message)
-            try {
-            const jsonResponse = JSON.parse(response.choices[0].message.content);
-            return jsonResponse;
-        } catch (parseError) {
-            console.log('Response was not JSON, converting...');
-            // return convertTextToJSON(response.choices[0].message.content);
+        console.log("AI Raw Output:", response.output[0].content);
+
+        const text = response.output[0].content[0].text;
+
+        try {
+            const json = JSON.parse(text);
+            return json;
+        } catch (err) {
+            console.error("JSON parse failed. Received text:", text);
+            throw new Error("Invalid JSON returned by AI");
         }
+
     } catch (error) {
-        console.error('OpenAI API error:', error);
-        throw new Error('Failed to generate Vastu report');
+        console.error("OpenAI API error:", error);
+        throw new Error("Failed to generate Vastu report");
     }
 };
+
 
 const createVastuPrompt = (userAnswers) => {
     let prompt = `Analyze this home for Vastu Shastra compliance and return JSON with exactly this structure:
