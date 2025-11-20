@@ -131,7 +131,7 @@ router.put('/questions/:id', async (req, res) => {
 // DELETE question (soft delete using is_active)
 router.delete('/questions/:id', async (req, res) => {
   try {
-    const question = await Question.findByIdAndDelete(req.params.id); // delete
+    const question = await Question.findById(req.params.id); // delete
     
     if (!question) {
       return res.status(404).json({
@@ -139,6 +139,16 @@ router.delete('/questions/:id', async (req, res) => {
         message: 'Question not found'
       });
     }
+
+    const displayOrder= question.display_order
+
+    await Question.findByIdAndDelete(req.params.id);
+
+    // Shift up display orders of remaining questions
+    await Question.updateMany(
+      { display_order: { $gt: displayOrder } },
+      { $inc: { display_order: -1 } }
+    );
     
     res.json({
       success: true,
