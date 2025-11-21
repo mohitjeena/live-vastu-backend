@@ -41,7 +41,9 @@ const createVastuPrompt = (userAnswers) => {
 }
 
 HOME DETAILS:\n`;
-    
+    prompt += `- Type: ${userAnswers.property_type}\n`;
+    prompt += `- Purpose: ${userAnswers.purpose}\n\n`;
+    prompt += `ANSWERS PROVIDED:\n`;
     userAnswers.answers.forEach(answer => {
         prompt += `- ${answer.question_text}: ${answer.answer}\n`;
     });

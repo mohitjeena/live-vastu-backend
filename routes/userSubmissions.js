@@ -6,7 +6,7 @@ const generateVastuReport = require('../services/openaiService').generateVastuRe
 // Save user submission (after mobile verification)
 router.post('/', async (req, res) => {
     try {
-        const { session_id, mobile_number, answers } = req.body;
+        const { session_id, mobile_number, answers, property_type, purpose } = req.body;
 
         // Check if session already exists
         const existingSubmission = await UserSubmission.findOne({ session_id });
@@ -39,6 +39,8 @@ router.post('/', async (req, res) => {
         const userSubmission = new UserSubmission({
             session_id,
             mobile_number,
+            property_type, 
+            purpose,
             answers,
             ai_score,
             ai_report,
