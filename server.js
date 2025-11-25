@@ -22,6 +22,8 @@ app.use('/api/questions', require('./routes/questions'));
 app.use('/api/admin', require('./routes/admin'));
 // routes for save user data
 app.use('/api/user-submissions', require('./routes/userSubmissions'));
+// for plans
+app.use('/api/plans', require('./routes/plans'));
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI, {
