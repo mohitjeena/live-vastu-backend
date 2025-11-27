@@ -110,4 +110,76 @@ router.get('/:session_id', async (req, res) => {
     }
 });
 
+// get payment status by session ID
+// Check if user has paid and can proceed
+router.get('/:session_id/payment-status', async (req, res) => {
+    try {
+        const submission = await UserSubmission.findOne({ 
+            session_id: req.params.session_id 
+        });
+
+        if (!submission) {
+            return res.status(404).json({
+                success: false,
+                message: 'User submission not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: {
+                plan_type: submission.plan_type,
+                payment_status: submission.payment_status,
+                has_paid_features: submission.payment_status === 'completed' && submission.plan_type !== 'basic',
+                can_proceed: submission.payment_status === 'completed'
+            }
+        });
+    } catch (error) {
+        console.error('Error checking payment status:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error checking payment status'
+        });
+    }
+});
+
+// update user plan status
+router.post('/:session_id/update-plan', async (req, res) => {
+    try {
+        const { session_id } = req.params;
+        const { plan_type, order_id, payment_status } = req.body;
+
+        const userSubmission = await UserSubmission.findOne({ session_id });
+        
+        if (!userSubmission) {
+            return res.status(404).json({
+                success: false,
+                message: 'User submission not found'
+            });
+        }
+
+        // Only update if payment is completed
+        if (payment_status === 'completed') {
+            userSubmission.plan_type = plan_type;
+            userSubmission.payment_status = payment_status;
+            userSubmission.order_id = order_id;
+            userSubmission.has_paid_features = true;
+        }
+
+        await userSubmission.save();
+
+        res.json({
+            success: true,
+            data: userSubmission,
+            message: 'Plan updated successfully'
+        });
+    } catch (error) {
+        console.error('Error updating user plan:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error updating user plan'
+        });
+    }
+});
+
 module.exports = router;

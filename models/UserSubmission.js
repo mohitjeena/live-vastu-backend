@@ -20,6 +20,26 @@ const userSubmissionSchema = new mongoose.Schema({
         enum: ['home', 'office'],
         required: true
     },
+        // Plan Type
+    plan_type: {
+        type: String,
+        enum: ['basic', 'gold', 'premium', 'premium_plus'],
+        default: 'basic'
+    },
+    // ADD PAYMENT STATUS
+    payment_status: {
+        type: String,
+        enum: ['pending', 'completed', 'failed'],
+        default: 'pending'
+    },
+    // ADD ORDER ID FOR REFERENCE
+    order_id: {
+        type: String
+    },
+     has_paid_features: {
+        type: Boolean,
+        default: false
+    },
     answers: [{
         question_id: {
             type: mongoose.Schema.Types.ObjectId,
