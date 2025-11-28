@@ -24,6 +24,8 @@ app.use('/api/admin', require('./routes/admin'));
 app.use('/api/user-submissions', require('./routes/userSubmissions'));
 // for plans
 app.use('/api/plans', require('./routes/plans'));
+// for webhooks
+app.use('/api/webhooks', require('./routes/webhooks'));
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI, {
