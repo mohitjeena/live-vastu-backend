@@ -1,8 +1,12 @@
 const express = require('express');
 const router = express.Router();
+const UserSubmission = require('../models/UserSubmission');
 
-router.post('/orders-paid', (req, res) => {
-     const data = req.body;
+router.post('/orders-paid',async (req, res) => {
+
+     try {
+
+           const data = req.body;
 
     // 1. Vastu variant IDs
     const vastuVariantIds = ['51401779773752', '51401792553272', '51401807462712'];
@@ -19,22 +23,54 @@ router.post('/orders-paid', (req, res) => {
     // 2. Extract session_id passed from checkout attributes
     const noteAttributes = data.note_attributes || [];
     let sessionId = null;
+    let planType = null;
 
     for (let attr of noteAttributes) {
-        if (attr.name === "session_id") {
-            sessionId = attr.value;
+        if (attr.name === "session_id") sessionId = attr.value;
+        if (attr.name === "plan_type") planType = attr.value;
         }
-    }
+    
 
     console.log("Session ID:", sessionId);
+    console.log("Plan Type:", planType);
 
     // 3. If not Vastu order or missing session, exit gracefully
     if (!isVastuOrder || !sessionId) {
         return res.status(200).send("Not a Vastu order or missing session");
     }
 
-    // 4. Now we will update your DB (next step)
-    res.status(200).send("OK");
+   
+           const userSubmission = await UserSubmission.findOne({ sessionId });
+           
+           if (!userSubmission) {
+               return res.status(404).json({
+                   success: false,
+                   message: 'User submission not found'
+               });
+           }
+      const orderId = data.id; 
+           
+               userSubmission.plan_type = planType || 'basic';
+               userSubmission.payment_status = 'completed';
+               userSubmission.order_id = orderId;
+               userSubmission.has_paid_features = true;
+           
+   
+           await userSubmission.save();
+   
+           res.json({
+               success: true,
+               data: userSubmission,
+               message: 'Plan updated successfully'
+           });
+       } catch (error) {
+           console.error('Error updating user plan:', error);
+           res.status(500).json({
+               success: false,
+               message: 'Error updating user plan'
+           });
+       }
+
 });
 
 module.exports = router;
