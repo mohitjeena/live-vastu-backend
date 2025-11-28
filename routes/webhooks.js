@@ -40,7 +40,7 @@ router.post('/orders-paid',async (req, res) => {
     }
 
    
-           const userSubmission = await UserSubmission.findOne({ sessionId });
+           const userSubmission = await UserSubmission.findOne({ session_id: sessionId });
            
            if (!userSubmission) {
                return res.status(404).json({
