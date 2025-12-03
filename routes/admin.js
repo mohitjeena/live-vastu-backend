@@ -109,13 +109,9 @@ router.put('/questions/:id', async (req, res) => {
         }
 
      if (updateData.question_type && updateData.question_type !== 'multiple_choice') {
-       delete updateData.options;
+        updateData.options = [];
      }
-     if (updateData.question_type === 'multiple_choice' && 
-    (!updateData.options || updateData.options.length === 0)) {
-    
-    updateData.options =[];
-}
+  
         
         // Update the question
         const question = await Question.findByIdAndUpdate(
