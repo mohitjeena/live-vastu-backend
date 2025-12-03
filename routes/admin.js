@@ -65,7 +65,7 @@ router.post('/questions', async (req, res) => {
 // UPDATE question
 router.put('/questions/:id', async (req, res) => {
     try {
-        const { display_order,question_type,...updateData } = req.body;
+        const { display_order,...updateData } = req.body;
         const questionId = req.params.id;
         
         // Get current question and all questions
