@@ -7,9 +7,14 @@ const questionSchema = new mongoose.Schema({
   },
   question_type: {
     type: String,
-    enum: ['multiple_choice', 'text_input'],
+    enum: ['multiple_choice', 'text_input','image'],
     default: 'multiple_choice'
   },
+  question_plan: {
+    type: String,
+    enum: ['basic', 'gold', 'premium', 'premium_plus'],
+    default: 'basic'
+},
   options: {
     type: [String],
     default: []

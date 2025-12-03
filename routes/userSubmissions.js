@@ -130,7 +130,7 @@ router.get('/:session_id/payment-status', async (req, res) => {
             data: {
                 plan_type: submission.plan_type,
                 payment_status: submission.payment_status,
-                has_paid_features: submission.payment_status === 'completed' && submission.plan_type !== 'basic',
+                has_paid_features: submission.has_paid_features,
                 can_proceed: submission.payment_status === 'completed'
             }
         });
@@ -143,41 +143,48 @@ router.get('/:session_id/payment-status', async (req, res) => {
     }
 });
 
-// update user plan status
-router.post('/:session_id/update-plan', async (req, res) => {
+// Add answers, prevent duplicates
+router.post('/:session_id/add-answers', async (req, res) => {
     try {
         const { session_id } = req.params;
-        const { plan_type, order_id, payment_status } = req.body;
+        const { answers } = req.body;
 
-        const userSubmission = await UserSubmission.findOne({ session_id });
+        const user = await UserSubmission.findOne({ session_id });
         
-        if (!userSubmission) {
+        if (!user) {
             return res.status(404).json({
                 success: false,
-                message: 'User submission not found'
+                message: 'User not found'
             });
         }
 
-        // Only update if payment is completed
-        if (payment_status === 'completed') {
-            userSubmission.plan_type = plan_type;
-            userSubmission.payment_status = payment_status;
-            userSubmission.order_id = order_id;
-            userSubmission.has_paid_features = true;
-        }
-
-        await userSubmission.save();
+        // Merge without duplicates
+        answers.forEach(newAnswer => {
+            const existingIndex = user.answers.findIndex(a => 
+                a.question_id.toString() === newAnswer.question_id
+            );
+            
+            if (existingIndex !== -1) {
+                // Update existing
+                user.answers[existingIndex] = newAnswer;
+            } else {
+                // Add new
+                user.answers.push(newAnswer);
+            }
+        });
+        
+        await user.save();
 
         res.json({
             success: true,
-            data: userSubmission,
-            message: 'Plan updated successfully'
+            message: 'Answers saved successfully'
         });
+
     } catch (error) {
-        console.error('Error updating user plan:', error);
+        console.error('Error saving answers:', error);
         res.status(500).json({
             success: false,
-            message: 'Error updating user plan'
+            message: 'Error saving answers'
         });
     }
 });

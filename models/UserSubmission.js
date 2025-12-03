@@ -50,10 +50,18 @@ const userSubmissionSchema = new mongoose.Schema({
             type: String,
             required: true
         },
+        question_plan: {
+            type: String,
+            enum: ['basic', 'gold', 'premium', 'premium_plus'],
+            required: true,
+            default: 'basic'
+        }
+        ,
         answer: {
             type: String,
             required: true
-        },
+        }
+        ,
         timestamp: {
             type: Date,
             default: Date.now
