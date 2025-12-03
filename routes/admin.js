@@ -65,7 +65,7 @@ router.post('/questions', async (req, res) => {
 // UPDATE question
 router.put('/questions/:id', async (req, res) => {
     try {
-        const { display_order, ...updateData } = req.body;
+        const { display_order,question_type,...updateData } = req.body;
         const questionId = req.params.id;
         
         // Get current question and all questions
@@ -107,6 +107,15 @@ router.put('/questions/:id', async (req, res) => {
                 );
             }
         }
+
+     if (updateData.question_type && updateData.question_type !== 'multiple_choice') {
+       delete updateData.options;
+     }
+     if (updateData.question_type === 'multiple_choice' && 
+    (!updateData.options || updateData.options.length === 0)) {
+    
+    updateData.options =[];
+}
         
         // Update the question
         const question = await Question.findByIdAndUpdate(
