@@ -158,7 +158,6 @@ router.post('/:session_id/add-answers', async (req, res) => {
             });
         }
 
-        answers= JSON.parse(answers);
 
         // Merge without duplicates
         answers.forEach(newAnswer => {
@@ -176,10 +175,25 @@ router.post('/:session_id/add-answers', async (req, res) => {
         });
         
         await user.save();
+        answers= user.answers;
+        answers.push({property_type: user.property_type, purpose: user.purpose});
+          // Generate AI report only if OpenAI API key is available
+          let aiResponse;
+        if (process.env.OPENAI_API_KEY) {
+            try {
+                console.log('Generating AI Vastu report...');
+                aiResponse = await generateVastuReport({ answers,plan_type: user.plan_type });
+                
+            } catch (aiError) {
+                console.error('OpenAI error, using default response:', aiError);
+                // Continue with default values if OpenAI fails
+            }
+        }
 
         res.json({
             success: true,
-            message: 'Answers saved successfully'
+            message: 'Answers saved successfully',
+            data: aiResponse
         });
 
     } catch (error) {
