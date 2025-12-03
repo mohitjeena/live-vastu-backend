@@ -60,8 +60,25 @@ const userSubmissionSchema = new mongoose.Schema({
         answer: {
             type: String,
             required: true
+        },
+        images: [{
+        url: {  // Cloudinary URL
+            type: String,
+            required: true
+        },
+        public_id: {  
+            type: String,
+            required: true
+        },
+        originalName: {  
+            type: String
+        },
+        uploaded_at: {
+            type: Date,
+            default: Date.now
         }
-        ,
+    }],
+        
         timestamp: {
             type: Date,
             default: Date.now
