@@ -158,6 +158,8 @@ router.post('/:session_id/add-answers', async (req, res) => {
             });
         }
 
+        answers= JSON.parse(answers);
+
         // Merge without duplicates
         answers.forEach(newAnswer => {
             const existingIndex = user.answers.findIndex(a => 
