@@ -24,7 +24,7 @@ router.post('/', async (req, res) => {
         if (process.env.OPENAI_API_KEY) {
             try {
                 console.log('Generating AI Vastu report...');
-                const aiResponse = await generateVastuReport({ session_id, answers });
+                const aiResponse = await generateVastuReport({ session_id, answers, property_type, purpose });
                 ai_score = aiResponse.score  || ai_score;
                 ai_report = aiResponse.report || ai_report;
             } catch (aiError) {
@@ -175,14 +175,12 @@ router.post('/:session_id/add-answers', async (req, res) => {
         });
         
         await user.save();
-        answers= user.answers;
-        answers.push({property_type: user.property_type, purpose: user.purpose});
           // Generate AI report only if OpenAI API key is available
           let aiResponse;
         if (process.env.OPENAI_API_KEY) {
             try {
                 console.log('Generating AI Vastu report...');
-                aiResponse = await generateVastuReport({ answers,plan_type: user.plan_type });
+                aiResponse = await generateVastuReport(user, user.plan_type);
                 
             } catch (aiError) {
                 console.error('OpenAI error, using default response:', aiError);
