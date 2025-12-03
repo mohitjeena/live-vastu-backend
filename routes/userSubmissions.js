@@ -181,6 +181,10 @@ router.post('/:session_id/add-answers', async (req, res) => {
             try {
                 console.log('Generating AI Vastu report...');
                 aiResponse = await generateVastuReport(user, user.plan_type);
+                if (aiResponse) {
+                    user.vastu_report = JSON.stringify(aiResponse);
+                    await user.save();
+                } 
                 
             } catch (aiError) {
                 console.error('OpenAI error, using default response:', aiError);
