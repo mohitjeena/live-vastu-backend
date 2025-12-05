@@ -49,36 +49,12 @@ const userSubmissionSchema = new mongoose.Schema({
         question_text: {
             type: String,
             required: true
-        },
-        question_plan: {
-            type: String,
-            enum: ['basic', 'gold', 'premium', 'premium_plus'],
-            required: true,
-            default: 'basic'
         }
         ,
         answer: {
             type: String,
             required: true
         },
-        images: [{
-        url: {  // Cloudinary URL
-            type: String,
-            required: true
-        },
-        public_id: {  
-            type: String,
-            required: true
-        },
-        originalName: {  
-            type: String
-        },
-        uploaded_at: {
-            type: Date,
-            default: Date.now
-        }
-    }],
-        
         timestamp: {
             type: Date,
             default: Date.now
@@ -99,6 +75,20 @@ const userSubmissionSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+        profile_image: {
+        url: String,
+        public_id: String,
+        filename: String,
+        uploaded_at: Date
+    },
+    
+    // Map Images (array)
+    map_images: [{
+        url: String,
+        public_id: String,
+        filename: String,
+        uploaded_at: Date
+    }],
     created_at: {
         type: Date,
         default: Date.now
