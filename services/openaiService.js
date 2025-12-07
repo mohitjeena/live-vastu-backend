@@ -9,6 +9,8 @@ const generateVastuReport = async (userAnswers, plan_type = 'basic') => {
     const prompt = createVastuPrompt(userAnswers, plan_type);
 
     console.log(`Generating ${plan_type} Vastu report...`);
+    console.log(plan_type);
+    
 
     const response = await client.responses.create({
       model: "gpt-5-nano", 
@@ -38,7 +40,7 @@ const generateVastuReport = async (userAnswers, plan_type = 'basic') => {
 
 
 
-const createVastuPrompt = (userAnswers,plan_type = "basic") => {
+const createVastuPrompt = (userAnswers,plan_type) => {
   if(plan_type === "basic"){
     let prompt = `Analyze this home for Vastu Shastra compliance and return JSON with exactly this structure:
 {

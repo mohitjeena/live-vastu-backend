@@ -19,12 +19,13 @@ router.post('/', async (req, res) => {
 
            let ai_score = 0;
         let ai_report = "Vastu analysis report will be available soon.";
+        let plan_type = 'basic';
 
         // Generate AI report only if OpenAI API key is available
         if (process.env.OPENAI_API_KEY) {
             try {
                 console.log('Generating AI Vastu report...');
-                const aiResponse = await generateVastuReport({ session_id, answers, property_type, purpose });
+                const aiResponse = await generateVastuReport({ session_id, answers, property_type, purpose },plan_type);
                 ai_score = aiResponse.score  || ai_score;
                 ai_report = aiResponse.report || ai_report;
             } catch (aiError) {
