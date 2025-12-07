@@ -63,6 +63,8 @@ HOME DETAILS:\n`;
   - Second paragraph: Specific remedies and recommendations
   - End with: "For complete analysis, consider our premium plans."
 - Keep it professional but easy to understand`;
+
+return prompt;
   }
   else {
           prompt = `Analyze this home for Vastu Shastra compliance and return EXACT JSON format:
