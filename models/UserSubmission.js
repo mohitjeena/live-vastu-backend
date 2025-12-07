@@ -10,6 +10,11 @@ const userSubmissionSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    customer_email: {
+    type: String,
+    default: null
+}
+,
       property_type: {
         type: String,
         enum: ['floor', 'flat', 'bungalow'],
