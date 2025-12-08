@@ -3,6 +3,7 @@ const router = express.Router();
 const UserSubmission = require('../models/UserSubmission');
 const nodemailer = require("nodemailer");
 const pdf = require("html-pdf-node");
+const transporter = require("../utils/mail");
 
 router.post("/send-vastu-pdf", async (req, res) => {
       try {
@@ -44,36 +45,22 @@ router.post("/send-vastu-pdf", async (req, res) => {
 
 
            const pdfBuffer = await pdf.generatePdf(file, options);
+
+        const info = await transporter.sendMail({
+            from: "livevastu <mjeenaalm01@gmail.com>",  
+            to: user.customer_email || 'mjeenaalm09@gmail.com',
+            subject: "Your Vastu Report",
+            text: "Your Vastu report is attached.",
+            attachments: [
+                {
+                    filename: "vastu-report.pdf",
+                    content: pdfBuffer
+                }
+            ]
+        });
+
+        res.json({ success: true, message: "Email sent!", info });
    
-           // Send Email
-           const transporter = nodemailer.createTransport({
-               service: "gmail",
-               auth: {
-                   user: "mjeenaalm09@gmail.com",
-                   pass: "hnhzxtmxlatlleoj",
-               },
-           });
-   
-           const mailOptions = {
-               from: "mjeenaalm09@gmail.com",
-               to: user.customer_email || 'mjeenaalm01@gmail.com',
-               subject: "Your Vastu Report",
-               text: "Please find your PDF report attached.",
-               attachments: [
-                   {
-                       filename: "report.pdf",
-                       content: pdfBuffer,
-                       contentType: "application/pdf"
-                   }
-               ]
-           };
-   
-           await transporter.sendMail(mailOptions);
-   
-           res.json({
-               success: true,
-               message: "Email sent successfully!"
-           });
    
        } catch (err) {
            console.log(err);
