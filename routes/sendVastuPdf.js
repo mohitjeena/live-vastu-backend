@@ -15,18 +15,35 @@ router.post("/send-vastu-pdf", async (req, res) => {
            return res.json({ success: false });
        }
    
-           // Convert HTML to PDF
-           const file = { content: reportHtml };
-           const pdfBuffer = await pdf.generatePdf(file, {
-               format: "A4",
-               printBackground: true,
-               margin: {
-                   top: "20px",
-                   bottom: "20px",
-                   left: "20px",
-                   right: "20px"
-               }
-           });
+         const file = {
+            content: `
+                <html>
+                    <head>
+                        <meta charset="utf-8" />
+                        <style>
+                            body { font-family: Arial; padding: 20px; }
+                        </style>
+                    </head>
+                    <body>
+                        ${reportHtml}
+                    </body>
+                </html>
+            `,
+        };
+
+        const options = {
+            format: "A4",
+            printBackground: true,
+            margin: {
+                top: "20px",
+                bottom: "20px",
+                left: "20px",
+                right: "20px",
+            },
+        };
+
+
+           const pdfBuffer = await pdf.generatePdf(file, options);
    
            // Send Email
            const transporter = nodemailer.createTransport({
