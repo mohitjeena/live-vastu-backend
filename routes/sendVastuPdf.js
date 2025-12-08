@@ -3,7 +3,7 @@ const router = express.Router();
 const UserSubmission = require('../models/UserSubmission');
 const nodemailer = require("nodemailer");
 const pdf = require("html-pdf-node");
-const transporter = require("../utils/mail");
+const transporter = require("../utils/email");
 
 router.post("/send-vastu-pdf", async (req, res) => {
       try {
