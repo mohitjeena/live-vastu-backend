@@ -1,4 +1,4 @@
-import Brevo from "@getbrevo/brevo";
+const Brevo = require("@getbrevo/brevo");
 
  const sendPdfMail = async (toEmail, pdfBuffer) => {
     try {
