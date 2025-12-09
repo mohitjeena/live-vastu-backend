@@ -47,7 +47,7 @@ router.post("/send-vastu-pdf", async (req, res) => {
            const pdfBuffer = await pdf.generatePdf(file, options);
 
         const info = await transporter.sendMail({
-            from: "livevastu <mjeenaalm01@gmail.com>",  
+            from: `"livevastu" <${process.env.BREVO_SMTP_USER}>`,  
             to: user.customer_email || 'mjeenaalm09@gmail.com',
             subject: "Your Vastu Report",
             text: "Your Vastu report is attached.",
