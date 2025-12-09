@@ -4,6 +4,7 @@ const UserSubmission = require('../models/UserSubmission');
 const nodemailer = require("nodemailer");
 const pdf = require("html-pdf-node");
 const transporter = require("../utils/email");
+const sendPdfMail = require("../services/mail");
 
 router.post("/send-vastu-pdf", async (req, res) => {
       try {
@@ -46,20 +47,9 @@ router.post("/send-vastu-pdf", async (req, res) => {
 
            const pdfBuffer = await pdf.generatePdf(file, options);
 
-        const info = await transporter.sendMail({
-            from: `"livevastu" <${process.env.BREVO_SMTP_USER}>`,  
-            to: user.customer_email || 'mjeenaalm09@gmail.com',
-            subject: "Your Vastu Report",
-            text: "Your Vastu report is attached.",
-            attachments: [
-                {
-                    filename: "vastu-report.pdf",
-                    content: pdfBuffer
-                }
-            ]
-        });
+       const sent = await sendPdfMail(user.customer_email || 'mjeenaalm09@gmail.com', pdfBuffer);
 
-        res.json({ success: true, message: "Email sent!", info });
+        return res.json(sent);
    
    
        } catch (err) {
