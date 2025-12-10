@@ -248,4 +248,42 @@ router.post("/save-report", async (req, res) => {
 });
 
 
+// check user images completeness/
+
+router.get("/check-user-images/:userId", async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const user = await UserSubmission.findById({ session_id: userId });
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        const profileImageValid =
+            user.profile_image &&
+            user.profile_image.url ;
+
+        const mapImagesValid =
+            Array.isArray(user.map_images) &&
+            user.map_images.length > 0 &&
+            user.map_images.every(img => img.url && img.public_id);
+
+        return res.json({
+            success: true,
+            data: {
+                profileImageValid,
+                mapImagesValid,
+                allValid: profileImageValid && mapImagesValid
+            }
+        });
+
+    } catch (err) {
+        console.error("Error checking user images:", err);
+        return res.status(500).json({ success: false, message: "Server error" });
+    }
+});
+
+
+
 module.exports = router;
