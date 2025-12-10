@@ -266,8 +266,7 @@ router.get("/check-user-images/:userId", async (req, res) => {
 
         const mapImagesValid =
             Array.isArray(user.map_images) &&
-            user.map_images.length > 0 &&
-            user.map_images.every(img => img.url && img.public_id);
+            user.map_images.length >0
 
         return res.json({
             success: true,
