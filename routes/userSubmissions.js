@@ -254,7 +254,7 @@ router.get("/check-user-images/:userId", async (req, res) => {
     try {
         const { userId } = req.params;
 
-        const user = await UserSubmission.findById({ session_id: userId });
+        const user = await UserSubmission.findOne({ session_id: userId });
 
         if (!user) {
             return res.status(404).json({ success: false, message: "User not found" });
