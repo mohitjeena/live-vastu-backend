@@ -284,5 +284,40 @@ router.get("/check-user-images/:userId", async (req, res) => {
 });
 
 
+// for check mobile number existence
+router.post("/check-mobile", async (req, res) => {
+    try {
+        const { mobile_number } = req.body;
+
+        if (!mobile_number) {
+            return res.json({ success: false, message: "Mobile number required" });
+        }
+
+        const existingUser = await UserSubmission.findOne({ mobile_number });
+
+        if (existingUser) {
+            return res.json({
+                success: true,
+                exists: true,
+                message: "Mobile number already exists"
+            });
+        }
+
+        return res.json({
+            success: true,
+            exists: false
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            error: err.message
+        });
+    }
+});
+
+
+
 
 module.exports = router;
