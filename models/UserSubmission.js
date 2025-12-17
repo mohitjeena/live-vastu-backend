@@ -73,6 +73,13 @@ const userSubmissionSchema = new mongoose.Schema({
     ai_report: {
         type: String
     },
+    ai_free_report_txt:{
+        type: String
+    },
+    ai_paid_report_txt:{
+        type: String
+    }
+    ,
     vastu_report:{
         type: String
     },

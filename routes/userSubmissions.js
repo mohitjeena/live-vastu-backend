@@ -20,7 +20,7 @@ router.post('/', async (req, res) => {
            let ai_score = 0;
         let ai_report = "Vastu analysis report will be available soon.";
         let plan_type = 'basic';
-
+        let ai_free_report_txt = ''
         // Generate AI report only if OpenAI API key is available
         if (process.env.OPENAI_API_KEY) {
             try {
@@ -28,6 +28,10 @@ router.post('/', async (req, res) => {
                 const aiResponse = await generateVastuReport({ session_id, answers, property_type, purpose },plan_type);
                 ai_score = aiResponse.score  || ai_score;
                 ai_report = aiResponse.report || ai_report;
+                if(!aiResponse.report)
+                {
+                   ai_free_report_txt = aiResponse
+                }
             } catch (aiError) {
                 console.error('OpenAI error, using default response:', aiError);
                 // Continue with default values if OpenAI fails
@@ -45,6 +49,7 @@ router.post('/', async (req, res) => {
             answers,
             ai_score,
             ai_report,
+            ai_free_report_txt,
             is_verified: true 
         });
 
@@ -182,8 +187,15 @@ router.post('/:session_id/add-answers', async (req, res) => {
             try {
                 console.log('Generating AI Vastu report...');
                 aiResponse = await generateVastuReport(user, user.plan_type);
+                
                 if (aiResponse) {
+                    if(aiResponse.score)
+                    {
                     user.vastu_report = JSON.stringify(aiResponse);
+                    
+                    }else{
+                        user.ai_paid_report_txt = aiResponse
+                    }
                     await user.save();
                 } 
                 

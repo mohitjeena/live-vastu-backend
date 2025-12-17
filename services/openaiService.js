@@ -30,8 +30,18 @@ const generateVastuReport = async (userAnswers, plan_type = 'basic') => {
       ],
       
     });
-
-    return JSON.parse(response.output_text);
+    let report = null;
+    let raw_text = response.output_text
+    try {
+      report = JSON.parse(raw_text);
+      
+    } catch (error) {
+      console.log('error while report parsing to json');
+      report = raw_text;
+    }
+   return report;
+    
+    
   } catch (error) {
     console.error("OpenAI API error:", error);
     throw new Error("Failed to generate Vastu report");
@@ -39,10 +49,10 @@ const generateVastuReport = async (userAnswers, plan_type = 'basic') => {
 };
 
 
-
 const createVastuPrompt = (userAnswers,plan_type) => {
   if(plan_type === "basic"){
-    let prompt = `Analyze this home for Vastu Shastra compliance and return JSON with exactly this structure:
+    let prompt = `
+    Analyze this home for Vastu Shastra compliance and return JSON with exactly this structure:
 {
     "score": 85,
     "report": "Your analysis report here..."
@@ -67,55 +77,53 @@ HOME DETAILS:\n`;
 return prompt;
   }
   else {
-          prompt = `Analyze this home for Vastu Shastra compliance and return EXACT JSON format:
+          prompt = `
+IMPORTANT RULES:
+- Return ONLY valid JSON
+- Do NOT add any text outside JSON
+- Do NOT use markdown
+- Use proper HTML tags
+- Escape double quotes inside HTML if needed
+
+Return JSON in EXACT format:
 {
-    "score": 85,
-    "report": "Main report text here...",
-    "overview": "Brief overview of findings",
-    "strengths": ["List of positive aspects"],
-    "weaknesses": ["List of Vastu issues"],
-    "remedies": ["Specific remedies with priority"],
-    "room_analysis": {
-        "living_room": "Analysis text",
-        "bedroom": "Analysis text",
-        "kitchen": "Analysis text",
-        "bathroom": "Analysis text"
-    },
-    "directions_analysis": {
-        "north": "Analysis",
-        "south": "Analysis",
-        "east": "Analysis",
-        "west": "Analysis"
-    },
-    "action_plan": {
-        "immediate": ["Actions within 1 week"],
-        "short_term": ["Actions within 1 month"],
-        "long_term": ["Actions within 6 months"]
-    }
+  "score": 0,
+  "report_html": ""
 }
+
+TASK:
+Generate a PROFESSIONAL Vastu Shastra report in HTML format.
+
+HTML REQUIREMENTS:
+- Use <h1>, <h2>, <h3> for headings
+- Use <p> for paragraphs
+- Use <ul><li> for lists
+- Use <strong> where needed
+- No inline CSS
+- Clean semantic HTML
+- Large detailed content (10–14 pages equivalent)
+
+REPORT STRUCTURE:
+1. Executive Summary
+2. Overall Vastu Score Explanation
+3. Strengths
+4. Weaknesses
+5. Room-wise Analysis
+6. Direction-wise Analysis
+7. Remedies (with priority)
+8. Action Plan (Immediate / Short / Long term)
+9. Final Conclusion
 
 HOME DETAILS:
 - Property Type: ${userAnswers.property_type}
 - Purpose: ${userAnswers.purpose}
 
-VASTU DATA:`;
-    
-    userAnswers.answers.forEach(answer => {
-        prompt += `\n- ${answer.question_text}: ${answer.answer}`;
-    });
+VASTU INPUT DATA:
+`;
 
-    prompt += `\n\nPREMIUM REQUIREMENTS (10-14 pages equivalent):
-- "score": Detailed scoring with breakdown
-- "report": Comprehensive 10-14 page analysis with sections
-- "overview": Executive summary (1 page)
-- "strengths": List all positive Vastu elements
-- "weaknesses": Detailed list of issues found
-- "remedies": Specific remedies with materials/instructions
-- "room_analysis": Each room detailed analysis
-- "directions_analysis": Each direction impact
-- "action_plan": Step-by-step implementation timeline
-- Format: Professional but understandable
-- Include: Diagrams suggestion, priority levels, costs if applicable`;
+userAnswers.answers.forEach(answer => {
+  prompt += `\n- ${answer.question_text}: ${answer.answer}`;
+});
 
     }
 
