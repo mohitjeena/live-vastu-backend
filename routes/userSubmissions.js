@@ -4,7 +4,7 @@ const UserSubmission = require('../models/UserSubmission');
 const generateVastuReport = require('../services/openaiService').generateVastuReport;
 const EmailOtp = require("../models/EmailOtp")
 const Brevo = require("@getbrevo/brevo");
-const crpto = require("crypto")
+const crypto = require("crypto")
 
 // Save user submission (after mobile verification)
 router.post('/', async (req, res) => {
