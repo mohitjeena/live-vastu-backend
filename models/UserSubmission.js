@@ -8,11 +8,11 @@ const userSubmissionSchema = new mongoose.Schema({
     },
     mobile_number: {
         type: String,
-        required: true
+        
     },
     customer_email: {
     type: String,
-    default: null
+    required: true
 }
 ,
       property_type: {
