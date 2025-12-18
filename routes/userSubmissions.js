@@ -2,11 +2,14 @@ const express = require('express');
 const router = express.Router();
 const UserSubmission = require('../models/UserSubmission');
 const generateVastuReport = require('../services/openaiService').generateVastuReport;
+const EmailOtp = require("../models/EmailOtp")
+const Brevo = require("@getbrevo/brevo");
+const crpto = require("crypto")
 
 // Save user submission (after mobile verification)
 router.post('/', async (req, res) => {
     try {
-        const { session_id, mobile_number, answers, property_type, purpose } = req.body;
+        const { session_id, email, answers, property_type, purpose } = req.body;
 
         // Check if session already exists
         const existingSubmission = await UserSubmission.findOne({ session_id });
@@ -43,7 +46,7 @@ router.post('/', async (req, res) => {
         // Create new user submission
         const userSubmission = new UserSubmission({
             session_id,
-            mobile_number,
+            customer_email: email,
             property_type, 
             purpose,
             answers,
@@ -296,38 +299,129 @@ router.get("/check-user-images/:userId", async (req, res) => {
 });
 
 
-// for check mobile number existence
-router.post("/check-mobile", async (req, res) => {
+// send otp to email
+router.post("/send-email-otp", async (req, res) => {
     try {
-        const { mobile_number } = req.body;
+        const { email } = req.body;
 
-        if (!mobile_number) {
-            return res.json({ success: false, message: "Mobile number required" });
+        if (!email) {
+            return res.json({ success: false, message: "Email required" });
         }
 
-        const existingUser = await UserSubmission.findOne({ mobile_number });
+       
+        const existingUser = await UserSubmission.findOne({ customer_email: email });
 
         if (existingUser) {
             return res.json({
-                success: true,
-                exists: true,
-                message: "Mobile number already exists"
+                success: false,
+                message: "This email already exists"
             });
         }
 
-        return res.json({
-            success: true,
-            exists: false
-        });
+        
+        const otp = crypto.randomInt(100000, 999999).toString();
+
+        const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+         await EmailOtp.findOneAndUpdate(
+      { email },
+      {
+        email_otp: otp,
+        email_otp_expires: expiresAt,
+        email_verified: false
+      },
+      { upsert: true, new: true }
+    );
+
+
+        // mail OTP
+        const apiInstance = new Brevo.TransactionalEmailsApi();
+                apiInstance.setApiKey(
+                    Brevo.TransactionalEmailsApiApiKeys.apiKey,
+                    process.env.BREVO_API_KEY
+                );
+        
+                const emailData = {
+                    sender: { 
+                        email: process.env.BREVO_EMAIL, 
+                        name: "Vastu Verification" 
+                    },
+                    to: [{ email: email }],
+                    subject: "Your OTP for Vastu Report",
+                    htmlContent: `<p>Your OTP is <b>${otp}</b>. It is valid for 10 minutes.</p>`,
+                    
+                };
+        
+                const response = await apiInstance.sendTransacEmail(emailData);
+                
+                    res.json({
+                success: true,
+                message: "OTP sent successfully",
+                
+            });
 
     } catch (err) {
         console.error(err);
         res.status(500).json({
             success: false,
-            error: err.message
+            error: err.message,
+            message: 'failed to send otp'
         });
     }
 });
+
+
+router.post("/verify-email-otp", async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const record = await EmailOtp.findOne({ email });
+
+    if (!record) {
+      return res.json({
+        success: false,
+        message: "Please send OTP."
+      });
+    }
+
+   
+    if (record.email_otp_expires < new Date()) {
+      await EmailOtp.deleteOne({ email });
+      return res.json({
+        success: false,
+        message: "OTP expired"
+      });
+    }
+
+  
+    if (record.email_otp !== otp) {
+      return res.json({
+        success: false,
+        message: "Invalid OTP"
+      });
+    }
+
+   
+    record.email_verified = true;
+    await record.save();
+
+    
+    await EmailOtp.deleteOne({ email });
+
+    res.json({
+      success: true,
+      message: "Email verified successfully"
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "OTP verification failed"
+    });
+  }
+});
+
 
 
 

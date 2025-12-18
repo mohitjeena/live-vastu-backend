@@ -30,8 +30,12 @@ router.post('/orders-paid',async (req, res) => {
         if (attr.name === "plan_type") planType = attr.value;
         }
     
-          // 2️⃣ Extract email safely
-        const email = data.email || data.customer?.email || null;
+         const phone =
+  data.phone ||
+  data.customer?.phone ||
+  data.shipping_address?.phone ||
+  data.billing_address?.phone ||
+  '';
 
     console.log("Session ID:", sessionId);
     console.log("Plan Type:", planType);
@@ -56,7 +60,7 @@ router.post('/orders-paid',async (req, res) => {
                userSubmission.payment_status = 'completed';
                userSubmission.order_id = orderId;
                userSubmission.has_paid_features = true;
-                userSubmission.customer_email = email; 
+                userSubmission.mobile_number = phone; 
    
            await userSubmission.save();
    
