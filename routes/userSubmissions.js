@@ -422,6 +422,33 @@ router.post("/verify-email-otp", async (req, res) => {
   }
 });
 
+// check-email
+router.post("/check-email", async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.json({ success: false, message: "Email required" });
+        }
+
+       
+        const existingUser = await UserSubmission.findOne({ customer_email: email });
+
+        if (existingUser) {
+            return res.json({
+                success: true,
+                message: "This email already exists"
+            });
+        }
+    }catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            error: err.message,
+            message: 'error on checking email'
+        });
+    }
+})
 
 
 

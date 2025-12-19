@@ -55,12 +55,16 @@ router.post('/orders-paid',async (req, res) => {
                });
            }
       const orderId = data.id; 
+
+      if(userSubmission.customer_email) 
+        email = userSubmission.customer_email
            
                userSubmission.plan_type = planType || 'basic';
                userSubmission.payment_status = 'completed';
                userSubmission.order_id = orderId;
                userSubmission.has_paid_features = true;
                 userSubmission.mobile_number = phone; 
+                userSubmission.customer_email = data.customer.email ? data.customer.email : email;
    
            await userSubmission.save();
    

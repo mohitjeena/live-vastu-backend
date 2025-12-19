@@ -68,7 +68,7 @@ HOME DETAILS:\n`;
     
     prompt += `\nREQUIREMENTS:
 - "score": Number between 0-100 representing Vastu compliance
-- "report": String with 8-9 lines in 2 paragraphs
+- "report": String with 15-20 lines in 2 paragraphs
   - First paragraph: Analysis of current Vastu compliance
   - Second paragraph: Specific remedies and recommendations
   - End with: "For complete analysis, consider our premium plans."
