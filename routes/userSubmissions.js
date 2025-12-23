@@ -413,7 +413,26 @@ router.post("/verify-email-otp", async (req, res) => {
 
 
 
+router.get("/user-plans", async (req, res) => {
+  try {
+    const { email } = req.query;
 
+    if (!email) {
+      return res.json({ success: false, message: "Email required" });
+    }
+
+    const reports = await UserSubmission.find({ email })
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      data: reports
+    });
+
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
 
 
 module.exports = router;
