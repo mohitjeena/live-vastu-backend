@@ -65,6 +65,7 @@ router.post('/orders-paid',async (req, res) => {
                userSubmission.has_paid_features = true;
                 userSubmission.mobile_number = phone; 
                 userSubmission.customer_email = data.customer.email ? data.customer.email : email;
+                userSubmission.vastu_task = false;
    
            await userSubmission.save();
    

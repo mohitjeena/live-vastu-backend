@@ -37,6 +37,10 @@ const userSubmissionSchema = new mongoose.Schema({
         enum: ['pending', 'completed', 'failed'],
         default: 'pending'
     },
+    vastu_task:{
+        type: Boolean,
+        default: false
+    },
     // ADD ORDER ID FOR REFERENCE
     order_id: {
         type: String

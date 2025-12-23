@@ -53,7 +53,8 @@ router.post('/', async (req, res) => {
             ai_score,
             ai_report,
             ai_free_report_txt,
-            is_verified: true 
+            is_verified: true ,
+            vastu_task: true
         });
 
         await userSubmission.save();
@@ -207,6 +208,8 @@ router.post('/:session_id/add-answers', async (req, res) => {
                 // Continue with default values if OpenAI fails
             }
         }
+
+        user.vastu_task = true;
 
         res.json({
             success: true,
