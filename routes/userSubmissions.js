@@ -421,7 +421,7 @@ router.get("/user-plans/:email", async (req, res) => {
       return res.json({ success: false, message: "Email required" });
     }
 
-    const reports = await UserSubmission.find({ email })
+    const reports = await UserSubmission.find({ customer_email: email })
       .sort({ createdAt: -1 });
 
     res.json({
