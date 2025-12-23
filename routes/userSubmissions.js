@@ -413,9 +413,9 @@ router.post("/verify-email-otp", async (req, res) => {
 
 
 
-router.get("/user-plans", async (req, res) => {
+router.get("/user-plans/:email", async (req, res) => {
   try {
-    const { email } = req.query;
+    const { email } = req.params;
 
     if (!email) {
       return res.json({ success: false, message: "Email required" });
