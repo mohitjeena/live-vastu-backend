@@ -200,6 +200,7 @@ router.post('/:session_id/add-answers', async (req, res) => {
                     }else{
                         user.ai_paid_report_txt = aiResponse
                     }
+                    user.vastu_task = true;
                     await user.save();
                 } 
                 
@@ -209,7 +210,7 @@ router.post('/:session_id/add-answers', async (req, res) => {
             }
         }
 
-        user.vastu_task = true;
+        
 
         res.json({
             success: true,
