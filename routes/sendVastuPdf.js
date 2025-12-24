@@ -61,5 +61,79 @@ router.post("/send-vastu-pdf", async (req, res) => {
        }
 });
 
+app.get('/download-report/:sessionId', async (req, res) => {
+    try {
+        const {sessionId} = req.params;
+
+        
+        const user = await UserSubmission.findOne({ session_id: sessionId });
+        if (!user) {
+            return res.status(404).send('user not found');
+        }
+
+        if(!user.vastu_report)
+        {
+            return res.status(404).send('report not found');
+        }
+
+        let rawReport = JSON.parse(user.vastu_report)
+
+        const reportHtml = rawReport.report_html; 
+
+        // 2️⃣ Build HTML file
+        const file = {
+            content: `
+                <!DOCTYPE html>
+                <html>
+                    <head>
+                        <meta charset="utf-8" />
+                        <style>
+                            body {
+                                font-family: Arial, sans-serif;
+                                padding: 20px;
+                            }
+                            table {
+                                width: 100%;
+                                border-collapse: collapse;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        ${reportHtml}
+                    </body>
+                </html>
+            `,
+        };
+
+        // 3️⃣ PDF options
+        const options = {
+            format: 'A4',
+            printBackground: true,
+            margin: {
+                top: '20px',
+                bottom: '20px',
+                left: '20px',
+                right: '20px',
+            },
+        };
+
+        // 4️⃣ Generate PDF buffer
+        const pdfBuffer = await pdf.generatePdf(file, options);
+
+        // 5️⃣ Send PDF
+        res.set({
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': 'attachment; filename="vastu-report.pdf"',
+            'Content-Length': pdfBuffer.length,
+        });
+
+        res.send(pdfBuffer);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Failed to generate PDF');
+    }
+});
+
 
 module.exports = router;
