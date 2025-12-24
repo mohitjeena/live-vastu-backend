@@ -49,7 +49,7 @@ router.post('/orders-paid',async (req, res) => {
     }
 
    
-           const userSubmission = await UserSubmission.findOne({ session_id: sessionId });
+           let userSubmission = await UserSubmission.findOne({ session_id: sessionId });
            
            if (!userSubmission) {
                userSubmission = new UserSubmission({ session_id: sessionId })
