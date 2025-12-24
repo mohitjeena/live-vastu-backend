@@ -18,12 +18,12 @@ const userSubmissionSchema = new mongoose.Schema({
       property_type: {
         type: String,
         enum: ['floor', 'flat', 'bungalow'],
-        required: true
+      
     },
     purpose: {
         type: String,
         enum: ['home', 'office'],
-        required: true
+       
     },
         // Plan Type
     plan_type: {
