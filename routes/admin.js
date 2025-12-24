@@ -20,7 +20,7 @@ router.get('/questions', async (req, res) => {
 
 // get filtered questions
 
-router.get('/api/questions/:planType', async (req, res) => {
+router.get('/questions/:planType', async (req, res) => {
     const { planType } = req.params;
 
   try {
