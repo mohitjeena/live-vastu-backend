@@ -18,6 +18,26 @@ router.get('/questions', async (req, res) => {
   }
 });
 
+// get filtered questions
+
+app.get('/api/questions/:planType', async (req, res) => {
+    const { planType } = req.params;
+
+  try {
+    const questions = await Question.find({ question_plan: planType }).sort({ display_order: 1 });
+    res.json({
+      success: true,
+      data: questions
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching filter questions'
+    });
+  }
+});
+
+
 // CREATE new question
 router.post('/questions', async (req, res) => {
     try {

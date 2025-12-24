@@ -158,7 +158,7 @@ router.get('/:session_id/payment-status', async (req, res) => {
 router.post('/:session_id/add-answers', async (req, res) => {
     try {
         const { session_id } = req.params;
-        const { answers } = req.body;
+        const { answers,propertyType,purpose } = req.body;
 
         const user = await UserSubmission.findOne({ session_id });
         
@@ -184,6 +184,12 @@ router.post('/:session_id/add-answers', async (req, res) => {
                 user.answers.push(newAnswer);
             }
         });
+
+        if(propertyType && purpose)
+        {
+            user.property_type = propertyType,
+            user.purpose = purpose
+        }
         
         await user.save();
           // Generate AI report only if OpenAI API key is available
