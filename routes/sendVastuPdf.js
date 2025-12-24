@@ -61,7 +61,7 @@ router.post("/send-vastu-pdf", async (req, res) => {
        }
 });
 
-app.get('/download-report/:sessionId', async (req, res) => {
+router.get('/download-report/:sessionId', async (req, res) => {
     try {
         const {sessionId} = req.params;
 
