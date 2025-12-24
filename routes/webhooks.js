@@ -24,10 +24,13 @@ router.post('/orders-paid',async (req, res) => {
     const noteAttributes = data.note_attributes || [];
     let sessionId = null;
     let planType = null;
+     let email = null;
+
 
     for (let attr of noteAttributes) {
         if (attr.name === "session_id") sessionId = attr.value;
         if (attr.name === "plan_type") planType = attr.value;
+        if (attr.name === "email") email = attr.value;
         }
     
          const phone =
@@ -49,13 +52,10 @@ router.post('/orders-paid',async (req, res) => {
            const userSubmission = await UserSubmission.findOne({ session_id: sessionId });
            
            if (!userSubmission) {
-               return res.status(404).json({
-                   success: false,
-                   message: 'User submission not found'
-               });
+               userSubmission = new UserSubmission({ session_id: sessionId })
            }
       const orderId = data.id; 
-
+     
       if(userSubmission.customer_email) 
         email = userSubmission.customer_email
            
