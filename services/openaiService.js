@@ -56,7 +56,7 @@ INSTRUCTIONS:
     
 
     const response = await client.responses.create({
-      model: "gpt-4.1", 
+      model: "gpt-5-nano", 
       input: [
         {
           role: "system",
