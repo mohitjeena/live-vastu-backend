@@ -79,7 +79,8 @@ INSTRUCTIONS:
           content
         },
       ],
-      
+       max_output_tokens: 10000,
+       temperature: 0.2
     });
     let report = null;
     let raw_text = response.output_text
@@ -161,6 +162,12 @@ SCORING GUIDELINES:
 - Score range: 0–100
 - Consider orientation, room placement, entrances, defects, and severity
 - Explain score reasoning clearly inside report_html
+
+IMPORTANT LENGTH REQUIREMENT:
+- The "report_html" must be long: approximately **5,500 words** (~10 pages).
+- Each major section below should be ~400–700 words.
+- Keep writing until you have covered all sections in depth; do not stop early.
+- Use professional, non-repetitive language.
 
 REPORT STRUCTURE:
 1. Executive Summary
