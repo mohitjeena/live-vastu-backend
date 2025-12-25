@@ -5,7 +5,52 @@ const client = new OpenAI({
 
 const generateVastuReport = async (userAnswers, plan_type = 'basic') => {
   try {
-    // Different prompts based on plan type
+    const content = [];
+
+    // Base instruction
+    content.push({
+      type: "input_text",
+      text: "Analyze the property using classical Vastu Shastra principles."
+    });
+
+       if (plan_type === "premium_plus" && userAnswers.profile_image && userAnswers.map_images.length !== 0) {
+        console.log('entered in images in premium plus')
+
+        content.push({
+  type: "input_text",
+  text: `
+IMAGE CONTEXT:
+- First image is the PROFILE IMAGE of user.
+- Other are map images.
+
+INSTRUCTIONS:
+- Use map images to understand direction, room placement, and plot orientation.
+`
+});
+
+      if (userAnswers.profile_image?.url) {
+        content.push({
+          type: "input_image",
+          image_url: userAnswers.profile_image.url
+        });
+      }
+
+       userAnswers.map_images?.forEach(img => {
+        if (img.url) {
+          content.push({
+            type: "input_image",
+            image_url: img.url
+          });
+        }
+      });
+    }
+
+     content.push({
+      type: "input_text",
+      text: createVastuPrompt(userAnswers, plan_type)
+    });
+
+
     const prompt = createVastuPrompt(userAnswers, plan_type);
 
     console.log(`Generating ${plan_type} Vastu report...`);
@@ -13,19 +58,27 @@ const generateVastuReport = async (userAnswers, plan_type = 'basic') => {
     
 
     const response = await client.responses.create({
-      model: "gpt-5-nano", 
+      model: "gpt-4.1", 
       input: [
         {
           role: "system",
           content:
-            `You are a senior Vastu Shastra expert with 30 years experience. 
+            `You are a senior Vastu Shastra consultant with 30+ years of experience.
+              You strictly follow classical Vastu Shastra principles.. 
+              This report must be written in the professional analytical style and methodology commonly followed by
+                    Dr. Puneet Chawla, a well-known Vastu Shastra expert.
+
+                      IMPORTANT:
+              - Do NOT claim personal consultation
+              - Do NOT imply physical site visit
+              - Present the report as expert-guided analysis
             ${plan_type === 'basic' ? 
               'Provide concise analysis in 2 paragraphs.' : 
-              'Provide detailed, comprehensive analysis in 10-14 pages.'}`,
+              'Provide detailed, comprehensive analysis in 15-20 pages.'}`,
         },
         {
           role: "user",
-          content: prompt,
+          content
         },
       ],
       
@@ -93,6 +146,7 @@ Return JSON in EXACT format:
 
 TASK:
 Generate a PROFESSIONAL Vastu Shastra report in HTML format.
+Length must be equivalent to 15–20 pages.
 
 HTML REQUIREMENTS:
 - Use <h1>, <h2>, <h3> for headings
@@ -100,8 +154,14 @@ HTML REQUIREMENTS:
 - Use <ul><li> for lists
 - Use <strong> where needed
 - No inline CSS
+- No JavaScript
 - Clean semantic HTML
 - Large detailed content (10–14 pages equivalent)
+
+SCORING GUIDELINES:
+- Score range: 0–100
+- Consider orientation, room placement, entrances, defects, and severity
+- Explain score reasoning clearly inside report_html
 
 REPORT STRUCTURE:
 1. Executive Summary
@@ -110,15 +170,16 @@ REPORT STRUCTURE:
 4. Weaknesses
 5. Room-wise Analysis
 6. Direction-wise Analysis
-7. Remedies (with priority)
-8. Action Plan (Immediate / Short / Long term)
-9. Final Conclusion
+7. Dosha Analysis
+8. Remedies with Priority
+9. Action Plan
+10. Final Conclusion
 
 HOME DETAILS:
 - Property Type: ${userAnswers.property_type}
 - Purpose: ${userAnswers.purpose}
 
-VASTU INPUT DATA:
+USERS ANSWERS:
 `;
 
 userAnswers.answers.forEach(answer => {
