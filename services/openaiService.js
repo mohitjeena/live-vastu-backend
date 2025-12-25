@@ -51,8 +51,6 @@ INSTRUCTIONS:
     });
 
 
-    const prompt = createVastuPrompt(userAnswers, plan_type);
-
     console.log(`Generating ${plan_type} Vastu report...`);
     console.log(plan_type);
     
@@ -86,6 +84,7 @@ INSTRUCTIONS:
     let report = null;
     let raw_text = response.output_text
     try {
+      console.log(raw_text.ai_score)
       report = JSON.parse(raw_text);
       
     } catch (error) {
