@@ -80,7 +80,7 @@ INSTRUCTIONS:
         },
       ],
        max_output_tokens: 10000,
-       temperature: 0.2
+       
     });
     let report = null;
     let raw_text = response.output_text
