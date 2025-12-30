@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const Chunk = require('./models/Chunk')
+const fs = require('fs')
 
 // Load environment variables
 if (process.env.NODE_ENV !== 'production') {
@@ -61,7 +62,7 @@ async function insertChunks() {
 
     console.log("Total chunks:", chunks.length);
 
-    // (optional) पहले पुराने delete कर दो
+    
     await Chunk.deleteMany({});
 
     const result = await Chunk.insertMany(chunks);
@@ -69,9 +70,7 @@ async function insertChunks() {
 
   } catch (err) {
     console.error("Insert error:", err);
-  } finally {
-    mongoose.connection.close();
-  }
+  } 
 }
 
 insertChunks();
