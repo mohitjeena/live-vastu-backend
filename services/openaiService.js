@@ -28,10 +28,17 @@ INSTRUCTIONS:
 `
 });
 
+function getFastCloudinaryUrl(url) {
+  return url.replace(
+    '/upload/',
+    '/upload/f_auto,q_auto,w_700/'
+  );
+}
+
       if (userAnswers.profile_image?.url) {
         content.push({
           type: "input_image",
-          image_url: userAnswers.profile_image.url
+          image_url: getFastCloudinaryUrl(userAnswers.profile_image.url)
         });
       }
 
@@ -39,7 +46,7 @@ INSTRUCTIONS:
         if (img.url) {
           content.push({
             type: "input_image",
-            image_url: img.url
+            image_url: getFastCloudinaryUrl(img.url)
           });
         }
       });
@@ -79,7 +86,7 @@ INSTRUCTIONS:
           content
         },
       ],
-       max_output_tokens: 10000,
+       max_output_tokens: 16000,
        
     });
     let report = null;
@@ -164,7 +171,7 @@ SCORING GUIDELINES:
 - Explain score reasoning clearly inside report_html
 
 IMPORTANT LENGTH REQUIREMENT:
-- The "report_html" must be long: approximately **5,500 words** (~10 pages).
+- The "report_html" must be long: approximately **10,000 words** (~10 pages).
 - Each major section below should be ~400–700 words.
 - Keep writing until you have covered all sections in depth; do not stop early.
 - Use professional, non-repetitive language.

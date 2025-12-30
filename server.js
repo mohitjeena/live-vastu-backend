@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const Chunk = require('./models/Chunk')
 
 // Load environment variables
 if (process.env.NODE_ENV !== 'production') {
@@ -50,3 +51,27 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+
+async function insertChunks() {
+  try {
+    const chunks = JSON.parse(
+      fs.readFileSync("vastu_chunks.json", "utf-8")
+    );
+
+    console.log("Total chunks:", chunks.length);
+
+    // (optional) पहले पुराने delete कर दो
+    await Chunk.deleteMany({});
+
+    const result = await Chunk.insertMany(chunks);
+    console.log("Inserted documents:", result.length);
+
+  } catch (err) {
+    console.error("Insert error:", err);
+  } finally {
+    mongoose.connection.close();
+  }
+}
+
+insertChunks();
