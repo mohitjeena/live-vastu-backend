@@ -260,8 +260,8 @@ SCORING GUIDELINES:
 - Explain score reasoning clearly inside report_html
 
 IMPORTANT LENGTH REQUIREMENT:
-- The "report_html" must be long: approximately **10,000 words** (~10 pages).
-- Each major section below should be ~400–700 words.
+- The "report_html" must be long: approximately **12,000 words** (~13 pages).
+- Each major section below should be ~900–1000 words.
 - Keep writing until you have covered all sections in depth; do not stop early.
 - Use professional, non-repetitive language.
 
