@@ -96,7 +96,7 @@ function getFastCloudinaryUrl(url) {
           content
         },
       ],
-       max_output_tokens: 16000,
+       max_output_tokens: 18000,
        
     });
     let report = null;
@@ -141,7 +141,7 @@ async function vectorSearch(questionEmbedding) {
       path: "embedding",
       queryVector: questionEmbedding,
       numCandidates: 60,
-      limit: 20 
+      limit: 30 
     }
   },
   {
@@ -183,11 +183,11 @@ const finalContext = Object.entries(topicContexts)
   .join("\n\n");
 
 
-
+console.log(uniqueTopics);
 
   if(plan_type === "basic"){
 
- console.log(uniqueTopics);
+ 
  
 
 
@@ -260,8 +260,8 @@ SCORING GUIDELINES:
 - Explain score reasoning clearly inside report_html
 
 IMPORTANT LENGTH REQUIREMENT:
-- The "report_html" must be long: approximately **12,000 words** (~13 pages).
-- Each major section below should be ~900–1000 words.
+- The "report_html" must be long: approximately **12,000 words** (~14 pages).
+- Each major section below should be ~1000–1200 words.
 - Keep writing until you have covered all sections in depth; do not stop early.
 - Use professional, non-repetitive language.
 
