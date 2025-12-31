@@ -61,31 +61,21 @@ const client = new OpenAI({
 
 async function generateEmbeddings() {
   try {
-    const chunks = await Chunk.find({
-      embedding: { $exists: false }
-    });
+    const orderChunks = await Chunk.find({})
 
-    console.log("Chunks to embed:", chunks.length);
+      for (let i = 0; i < orderChunks.length; i++) {
+         const chunk = orderChunks[i];
 
-    for (let i = 0; i < chunks.length; i++) {
-      const chunk = chunks[i];
-
-      const embeddingResponse = await client.embeddings.create({
-        model: "text-embedding-3-small",
-        input: chunk.text
-      });
-
-      const embedding = embeddingResponse.data[0].embedding;
-
-      await Chunk.updateOne(
+           await Chunk.updateOne(
         { _id: chunk._id },
-        { $set: { embedding: embedding,order: i } }
+        { $set: { order: i } }
       );
 
-      console.log(`Embedded ${i + 1}/${chunks.length}`);
-    }
+      }
 
-    console.log("✅ All embeddings generated");
+
+    console.log("Chunks to embed:");
+
   } catch (err) {
     console.error("Embedding error:", err);
   } 
