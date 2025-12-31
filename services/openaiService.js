@@ -49,7 +49,7 @@ function getFastCloudinaryUrl(url) {
 
      content.push({
       type: "input_text",
-      text: createVastuPrompt(userAnswers, plan_type)
+      text: await createVastuPrompt(userAnswers, plan_type)
     });
 
 
@@ -172,7 +172,7 @@ const finalContext = Object.entries(topicContexts)
 
   if(plan_type === "basic"){
 
- console.log(finalContext);
+ console.log(uniqueTopics);
  
 
 
