@@ -5,7 +5,8 @@ const chunkSchema = new mongoose.Schema({
   topic: { type: String, required: true },
   text: { type: String, required: true },
   length: { type: Number },
-  
+  order: {type: Number},
+
    embedding: {
     type: [Number],
     default: []

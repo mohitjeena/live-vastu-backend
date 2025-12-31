@@ -79,7 +79,7 @@ async function generateEmbeddings() {
 
       await Chunk.updateOne(
         { _id: chunk._id },
-        { $set: { embedding } }
+        { $set: { embedding: embedding,order: i } }
       );
 
       console.log(`Embedded ${i + 1}/${chunks.length}`);
