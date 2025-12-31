@@ -180,7 +180,7 @@ const finalContext = Object.entries(topicContexts)
     Information to generate best vastu report : 
     ${finalContext}
 
-    user this information and use you logic  to generate best vastu report.
+    use this information and use your logic to generate best vastu report.
     Analyze this home for Vastu Shastra compliance and return JSON with exactly this structure:
 {
     "score": 85,
