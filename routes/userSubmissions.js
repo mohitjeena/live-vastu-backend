@@ -142,7 +142,8 @@ router.get('/:session_id/payment-status', async (req, res) => {
                 payment_status: submission.payment_status,
                 has_paid_features: submission.has_paid_features,
                 can_proceed: submission.payment_status === 'completed',
-                answers: submission.answers
+                answers: submission.answers,
+                vastu_task: submission.vastu_task
             }
         });
     } catch (error) {
