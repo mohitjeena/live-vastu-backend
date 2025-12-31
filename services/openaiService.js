@@ -111,7 +111,7 @@ function buildSearchQuery(answers) {
 }
 
 async function getEmbedding(text) {
-  const res = await OpenAI.embeddings.create({
+  const res = await client.embeddings.create({
     model: "text-embedding-3-small", 
     input: text
   });
