@@ -1,4 +1,5 @@
 const OpenAI = require("openai");
+const Chunk = require("../models/Chunk")
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -6,12 +7,6 @@ const client = new OpenAI({
 const generateVastuReport = async (userAnswers, plan_type = 'basic') => {
   try {
     const content = [];
-
-    // Base instruction
-    content.push({
-      type: "input_text",
-      text: "Analyze the property using classical Vastu Shastra principles."
-    });
 
        if (plan_type === "premium_plus" && userAnswers.profile_image && userAnswers.map_images.length !== 0) {
         console.log('entered in images in premium plus')
@@ -109,15 +104,89 @@ function getFastCloudinaryUrl(url) {
 };
 
 
-const createVastuPrompt = (userAnswers,plan_type) => {
+function buildSearchQuery(answers) {
+  return answers
+    .map(a => `${a.question_text} Answer: ${a.answer}`)
+    .join(". ");
+}
+
+async function getEmbedding(text) {
+  const res = await OpenAI.embeddings.create({
+    model: "text-embedding-3-small", 
+    input: text
+  });
+  return res.data[0].embedding;
+}
+
+async function vectorSearch(questionEmbedding) {
+  const results = await Chunk.aggregate([
+    {
+    $vectorSearch: {
+      index: "vector_index",
+      path: "embedding",
+      queryVector: questionEmbedding,
+      numCandidates: 60,
+      limit: 20 
+    }
+  },
+  {
+    $project: {
+      topic: 1,
+      score: { $meta: "vectorSearchScore" }
+    }
+  }
+  ]);
+
+  return results;
+}
+
+const createVastuPrompt =async (userAnswers,plan_type) => {
+
+  const searchQuery = buildSearchQuery(userAnswers.answers);
+
+   const embedding = await getEmbedding(searchQuery);
+
+   const results = await vectorSearch(embedding)
+
+   const uniqueTopics = [
+  ...new Set(results.map(r => r.topic))
+];
+
+const topicContexts = {};
+
+for (const topic of uniqueTopics) {
+  const chunks = await Chunk.find({ topic })
+    .sort({ order: 1 });
+
+  topicContexts[topic] = chunks
+    .map(c => c.text.trim())
+    .join("");
+}
+
+const finalContext = Object.entries(topicContexts)
+  .map(([topic, text]) => `### ${topic}\n${text}`)
+  .join("\n\n");
+
+
+
+
   if(plan_type === "basic"){
+
+ console.log(finalContext);
+ 
+
+
     let prompt = `
+    Information to generate best vastu report : 
+    ${finalContext}
+
+    user this information and use you logic  to generate best vastu report.
     Analyze this home for Vastu Shastra compliance and return JSON with exactly this structure:
 {
     "score": 85,
     "report": "Your analysis report here..."
 }
-
+Given answers by user according to questions :
 HOME DETAILS:\n`;
     prompt += `- Type: ${userAnswers.property_type}\n`;
     prompt += `- Purpose: ${userAnswers.purpose}\n\n`;

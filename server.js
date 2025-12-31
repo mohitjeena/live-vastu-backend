@@ -55,30 +55,5 @@ app.listen(PORT, () => {
 });
 
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
-
-async function generateEmbeddings() {
-  try {
-    const orderChunks = await Chunk.find({})
-
-      for (let i = 0; i < orderChunks.length; i++) {
-         const chunk = orderChunks[i];
-
-           await Chunk.updateOne(
-        { _id: chunk._id },
-        { $set: { order: i } }
-      );
-
-      }
 
 
-    console.log("Chunks to embed:");
-
-  } catch (err) {
-    console.error("Embedding error:", err);
-  } 
-}
-
-generateEmbeddings();
