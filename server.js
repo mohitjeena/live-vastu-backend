@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const Chunk = require('./models/Chunk')
 const fs = require('fs')
+const OpenAI = require("openai");
 
 // Load environment variables
 if (process.env.NODE_ENV !== 'production') {
@@ -54,23 +55,40 @@ app.listen(PORT, () => {
 });
 
 
-async function insertChunks() {
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+async function generateEmbeddings() {
   try {
-    const chunks = JSON.parse(
-      fs.readFileSync("vastu_chunks.json", "utf-8")
-    );
+    const chunks = await Chunk.find({
+      embedding: { $exists: false }
+    });
 
-    console.log("Total chunks:", chunks.length);
+    console.log("Chunks to embed:", chunks.length);
 
-    
-    await Chunk.deleteMany({});
+    for (let i = 0; i < chunks.length; i++) {
+      const chunk = chunks[i];
 
-    const result = await Chunk.insertMany(chunks);
-    console.log("Inserted documents:", result.length);
+      const embeddingResponse = await client.embeddings.create({
+        model: "text-embedding-3-small",
+        input: chunk.text
+      });
 
+      const embedding = embeddingResponse.data[0].embedding;
+
+      await Chunk.updateOne(
+        { _id: chunk._id },
+        { $set: { embedding } }
+      );
+
+      console.log(`Embedded ${i + 1}/${chunks.length}`);
+    }
+
+    console.log("✅ All embeddings generated");
   } catch (err) {
-    console.error("Insert error:", err);
+    console.error("Embedding error:", err);
   } 
 }
 
-insertChunks();
+generateEmbeddings();

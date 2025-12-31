@@ -4,7 +4,12 @@ const chunkSchema = new mongoose.Schema({
   chunkId: { type: String, required: true, unique: true },
   topic: { type: String, required: true },
   text: { type: String, required: true },
-  length: { type: Number }
+  length: { type: Number },
+  
+   embedding: {
+    type: [Number],
+    default: []
+  }
 }, { timestamps: true });
 
 // export default mongoose.model("Chunk", chunkSchema);
