@@ -243,7 +243,7 @@ router.post('/:session_id/add-answers', async (req, res) => {
                     <li>Your responses are under expert review</li> <li>A detailed Vastu analysis is being generated</li> 
                     <li>You will receive your complete Vastu report shortly
                     </li> 
-                    <li>You can track you vastu report here <a href="https://account.livevaastu.in/orders?locale=en&region_country=IN" target="_blank">Click Here</a>
+                    <li>You can track you vastu report here <a href="https://account.livevaastu.in/orders/${user.order_id}" target="_blank">Click Here</a>
                     </li> 
                     </ul> 
                     
@@ -262,11 +262,7 @@ router.post('/:session_id/add-answers', async (req, res) => {
         
                 const response = await apiInstance.sendTransacEmail(emailData);
                 
-                    res.json({
-                success: true,
-                message: "confirmation message sent successfully",
-                
-            });
+           
                 } 
                 
             } catch (aiError) {
