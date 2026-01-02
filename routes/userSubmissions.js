@@ -208,6 +208,7 @@ router.post('/:session_id/add-answers', async (req, res) => {
                     }else{
                         user.ai_paid_report_txt = aiResponse
                     }
+                    user.report_check = false;
                     user.vastu_task = true;
                     await user.save();
 
@@ -309,6 +310,7 @@ router.post("/save-report", async (req, res) => {
     let oldReport = JSON.parse(user.vastu_report)
     oldReport.report_html = reportHtml
      user.vastu_report  = JSON.stringify(oldReport);
+     user.report_check = true;
      await user.save();
 
         

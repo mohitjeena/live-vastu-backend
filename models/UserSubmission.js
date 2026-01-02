@@ -87,6 +87,11 @@ const userSubmissionSchema = new mongoose.Schema({
     vastu_report:{
         type: String
     },
+
+    report_check:{
+        type: Boolean,
+        default: false
+    },
     
     is_verified: {
         type: Boolean,

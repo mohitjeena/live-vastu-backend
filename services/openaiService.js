@@ -96,7 +96,7 @@ function getFastCloudinaryUrl(url) {
           content
         },
       ],
-       max_output_tokens: 18000,
+       max_output_tokens: 20000,
        
     });
     let report = null;
@@ -187,22 +187,45 @@ console.log(uniqueTopics);
 
   if(plan_type === "basic"){
 
- 
- 
-
-
     let prompt = `
-    Information to generate best vastu report : 
-    ${finalContext}
-
-    use this information and use your logic to generate best vastu report.
     Analyze this home for Vastu Shastra compliance and return JSON with exactly this structure:
 {
     "score": 85,
     "report": "Your analysis report here..."
 }
+
+CRITICAL INSTRUCTION:
+You MUST generate the Vastu report ONLY using the information provided
+in the CONTEXT section below, combined with the user's answers.
+Do NOT rely on external knowledge.
+If something is missing, infer carefully using Vastu principles
+from the CONTEXT only.
+
+REPORT FORMAT RULES:
+- "score": Number between 0-100 representing Vastu compliance
+- "report": 
+- report MUST contain exactly TWO sections with 15-20 lines
+- Use <h3> for section titles
+- Use <p> for paragraphs
+- Each section should have 5–7 lines
+- Keep language professional and easy to understand
+
+SECTION STRUCTURE:
+
+<h3>Current Vastu Analysis</h3>
+<p>Paragraph content here...</p>
+
+<h3>Remedies & Recommendations</h3>
+<p>Paragraph content here...</p>
+
+CONTENT GUIDELINES:
+- Analysis should explain current vastu compliance clearly
+- Remedies should be practical and actionable
+- End remedies section with:
+  "For complete analysis, consider our premium plans."
+
 Given answers by user according to questions :
-HOME DETAILS:\n`;
+\n`;
     prompt += `- Type: ${userAnswers.property_type}\n`;
     prompt += `- Purpose: ${userAnswers.purpose}\n\n`;
     prompt += `ANSWERS PROVIDED:\n`;
@@ -210,13 +233,11 @@ HOME DETAILS:\n`;
         prompt += `- ${answer.question_text}: ${answer.answer}\n`;
     });
     
-    prompt += `\nREQUIREMENTS:
-- "score": Number between 0-100 representing Vastu compliance
-- "report": String with 15-20 lines in 2 paragraphs
-  - First paragraph: Analysis of current Vastu compliance
-  - Second paragraph: Specific remedies and recommendations
-  - End with: "For complete analysis, consider our premium plans."
-- Keep it professional but easy to understand`;
+    prompt += `\n
+
+CONTEXT (FROM DATABASE – RAG):
+${finalContext}
+`;
 
 return prompt;
   }
@@ -244,6 +265,13 @@ TASK:
 Generate a PROFESSIONAL Vastu Shastra report in HTML format.
 Length must be equivalent to 15–20 pages.
 
+CRITICAL INSTRUCTION:
+You MUST generate the Vastu report ONLY using the information provided
+in the CONTEXT section below, combined with the user's answers.
+Do NOT rely on external knowledge.
+If something is missing, infer carefully using Vastu principles
+from the CONTEXT only.
+
 HTML REQUIREMENTS:
 - Use <h1>, <h2>, <h3> for headings
 - Use <p> for paragraphs
@@ -261,7 +289,7 @@ SCORING GUIDELINES:
 
 IMPORTANT LENGTH REQUIREMENT:
 - The "report_html" must be long: approximately **14,000 words** (~14 pages).
-- Each major section below should be ~1200–1500 words.
+- Each major section below should be ~1500–1600 words.
 - Keep writing until you have covered all sections in depth; do not stop early.
 - Use professional, non-repetitive language.
 
@@ -273,9 +301,12 @@ REPORT STRUCTURE:
 5. Room-wise Analysis
 6. Direction-wise Analysis
 7. Dosha Analysis
-8. Remedies with Priority
-9. Action Plan
-10. Final Conclusion
+8. Elemental Balance Analysis (Panch Tatva)
+9. Remedies with Priority
+10. Action Plan (Immediate / Short / Long Term)
+11. Health, Wealth & Relationship Impact
+12. Precautions & Do’s / Don’ts
+13. Final Conclusion
 
 HOME DETAILS:
 - Property Type: ${userAnswers.property_type}
@@ -287,6 +318,10 @@ USERS ANSWERS:
 userAnswers.answers.forEach(answer => {
   prompt += `\n- ${answer.question_text}: ${answer.answer}`;
 });
+
+prompt += `\n CONTEXT (FROM DATABASE – RAG):
+${finalContext}
+`;
 
     }
 
