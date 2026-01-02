@@ -210,6 +210,63 @@ router.post('/:session_id/add-answers', async (req, res) => {
                     }
                     user.vastu_task = true;
                     await user.save();
+
+                    // mail for confirmation message of complete paid questions
+         
+        const apiInstance = new Brevo.TransactionalEmailsApi();
+                apiInstance.setApiKey(
+                    Brevo.TransactionalEmailsApiApiKeys.apiKey,
+                    process.env.BREVO_API_KEY
+                );
+        
+                const emailData = {
+                    sender: { 
+                        email: process.env.BREVO_EMAIL, 
+                        name: "Vastu Confirmation" 
+                    },
+                    to: [{ email: user.customer_email }],
+                    subject: "Your Vastu Consultation Has Been Successfully Submitted",
+                    htmlContent: `
+                    <table> <tr> </td>
+                    <tr> 
+                    <td style="background:#2c3e50; padding:20px; text-align:center;"> <h1 style="color:#ffffff; margin:0; font-size:22px;"> Vastu Report Confirmation </h1> </td> 
+                    </tr> 
+                    
+                   
+                    <tr> 
+                    <td style="padding:25px; color:#333333;"> 
+                    <p style="font-size:15px; margin:0 0 15px;"> Dear User, </p> 
+                    <p style="font-size:14px; line-height:1.6;"> Thank you for successfully completing your <strong>paid Vastu consultation questionnaire</strong>. We have received all your responses and the details have been securely recorded. </p> <p style="font-size:14px; line-height:1.6;"> Our expert <strong>Dr. Puneet Chawla</strong> is now analyzing your inputs based on authentic Vastu Shastra principles to prepare your <strong>personalized Vastu report</strong>. </p> 
+                    <p style="font-size:14px; line-height:1.6;"> 🔍 <strong>Next: </strong> 
+                    </p> 
+                    <ul style="font-size:14px; line-height:1.6; padding-left:20px;"> 
+                    <li>Your responses are under expert review</li> <li>A detailed Vastu analysis is being generated</li> 
+                    <li>You will receive your complete Vastu report shortly
+                    </li> 
+                    <li>You can track you vastu report here <a href="https://account.livevaastu.in/orders?locale=en&region_country=IN" target="_blank">Click Here</a>
+                    </li> 
+                    </ul> 
+                    
+                    
+                    <p style="font-size:14px; margin-top:20px;"> Thank you for trusting us for your Vastu guidance. </p> 
+                    
+                    <p style="font-size:14px; margin-top:10px;"> Warm regards,<br /> <strong>Vastu Consultation Team</strong><br /> Guided by Dr. Puneet Chawla </p> 
+                    </td> </tr> 
+                    
+                    <tr> <td style="background:#f0f0f0; padding:15px; text-align:center; font-size:12px; color:#777;"> © 2026 Live Vaastu. All rights reserved. </td> </tr> 
+                    
+                    
+                    </td> </tr> </table>`,
+                    
+                };
+        
+                const response = await apiInstance.sendTransacEmail(emailData);
+                
+                    res.json({
+                success: true,
+                message: "confirmation message sent successfully",
+                
+            });
                 } 
                 
             } catch (aiError) {
