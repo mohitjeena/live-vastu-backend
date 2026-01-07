@@ -302,7 +302,18 @@ router.post("/save-report", async (req, res) => {
             return res.json({ success: false, message: "User not found" });
         }
    
-     user.vastu_report  = reportHtml;
+     user.vastu_report  = ` <html>
+                    <head>
+                        <meta charset="utf-8" />
+                        <style>
+                            body { font-family: Arial; padding: 20px; }
+                        </style>
+                    </head>
+                    <body>
+                    ${reportHtml}
+                    </body>
+                    </html>`;
+
      user.report_check = true;
      await user.save();
 
