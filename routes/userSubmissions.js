@@ -200,14 +200,8 @@ router.post('/:session_id/add-answers', async (req, res) => {
                 console.log('Generating AI Vastu report...');
                 aiResponse = await generateVastuReport(user, user.plan_type);
                 
-                if (aiResponse) {
-                    if(aiResponse.score)
-                    {
-                    user.vastu_report = JSON.stringify(aiResponse);
-                    
-                    }else{
-                        user.ai_paid_report_txt = aiResponse
-                    }
+                if (aiResponse) {             
+                    user.vastu_report = aiResponse;                
                     user.report_check = false;
                     user.vastu_task = true;
                     await user.save();

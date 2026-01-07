@@ -102,12 +102,17 @@ function getFastCloudinaryUrl(url) {
     let report = null;
     let raw_text = response.output_text
     try {
-      console.log(raw_text.ai_score)
-      report = JSON.parse(raw_text);
+      if(plan_type === 'basic')
+      {
+      report =await JSON.parse(raw_text);
+      }
+      else{
+        report = raw_text;
+      }
       
     } catch (error) {
       console.log('error while report parsing to json');
-      report = raw_text;
+       report = raw_text;
     }
    return report;
     
@@ -243,23 +248,17 @@ return prompt;
   }
   else {
           prompt = `
-          Information to generate best vastu report : 
-          ${finalContext}
+IMPORTANT RULES (STRICT):
 
-          use this information and use your logic to generate best vastu report.
-  
-IMPORTANT RULES:
-- Return ONLY valid JSON
-- Do NOT add any text outside JSON
-- Do NOT use markdown
-- Use proper HTML tags
-- Escape double quotes inside HTML if needed
-
-Return JSON in EXACT format:
-{
-  "score": 0,
-  "report_html": ""
-}
+- Return ONLY a COMPLETE and VALID HTML document
+- Do NOT return JSON
+- Do NOT return markdown
+- Do NOT add explanations, comments, or extra text
+- The response MUST start with <html> and end with </html>
+- Use proper semantic HTML tags (h1, h2, h3, p, ul, li, table, tr, td)
+- Ensure well-structured formatting suitable for a 10–15 page professional report
+- Do NOT include code blocks
+- Do NOT mention OpenAI or AI in the report
 
 TASK:
 Generate a PROFESSIONAL Vastu Shastra report in HTML format.
@@ -272,41 +271,29 @@ Do NOT rely on external knowledge.
 If something is missing, infer carefully using Vastu principles
 from the CONTEXT only.
 
-HTML REQUIREMENTS:
-- Use <h1>, <h2>, <h3> for headings
-- Use <p> for paragraphs
-- Use <ul><li> for lists
-- Use <strong> where needed
-- No inline CSS
-- No JavaScript
-- Clean semantic HTML
-- Large detailed content (10–14 pages equivalent)
-
-SCORING GUIDELINES:
-- Score range: 0–100
-- Consider orientation, room placement, entrances, defects, and severity
-- Explain score reasoning clearly inside report_html
 
 IMPORTANT LENGTH REQUIREMENT:
-- The "report_html" must be long: approximately **14,000 words** (~14 pages).
-- Each major section below should be ~1500–1600 words.
+- The report must be long: approximately **14,000 words** (~14 pages).
+- Each major section below should be ~1200–1400 words.
 - Keep writing until you have covered all sections in depth; do not stop early.
 - Use professional, non-repetitive language.
 
 REPORT STRUCTURE:
 1. Executive Summary
 2. Overall Vastu Score Explanation
-3. Strengths
-4. Weaknesses
-5. Room-wise Analysis
-6. Direction-wise Analysis
-7. Dosha Analysis
-8. Elemental Balance Analysis (Panch Tatva)
-9. Remedies with Priority
-10. Action Plan (Immediate / Short / Long Term)
-11. Health, Wealth & Relationship Impact
-12. Precautions & Do’s / Don’ts
-13. Final Conclusion
+3. Data Sources Used for Analysis
+4. Strengths
+5. Weaknesses
+6. Room-wise Analysis
+7. Direction-wise Analysis
+8. Dosha Analysis
+9. Remedies with Priority Levels
+10. Short-term Action Plan (0–30 days)
+11. Long-term Recommendations
+12. Lifestyle & Behavioral Suggestions (as per Vastu)
+13. Expected Outcomes After Remedies
+14. Disclaimer
+15. Final Conclusion
 
 HOME DETAILS:
 - Property Type: ${userAnswers.property_type}
@@ -319,7 +306,7 @@ userAnswers.answers.forEach(answer => {
   prompt += `\n- ${answer.question_text}: ${answer.answer}`;
 });
 
-prompt += `\n CONTEXT (FROM DATABASE – RAG):
+prompt += `\n CONTEXT (FROM DATABASE – RAG):\n
 ${finalContext}
 `;
 
