@@ -8,7 +8,7 @@ const sendPdfMail = require("../services/mail");
 
 router.post("/send-vastu-pdf", async (req, res) => {
       try {
-           const { session_id, reportHtml } = req.body;
+           const { session_id } = req.body;
    
        const user = await UserSubmission.findOne({ session_id });
         
@@ -17,20 +17,9 @@ router.post("/send-vastu-pdf", async (req, res) => {
            return res.json({ success: false });
        }
    
+       const reportHtml = user.vastu_report;
          const file = {
-            content: `
-                <html>
-                    <head>
-                        <meta charset="utf-8" />
-                        <style>
-                            body { font-family: Arial; padding: 20px; }
-                        </style>
-                    </head>
-                    <body>
-                        ${reportHtml}
-                    </body>
-                </html>
-            `,
+            content: reportHtml
         };
 
         const options = {
@@ -47,7 +36,7 @@ router.post("/send-vastu-pdf", async (req, res) => {
 
            const pdfBuffer = await pdf.generatePdf(file, options);
 
-       const sent = await sendPdfMail(user.customer_email || 'mjeenaalm09@gmail.com', pdfBuffer);
+       const sent = await sendPdfMail(user.customer_email, pdfBuffer);
 
         return res.json(sent);
    
