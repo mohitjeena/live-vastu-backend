@@ -76,33 +76,12 @@ router.get('/download-report/:sessionId', async (req, res) => {
             return res.status(404).send('report not found');
         }
 
-        let rawReport = JSON.parse(user.vastu_report)
 
-        const reportHtml = rawReport.report_html; 
+        const reportHtml = user.vastu_report;
 
         // 2️⃣ Build HTML file
         const file = {
-            content: `
-                <!DOCTYPE html>
-                <html>
-                    <head>
-                        <meta charset="utf-8" />
-                        <style>
-                            body {
-                                font-family: Arial, sans-serif;
-                                padding: 20px;
-                            }
-                            table {
-                                width: 100%;
-                                border-collapse: collapse;
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        ${reportHtml}
-                    </body>
-                </html>
-            `,
+            content:  reportHtml
         };
 
         // 3️⃣ PDF options
