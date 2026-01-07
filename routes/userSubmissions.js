@@ -301,9 +301,8 @@ router.post("/save-report", async (req, res) => {
      if (!user) {
             return res.json({ success: false, message: "User not found" });
         }
-    let oldReport = JSON.parse(user.vastu_report)
-    oldReport.report_html = reportHtml
-     user.vastu_report  = JSON.stringify(oldReport);
+   
+     user.vastu_report  = reportHtml;
      user.report_check = true;
      await user.save();
 
