@@ -14,9 +14,21 @@ if (process.env.NODE_ENV !== 'production') {
 
 const app = express();
 
+const allowedOrigins = [
+  "https://livevaastu.in"
+];
+
 // Middleware
 app.use(cors({
-  origin: "*",
+    origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
