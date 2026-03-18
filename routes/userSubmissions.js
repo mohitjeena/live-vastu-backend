@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const UserSubmission = require('../models/UserSubmission');
+const UserDetails = require("../models/userDetails")
 const generateVastuReport = require('../services/openaiService').generateVastuReport;
 const EmailOtp = require("../models/EmailOtp")
 const Brevo = require("@getbrevo/brevo");
@@ -159,7 +160,7 @@ router.get('/:session_id/payment-status', async (req, res) => {
 router.post('/:session_id/add-answers', async (req, res) => {
     try {
         const { session_id } = req.params;
-        const { answers,propertyType,purpose } = req.body;
+        const { answers,propertyType,purpose,userDetails } = req.body;
 
         const user = await UserSubmission.findOne({ session_id });
         
@@ -191,6 +192,13 @@ router.post('/:session_id/add-answers', async (req, res) => {
             user.property_type = propertyType,
             user.purpose = purpose
         }
+
+        const newEntry = new UserDetails({
+            userId: user._id, 
+            ...userDetails
+        });
+
+        await newEntry.save();
         
         await user.save();
           // Generate AI report only if OpenAI API key is available
