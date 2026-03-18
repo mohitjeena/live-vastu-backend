@@ -15,6 +15,11 @@ const questionSchema = new mongoose.Schema({
     enum: ['basic', 'gold', 'premium', 'premium_plus'],
     default: 'basic'
 },
+  question_key: {
+    type: String,
+    enum: ['mainDoorFacing', 'bedroomFacing', 'toiletFacing', 'kitchenDirection', 'mandirDirection'],
+    default: ''
+},
   options: {
     type: [String],
     default: []
