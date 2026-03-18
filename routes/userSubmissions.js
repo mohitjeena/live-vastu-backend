@@ -193,10 +193,24 @@ router.post('/:session_id/add-answers', async (req, res) => {
             user.purpose = purpose
         }
 
-        const newEntry = new UserDetails({
-            userId: user._id, 
-            ...userDetails
-        });
+        const {
+            members,
+            adults,
+            children,
+            elders,
+            ...restData
+            } = userDetails;
+
+            const newEntry = new UserDetails({
+            userId: user._id,
+            family: {
+                members,
+                adults,
+                children,
+                elders
+            },
+            ...restData
+            });
 
         await newEntry.save();
         
