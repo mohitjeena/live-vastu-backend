@@ -35,6 +35,10 @@ app.use(cors({
 
 
 app.use((req, res, next) => {
+  if (req.originalUrl.includes('/api/webhooks/orders-paid')) {
+    return next();
+  }
+
   const key = req.headers["x-site-key"];
 
   if (key !== process.env.SITE_SECRET_KEY) {
