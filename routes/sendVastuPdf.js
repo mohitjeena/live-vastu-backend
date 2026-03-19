@@ -5,6 +5,9 @@ const nodemailer = require("nodemailer");
 const pdf = require("html-pdf-node");
 // const transporter = require("../utils/email");
 const sendPdfMail = require("../services/mail");
+const { generateFinalHtml,extractAnswers } =require("../utils/generatePdf")
+const UserDetails = require("../models/userDetails")
+
 
 router.post("/send-vastu-pdf", async (req, res) => {
       try {
@@ -16,20 +19,35 @@ router.post("/send-vastu-pdf", async (req, res) => {
        if (!user) {
            return res.json({ success: false });
        }
-   
-       const reportHtml = user.vastu_report;
+
+       // 👉 Details fetch (IMPORTANT)
+    const details = await UserDetails.findOne({ userId: user._id });
+
+   // 👉 Extract answers
+    const userAnswers = extractAnswers(user.answers);
+
+       const aiHtml = user.vastu_report;
+
+        // 👉 Final HTML
+    const finalHtml = generateFinalHtml(
+      userAnswers,
+      details?.toObject() || {},
+      aiHtml
+    );
+
+
          const file = {
-            content: reportHtml
+            content: finalHtml
         };
 
         const options = {
             format: "A4",
             printBackground: true,
             margin: {
-                top: "20px",
-                bottom: "20px",
-                left: "20px",
-                right: "20px",
+                top: "0px",
+                bottom: "0px",
+                left: "0px",
+                right: "0px",
             },
         };
 

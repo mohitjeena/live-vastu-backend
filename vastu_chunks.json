@@ -10,7 +10,7 @@
     "south-east": "templates/bedroom/south-east.html",
     "common": "templates/bedroom/common.html"
   },
-  "bathroom": {
+  "toilet": {
     "north": "templates/bathroom/north.html",
     "east": "templates/bathroom/east.html",
     "north-east": "templates/bathroom/north-east.html",
