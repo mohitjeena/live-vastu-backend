@@ -87,6 +87,16 @@ function extractBodyContent(html) {
   return match ? match[1] : html;
 }
 
+function cleanHtml(html) {
+  return html
+    .replace(/<!DOCTYPE[^>]*>/gi, "")
+    .replace(/<html[^>]*>/gi, "")
+    .replace(/<\/html>/gi, "")
+    .replace(/<head[^>]*>[\s\S]*?<\/head>/gi, "")
+    .replace(/<body[^>]*>/gi, "")
+    .replace(/<\/body>/gi, "");
+}
+
 
 function generateFinalHtml(userAnswers, detailsData, aiHtml) {
   let html = "";
@@ -137,7 +147,17 @@ function generateFinalHtml(userAnswers, detailsData, aiHtml) {
   
 
   // 7️⃣ AI REPORT (LAST)
-  html += extractBodyContent(aiHtml);
+  const aiClean = cleanHtml(aiHtml);
+const aiBody = extractBodyContent(aiClean);
+
+  html += `
+  <div class="vastu-page ai-report">
+  <div class="usage-content">
+    ${aiBody}
+    </div>
+  </div>
+`;
+
   html += "</body></html>";
 
   return html;
