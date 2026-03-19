@@ -25,10 +25,20 @@ function loadHtml(filePath) {
 function injectDetails(template, data) {
   let html = template;
 
-  Object.keys(data).forEach(key => {
-    html = html.replaceAll(`{{${key}}}`, data[key] || "");
-  });
+  function replace(obj, prefix = "") {
+    Object.keys(obj).forEach(key => {
+      const value = obj[key];
+      const newKey = prefix ? `${prefix}.${key}` : key;
 
+      if (typeof value === "object" && value !== null) {
+        replace(value, newKey);
+      } else {
+        html = html.replaceAll(`{{${newKey}}}`, value);
+      }
+    });
+  }
+
+  replace(data);
   return html;
 }
 
