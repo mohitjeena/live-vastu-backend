@@ -2,8 +2,6 @@ const fs = require("fs");
 const path = require("path");
 const mapping = require("../vastu_chunks.json");
 
-const fs = require("fs");
-const path = require("path");
 
 function loadHtml(filePath) {
   try {
