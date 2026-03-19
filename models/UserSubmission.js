@@ -61,7 +61,6 @@ const userSubmissionSchema = new mongoose.Schema({
         },
         question_key: {
             type: String,
-            required: true,
             default: ""
         }
         ,
