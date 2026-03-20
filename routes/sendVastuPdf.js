@@ -14,8 +14,6 @@ const html_to_pdf = require('html-pdf-node');
 const axios = require('axios')
 
 
-
-
 router.post("/send-vastu-pdf", async (req, res) => {
       try {
            const { session_id } = req.body;
@@ -102,7 +100,7 @@ await sendMail(user.customer_email, pdfUrl);
 });
 
 
-router.get("/temp-pdf/:id", (req, res) => {
+router.get("/temp-pdf", (req, res) => {
     let testHtml = "<!DOCTYPE html><html><body><h1>Hello Mohit 👋</h1><p>Test PDF</p></body></html>";
   res.send(testHtml);
 });

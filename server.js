@@ -39,6 +39,10 @@ app.use((req, res, next) => {
     return next();
   }
 
+   if (req.originalUrl.includes('/api/pdf/temp-pdf')) {
+    return next();
+  }
+
   const key = req.headers["x-site-key"];
 
   if (key !== process.env.SITE_SECRET_KEY) {
