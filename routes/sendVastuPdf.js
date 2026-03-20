@@ -25,20 +25,7 @@ router.post("/send-vastu-pdf", async (req, res) => {
            return res.json({ success: false });
        }
 
-       // 👉 Details fetch (IMPORTANT)
-    const details = await UserDetails.findOne({ userId: user._id });
-
-   // 👉 Extract answers
-    const userAnswers = extractAnswers(user.answers);
-
-       const aiHtml = user.vastu_report;
-
-        // 👉 Final HTML
-    const finalHtml = generateFinalHtml(
-      userAnswers,
-      details?.toObject() || {},
-      aiHtml
-    );
+    
 
 
 
@@ -100,9 +87,28 @@ await sendMail(user.customer_email, pdfUrl);
 });
 
 
-router.get("/temp-pdf", (req, res) => {
-    let testHtml = "<!DOCTYPE html><html><body><h1>Hello Mohit 👋</h1><p>Test PDF</p></body></html>";
-  res.send(testHtml);
+router.get("/temp-pdf/:id",async (req, res) => {
+
+    const { id } = req.params;
+    
+   const user = await UserSubmission.findOne({ session_id: id });
+
+     // 👉 Details fetch (IMPORTANT)
+    const details = await UserDetails.findOne({ userId: user._id });
+
+   // 👉 Extract answers
+    const userAnswers = extractAnswers(user.answers);
+
+       const aiHtml = user.vastu_report;
+
+        // 👉 Final HTML
+    const finalHtml = generateFinalHtml(
+      userAnswers,
+      details?.toObject() || {},
+      aiHtml
+    );
+
+    res.send(finalHtml); 
 });
 
 router.get('/download-report/:sessionId', async (req, res) => {
