@@ -152,9 +152,7 @@ const aiBody = extractBodyContent(aiClean);
 
   html += `
   <div class="vastu-page ai-report">
-  <div class="usage-content">
     ${aiBody}
-    </div>
   </div>
 `;
 
