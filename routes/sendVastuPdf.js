@@ -42,26 +42,30 @@ router.post("/send-vastu-pdf", async (req, res) => {
       aiHtml
     );
 
-     const response = await axios.post(
-  "https://api.doppio.sh/v1/render/pdf",
+
+
+const response = await axios.post(
+  "https://api.doppio.sh/v1/render/pdf/sync",
   {
-    html: finalHtml,
-    print_options: {
-      format: "A4",
-      print_background: true
+    page: {
+      content: finalHtml
+    },
+    pdf: {
+      printBackground: true,
+      format: "A4"
     }
   },
   {
     headers: {
-      Authorization: `Bearer ${process.env.DOPPIO_API_KEY}`
+      Authorization: `Bearer ${process.env.DOPPIO_API_KEY}`,
+      "Content-Type": "application/json"
     }
   }
 );
 
-// base64 PDF milega
-const pdfBase64 = response.data.data;
-const pdfBuffer =await Buffer.from(pdfBase64, "base64");
+const pdfUrl = response.data.documentUrl;
 
+await sendMail(user.customer_email, pdfUrl);
 
 
 
