@@ -27,11 +27,11 @@ router.post("/send-vastu-pdf", async (req, res) => {
     const pdfPageUrl = `https://live-vastu-backend.onrender.com/api/pdf/temp-pdf/${session_id}`;
 
     
-    const res = await generatePdfFromUrl(pdfPageUrl);
+    const result = await generatePdfFromUrl(pdfPageUrl);
 
-    if(res.renderStatus == 'SUCCESS')
+    if(result.renderStatus == 'SUCCESS')
     {
-        const sent = await sendPdfMail(user.customer_email, res.documentUrl);
+        const sent = await sendPdfMail(user.customer_email, result.documentUrl);
         return res.json(sent);
     }
    

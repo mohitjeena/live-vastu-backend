@@ -122,13 +122,13 @@ function generateFinalHtml(userAnswers, detailsData, aiHtml) {
         html += loadHtml(mapping.bedroom[dir]);
       }
     });
-
-    if (mapping.bedroom.common) {
-      html += loadHtml(mapping.bedroom.common);
-    }
-
    
   }
+
+  // for-common-bedroom
+   if (mapping.bedroom.common) {
+      html += loadHtml(mapping.bedroom.common);
+    }
 
   // 4️⃣ TOILETS
   userAnswers.toilets.forEach(dir => {
