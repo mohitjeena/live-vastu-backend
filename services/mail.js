@@ -1,6 +1,6 @@
 const Brevo = require("@getbrevo/brevo");
 
- const sendPdfMail = async (toEmail, pdfBuffer) => {
+ const sendPdfMail = async (toEmail, pdfUrl) => {
     try {
         const apiInstance = new Brevo.TransactionalEmailsApi();
         apiInstance.setApiKey(
@@ -15,13 +15,11 @@ const Brevo = require("@getbrevo/brevo");
             },
             to: [{ email: toEmail }],
             subject: "Your Vastu Report PDF",
-            htmlContent: "<p>Your report is attached.</p>",
-            attachment: [
-                {
-                    name: "vastu-report.pdf",
-                    content: pdfBuffer.toString("base64")
-                }
-            ]
+             htmlContent: `
+            <h3>Your report is ready ✅</h3>
+            <p>Click below to download:</p>
+            <a href="${pdfUrl}" target="_blank">Download PDF</a>
+            `
         };
 
         const response = await apiInstance.sendTransacEmail(emailData);
