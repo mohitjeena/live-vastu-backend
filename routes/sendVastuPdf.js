@@ -7,9 +7,7 @@ const pdf = require("html-pdf-node");
 const sendPdfMail = require("../services/mail");
 const { generateFinalHtml,extractAnswers } =require("../utils/generatePdf")
 const UserDetails = require("../models/userDetails")
-const puppeteer = require("puppeteer-core");
-const chromium = require("@sparticuz/chromium");
-const html_to_pdf = require('html-pdf-node');
+const generatePdfFromUrl = require("../utils/buildPdf")
 
 const axios = require('axios')
 
@@ -25,56 +23,17 @@ router.post("/send-vastu-pdf", async (req, res) => {
            return res.json({ success: false });
        }
 
+
+    const pdfPageUrl = `https://live-vastu-backend.onrender.com/api/pdf/temp-pdf/${session_id}`;
+
     
+    const res = await generatePdfFromUrl(pdfPageUrl);
 
-
-
-const response = await axios.post(
-  "https://api.doppio.sh/v1/render/pdf/sync",
-  {
-    page: {
-      content: finalHtml
-    },
-    pdf: {
-      printBackground: true,
-      format: "A4"
-    }
-  },
-  {
-    headers: {
-      Authorization: `Bearer ${process.env.DOPPIO_API_KEY}`,
-      "Content-Type": "application/json"
-    }
-  }
-);
-
-const pdfUrl = response.data.documentUrl;
-
-await sendMail(user.customer_email, pdfUrl);
-
-
-
-        //  const file = {
-        //     content: finalHtml
-        // };
-
-        // const options = {
-        //     format: "A4",
-        //     printBackground: true,
-        //     margin: {
-        //         top: "0px",
-        //         bottom: "0px",
-        //         left: "0px",
-        //         right: "0px",
-        //     },
-        // };
-
-
-        //    const pdfBuffer = await pdf.generatePdf(file, options);
-
-       const sent = await sendPdfMail(user.customer_email, pdfBuffer);
-
+    if(res.renderStatus == 'SUCCESS')
+    {
+        const sent = await sendPdfMail(user.customer_email, pdfBuffer);
         return res.json(sent);
+    }
    
    
        } catch (err) {
@@ -89,8 +48,9 @@ await sendMail(user.customer_email, pdfUrl);
 
 router.get("/temp-pdf/:id",async (req, res) => {
 
-    const { id } = req.params;
-    
+    try {
+         const { id } = req.params;
+
    const user = await UserSubmission.findOne({ session_id: id });
 
      // 👉 Details fetch (IMPORTANT)
@@ -109,6 +69,12 @@ router.get("/temp-pdf/:id",async (req, res) => {
     );
 
     res.send(finalHtml); 
+    } catch (error) {
+         console.log(error);
+    res.status(500).send("Error");
+    }
+
+   
 });
 
 router.get('/download-report/:sessionId', async (req, res) => {
