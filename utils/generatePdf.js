@@ -159,8 +159,6 @@ const aiBody = extractBodyContent(aiClean);
 `;
 
   html += "</body></html>";
-  
-  console.log(aiBody)
 
   return html;
 }
