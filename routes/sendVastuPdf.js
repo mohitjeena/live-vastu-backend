@@ -31,7 +31,7 @@ router.post("/send-vastu-pdf", async (req, res) => {
 
     if(res.renderStatus == 'SUCCESS')
     {
-        const sent = await sendPdfMail(user.customer_email, pdfBuffer);
+        const sent = await sendPdfMail(user.customer_email, res.documentUrl);
         return res.json(sent);
     }
    
