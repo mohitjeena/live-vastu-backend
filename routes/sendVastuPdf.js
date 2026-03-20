@@ -102,7 +102,7 @@ await sendMail(user.customer_email, pdfUrl);
 });
 
 
-app.get("/temp-pdf/:id", (req, res) => {
+router.get("/temp-pdf/:id", (req, res) => {
     let testHtml = "<!DOCTYPE html><html><body><h1>Hello Mohit 👋</h1><p>Test PDF</p></body></html>";
   res.send(testHtml);
 });
