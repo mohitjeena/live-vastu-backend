@@ -7,6 +7,7 @@ const pdf = require("html-pdf-node");
 const sendPdfMail = require("../services/mail");
 const { generateFinalHtml,extractAnswers } =require("../utils/generatePdf")
 const UserDetails = require("../models/userDetails")
+const puppeteer = require("puppeteer"); 
 
 
 router.post("/send-vastu-pdf", async (req, res) => {
@@ -35,24 +36,42 @@ router.post("/send-vastu-pdf", async (req, res) => {
       aiHtml
     );
 
+     const browser = await puppeteer.launch({
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    headless: true
+  });
 
-         const file = {
-            content: finalHtml
-        };
+  const page = await browser.newPage();
 
-        const options = {
-            format: "A4",
-            printBackground: true,
-            margin: {
-                top: "0px",
-                bottom: "0px",
-                left: "0px",
-                right: "0px",
-            },
-        };
+  await page.setContent(finalHtml, {
+    waitUntil: "networkidle0"
+  });
+
+  const pdfBuffer = await page.pdf({
+    format: "A4",
+    printBackground: true
+  });
+
+  await browser.close();
 
 
-           const pdfBuffer = await pdf.generatePdf(file, options);
+        //  const file = {
+        //     content: finalHtml
+        // };
+
+        // const options = {
+        //     format: "A4",
+        //     printBackground: true,
+        //     margin: {
+        //         top: "0px",
+        //         bottom: "0px",
+        //         left: "0px",
+        //         right: "0px",
+        //     },
+        // };
+
+
+        //    const pdfBuffer = await pdf.generatePdf(file, options);
 
        const sent = await sendPdfMail(user.customer_email, pdfBuffer);
 
