@@ -9,6 +9,9 @@ const { generateFinalHtml,extractAnswers } =require("../utils/generatePdf")
 const UserDetails = require("../models/userDetails")
 const puppeteer = require("puppeteer-core");
 const chromium = require("@sparticuz/chromium");
+const html_to_pdf = require('html-pdf-node');
+
+
 
 
 router.post("/send-vastu-pdf", async (req, res) => {
@@ -37,24 +40,10 @@ router.post("/send-vastu-pdf", async (req, res) => {
       aiHtml
     );
 
-      const browser = await puppeteer.launch({
-    args: chromium.args,
-    executablePath: await chromium.executablePath(),
-    headless: true
-  });
+     let options = { format: 'A4' };
+let file = { content: finalHtml };
 
-  const page = await browser.newPage();
-
-  await page.setContent(finalHtml, {
-    waitUntil: "networkidle0"
-  });
-
-  const pdfBuffer = await page.pdf({
-    format: "A4",
-    printBackground: true
-  });
-
-  await browser.close();
+const pdfBuffer = await html_to_pdf.generatePdf(file, options);
 
 
 
