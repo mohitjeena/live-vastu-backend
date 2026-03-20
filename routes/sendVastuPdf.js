@@ -11,6 +11,8 @@ const puppeteer = require("puppeteer-core");
 const chromium = require("@sparticuz/chromium");
 const html_to_pdf = require('html-pdf-node');
 
+const axios = require('axios')
+
 
 
 
@@ -40,10 +42,25 @@ router.post("/send-vastu-pdf", async (req, res) => {
       aiHtml
     );
 
-     let options = { format: 'A4' };
-let file = { content: finalHtml };
+     const response = await axios.post(
+  "https://api.doppio.sh/v1/render/pdf",
+  {
+    html: finalHtml,
+    print_options: {
+      format: "A4",
+      print_background: true
+    }
+  },
+  {
+    headers: {
+      Authorization: `Bearer ${process.env.DOPPIO_API_KEY}`
+    }
+  }
+);
 
-const pdfBuffer = await html_to_pdf.generatePdf(file, options);
+// base64 PDF milega
+const pdfBase64 = response.data.data;
+const pdfBuffer =await Buffer.from(pdfBase64, "base64");
 
 
 
