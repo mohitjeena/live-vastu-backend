@@ -13,6 +13,7 @@
   "type": "commonjs",
   "dependencies": {
     "@getbrevo/brevo": "^3.0.1",
+    "@sparticuz/chromium": "^143.0.4",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.8.0",
     "cors": "^2.8.5",
@@ -24,7 +25,8 @@
     "multer": "^2.0.2",
     "nodemailer": "^7.0.11",
     "openai": "^6.9.1",
-    "puppeteer": "^24.40.0"
+    "puppeteer": "^24.40.0",
+    "puppeteer-core": "^24.40.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"

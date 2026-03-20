@@ -7,7 +7,8 @@ const pdf = require("html-pdf-node");
 const sendPdfMail = require("../services/mail");
 const { generateFinalHtml,extractAnswers } =require("../utils/generatePdf")
 const UserDetails = require("../models/userDetails")
-const puppeteer = require("puppeteer"); 
+const puppeteer = require("puppeteer-core");
+const chromium = require("@sparticuz/chromium");
 
 
 router.post("/send-vastu-pdf", async (req, res) => {
@@ -36,8 +37,9 @@ router.post("/send-vastu-pdf", async (req, res) => {
       aiHtml
     );
 
-     const browser = await puppeteer.launch({
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      const browser = await puppeteer.launch({
+    args: chromium.args,
+    executablePath: await chromium.executablePath(),
     headless: true
   });
 
@@ -53,6 +55,8 @@ router.post("/send-vastu-pdf", async (req, res) => {
   });
 
   await browser.close();
+
+
 
 
         //  const file = {
