@@ -30,7 +30,10 @@ router.post("/send-vastu-pdf", async (req, res) => {
         return res.json(sent);
     }
     else{
-        return res.json("first generate the pdf before send to mail.")
+        return res.json({
+            success: true,
+            message: "first generate the pdf before send to mail."
+        })
     }
    
    

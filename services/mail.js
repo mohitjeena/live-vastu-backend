@@ -25,7 +25,7 @@ const Brevo = require("@getbrevo/brevo");
         const response = await apiInstance.sendTransacEmail(emailData);
         console.log("Email sent:", response);
 
-        return { success: true };
+        return { success: true , message: "PDF mailed."};
 
     } catch (error) {
         console.error("Brevo API Error:", error);
