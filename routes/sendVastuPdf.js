@@ -126,6 +126,12 @@ router.get('/download-report/:sessionId', async (req, res) => {
                 message: "pdf downloaded successfully"
             })
         }
+        else{
+            return res.status(200).json({
+                success: true,
+                message: "first generate the pdf before download the pdf."
+            })
+        }
 
         
 
