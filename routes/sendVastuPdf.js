@@ -24,14 +24,9 @@ router.post("/send-vastu-pdf", async (req, res) => {
        }
 
 
-    const pdfPageUrl = `https://live-vastu-backend.onrender.com/api/pdf/temp-pdf/${session_id}`;
-
-    
-    const result = await generatePdfFromUrl(pdfPageUrl);
-
-    if(result.renderStatus == 'SUCCESS')
+    if(user.pdf_url)
     {
-        const sent = await sendPdfMail(user.customer_email, result.documentUrl);
+        const sent = await sendPdfMail(user.customer_email, user.pdf_url);
         return res.json(sent);
     }
    
@@ -77,6 +72,36 @@ router.get("/temp-pdf/:id",async (req, res) => {
    
 });
 
+router.get('/generate-report/:sessionId', async (req, res) => {
+    try {
+        const {sessionId} = req.params;
+
+        
+        const user = await UserSubmission.findOne({ session_id: sessionId });
+        if (!user) {
+            return res.status(404).send('user not found');
+        }
+
+         const pdfPageUrl = `https://live-vastu-backend.onrender.com/api/pdf/temp-pdf/${session_id}`;
+
+    
+    const result = await generatePdfFromUrl(pdfPageUrl);
+
+    if(result.renderStatus == 'SUCCESS')
+    {
+       user.pdf_url =  result.documentUrl;
+       user.save();
+        return res.status(200).json("pdf generated successfully")
+    }
+
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Failed to generate PDF');
+    }
+});
+
+
 router.get('/download-report/:sessionId', async (req, res) => {
     try {
         const {sessionId} = req.params;
@@ -87,46 +112,20 @@ router.get('/download-report/:sessionId', async (req, res) => {
             return res.status(404).send('user not found');
         }
 
-        if(!user.vastu_report)
+        if(user.pdf_url)
         {
-            return res.status(404).send('report not found');
+            res.status(200).json({
+                success: true,
+                pdf: user.pdf_url,
+                message: "pdf downloaded successfully"
+            })
         }
 
-
-        const reportHtml = user.vastu_report;
-
-        // 2️⃣ Build HTML file
-        const file = {
-            content:  reportHtml
-        };
-
-        // 3️⃣ PDF options
-        const options = {
-            format: 'A4',
-            printBackground: true,
-            margin: {
-                top: '20px',
-                bottom: '20px',
-                left: '20px',
-                right: '20px',
-            },
-        };
-
-        // 4️⃣ Generate PDF buffer
-        const pdfBuffer = await pdf.generatePdf(file, options);
-
-        // 5️⃣ Send PDF
-        res.set({
-            'Content-Type': 'application/pdf',
-            'Content-Disposition': 'attachment; filename="vastu-report.pdf"',
-            'Content-Length': pdfBuffer.length,
-        });
-
-        res.send(pdfBuffer);
+        
 
     } catch (err) {
         console.error(err);
-        res.status(500).send('Failed to generate PDF');
+        res.status(500).send('Failed to download PDF');
     }
 });
 

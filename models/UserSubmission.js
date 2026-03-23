@@ -115,6 +115,9 @@ const userSubmissionSchema = new mongoose.Schema({
         filename: String,
         uploaded_at: Date
     }],
+    pdf_url: {
+        type: String
+    },
     created_at: {
         type: Date,
         default: Date.now
