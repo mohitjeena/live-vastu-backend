@@ -29,6 +29,9 @@ router.post("/send-vastu-pdf", async (req, res) => {
         const sent = await sendPdfMail(user.customer_email, user.pdf_url);
         return res.json(sent);
     }
+    else{
+        return res.json("first generate the pdf before send to mail.")
+    }
    
    
        } catch (err) {
