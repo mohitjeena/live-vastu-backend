@@ -88,7 +88,7 @@ router.post('/generate-report/:sessionId', async (req, res) => {
             return res.status(404).send('user not found');
         }
 
-         const pdfPageUrl = `https://live-vastu-backend.onrender.com/api/pdf/temp-pdf/${session_id}`;
+         const pdfPageUrl = `https://live-vastu-backend.onrender.com/api/pdf/temp-pdf/${sessionId}`;
 
     
     const result = await generatePdfFromUrl(pdfPageUrl);
