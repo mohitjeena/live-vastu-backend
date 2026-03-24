@@ -78,7 +78,7 @@ router.get("/temp-pdf/:id",async (req, res) => {
    
 });
 
-router.get('/generate-report/:sessionId', async (req, res) => {
+router.post('/generate-report/:sessionId', async (req, res) => {
     try {
         const {sessionId} = req.params;
 
