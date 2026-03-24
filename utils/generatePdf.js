@@ -56,6 +56,8 @@ function injectDetails(template, data) {
 
 
 function normalizeDirection(val) {
+  console.log('answer value',val);
+  
   const map = {
     n: "north", s: "south", e: "east", w: "west",
     ne: "north-east", nw: "north-west",
@@ -68,14 +70,14 @@ function normalizeDirection(val) {
 function extractAnswers(answers) {
   return {
     mainDoor: normalizeDirection(
-      answers.find(a => a.key === "mainDoorFacing")?.answer.trim()
+      answers.find(a => a.key === "mainDoorFacing")?.answer.toLowerCase().trim()
     ),
 
     bedrooms: [
       ...new Set(
         answers
           .filter(a => a.key === "bedroomFacing")
-          .map(a => normalizeDirection(a.answer.trim()))
+          .map(a => normalizeDirection(a.answer.toLowerCase().trim()))
       )
     ],
 
@@ -83,12 +85,12 @@ function extractAnswers(answers) {
       ...new Set(
         answers
           .filter(a => a.key === "toiletFacing")
-          .map(a => normalizeDirection(a.answer.trim()))
+          .map(a => normalizeDirection(a.answer.toLowerCase().trim()))
       )
     ],
 
     kitchen: normalizeDirection(
-      answers.find(a => a.key === "kitchenDirection")?.answer.trim()
+      answers.find(a => a.key === "kitchenDirection")?.answer.toLowerCase().trim()
     )
   };
 }
@@ -112,7 +114,8 @@ function cleanHtml(html) {
 
 function generateFinalHtml(userAnswers, detailsData, aiHtml) {
   let html = "";
-
+  console.log('userAnswers',userAnswers);
+  
   html += loadHtml(mapping.common.cover);
 
   // 1️⃣ DETAILS PAGE
