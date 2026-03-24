@@ -68,14 +68,14 @@ function normalizeDirection(val) {
 function extractAnswers(answers) {
   return {
     mainDoor: normalizeDirection(
-      answers.find(a => a.key === "mainDoorFacing")?.answer
+      answers.find(a => a.key === "mainDoorFacing")?.answer.trim()
     ),
 
     bedrooms: [
       ...new Set(
         answers
           .filter(a => a.key === "bedroomFacing")
-          .map(a => normalizeDirection(a.answer))
+          .map(a => normalizeDirection(a.answer.trim()))
       )
     ],
 
@@ -83,12 +83,12 @@ function extractAnswers(answers) {
       ...new Set(
         answers
           .filter(a => a.key === "toiletFacing")
-          .map(a => normalizeDirection(a.answer))
+          .map(a => normalizeDirection(a.answer.trim()))
       )
     ],
 
     kitchen: normalizeDirection(
-      answers.find(a => a.key === "kitchenDirection")?.answer
+      answers.find(a => a.key === "kitchenDirection")?.answer.trim()
     )
   };
 }
