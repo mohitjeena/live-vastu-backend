@@ -31,7 +31,7 @@ function injectDetails(template, data) {
       const value = obj[key];
       const newKey = prefix ? `${prefix}.${key}` : key;
 
-      if (typeof value === "object" && value !== null) {
+      if (typeof value === "object" && value !== null && !(value instanceof Date)) {
         replace(value, newKey);
       } else {
         if(newKey == "updatedAt")
