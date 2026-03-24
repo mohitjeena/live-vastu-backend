@@ -33,6 +33,16 @@ function injectDetails(template, data) {
       if (typeof value === "object" && value !== null) {
         replace(value, newKey);
       } else {
+        if(newKey == "updatedAt")
+        {
+          const formattedDate = new Date(value).toLocaleDateString("en-GB", {
+            timeZone: "Asia/Kolkata",
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+          });
+          value = formattedDate;
+        }
         html = html.replaceAll(`{{${newKey}}}`, value);
       }
     });
