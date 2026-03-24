@@ -24,7 +24,8 @@ function loadHtml(filePath) {
 
 function injectDetails(template, data) {
   let html = template;
-
+  console.log(data);
+  
   function replace(obj, prefix = "") {
     Object.keys(obj).forEach(key => {
       const value = obj[key];
@@ -35,6 +36,8 @@ function injectDetails(template, data) {
       } else {
         if(newKey == "updatedAt")
         {
+          console.log("enter");
+          
           const formattedDate = new Date(value).toLocaleDateString("en-GB", {
             timeZone: "Asia/Kolkata",
             day: "2-digit",
