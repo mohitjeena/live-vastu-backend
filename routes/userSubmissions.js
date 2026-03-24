@@ -213,7 +213,10 @@ router.post('/:session_id/add-answers', async (req, res) => {
             });
 
         await newEntry.save();
-        
+
+         user.report_check = false;
+         user.vastu_task = true;
+
         await user.save();
           // Generate AI report only if OpenAI API key is available
           let aiResponse;
@@ -224,8 +227,7 @@ router.post('/:session_id/add-answers', async (req, res) => {
                 
                 if (aiResponse) {             
                     user.vastu_report = aiResponse;                
-                    user.report_check = false;
-                    user.vastu_task = true;
+                   
                     await user.save();
 
                     // mail for confirmation message of complete paid questions
@@ -281,6 +283,11 @@ router.post('/:session_id/add-answers', async (req, res) => {
                 
            
                 } 
+                else{
+                     user.report_check = false;
+                    user.vastu_task = false;
+                    user.save()
+                }
                 
             } catch (aiError) {
                 console.error('OpenAI error, using default response:', aiError);
