@@ -17,7 +17,7 @@ const questionSchema = new mongoose.Schema({
 },
   question_key: {
     type: String,
-    enum: ['mainDoorFacing', 'bedroomFacing', 'toiletFacing', 'kitchenDirection', 'mandirDirection'],
+    enum: ['mainDoorFacing', 'bedroomFacing', 'toiletFacing', 'kitchenDirection', 'bedroomCounting', 'toiletCounting'],
     default: ''
 },
   options: {
