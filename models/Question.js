@@ -28,6 +28,9 @@ const questionSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  sub_order: {
+    type: Number
+  },
   is_active: {
     type: Boolean,
     default: true
