@@ -187,6 +187,48 @@ router.post('/:session_id/add-answers', async (req, res) => {
             }
         });
 
+        // Bedroom cleanup
+const bedroomCountAnswer = answers.find(a => a.question_key === 'bedroomCounting');
+
+        if (bedroomCountAnswer) {
+            const count = parseInt(bedroomCountAnswer.answer);
+
+            user.answers = user.answers.filter(a => {
+
+                if (a.question_key === 'bedroomFacing') {
+
+                    if (count === 1) {
+                        return (a.sub_order || 0) === 0;
+                    }
+
+                    return a.sub_order > 0 && a.sub_order <= count;
+                }
+
+                return true;
+            });
+}
+
+// toilet data cleanup
+const toiletCountAnswer = answers.find(a => a.question_key === 'toiletCounting');
+
+if (toiletCountAnswer) {
+    const count = parseInt(toiletCountAnswer.answer);
+
+    user.answers = user.answers.filter(a => {
+
+        if (a.question_key === 'toiletFacing') {
+
+            if (count === 1) {
+                return (a.sub_order || 0) === 0;
+            }
+
+            return a.sub_order > 0 && a.sub_order <= count;
+        }
+
+        return true;
+    });
+}
+
         if(propertyType && purpose)
         {
             user.property_type = propertyType,
