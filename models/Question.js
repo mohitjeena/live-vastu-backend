@@ -31,6 +31,9 @@ const questionSchema = new mongoose.Schema({
   sub_order: {
     type: Number
   },
+  parent_key: {
+     type: String
+  },
   is_active: {
     type: Boolean,
     default: true
