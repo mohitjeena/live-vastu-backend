@@ -198,7 +198,7 @@ const bedroomCountAnswer = answers.find(a => a.question_key === 'bedroomCounting
                 if (a.question_key === 'bedroomFacing') {
 
                     if (count === 1) {
-                        return a.sub_order  === 0;
+                        return a.sub_order  == 0;
                     }
 
                     return a.sub_order > 0 && a.sub_order <= count;
@@ -219,7 +219,7 @@ if (toiletCountAnswer) {
         if (a.question_key === 'toiletFacing') {
 
             if (count === 1) {
-                return a.sub_order === 0;
+                return a.sub_order == 0;
             }
 
             return a.sub_order > 0 && a.sub_order <= count;
