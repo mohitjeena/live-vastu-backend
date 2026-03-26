@@ -62,6 +62,9 @@ const userSubmissionSchema = new mongoose.Schema({
         question_key: {
             type: String,
             default: ""
+        },
+        sub_order: {
+            type: String
         }
         ,
         answer: {
