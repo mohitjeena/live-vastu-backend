@@ -243,7 +243,21 @@ if (toiletCountAnswer) {
             ...restData
             } = userDetails;
 
-            const newEntry = new UserDetails({
+            let userDetailsExist = await UserDetails.findOne({ userId: user._id });
+
+            if(userDetailsExist)
+            {
+               userDetailsExist.family = {
+                    members,
+                    adults,
+                    children,
+                    elders
+                };
+
+                Object.assign(userDetailsExist, restData);
+            await userDetailsExist.save();
+            } else{
+                  const newEntry = new UserDetails({
             userId: user._id,
             family: {
                 members,
@@ -253,8 +267,9 @@ if (toiletCountAnswer) {
             },
             ...restData
             });
+            await newEntry.save();
+            }
 
-        await newEntry.save();
 
          user.report_check = false;
          user.vastu_task = true;
