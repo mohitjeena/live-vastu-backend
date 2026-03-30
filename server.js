@@ -67,6 +67,9 @@ app.use('/api/webhooks', require('./routes/webhooks'));
 app.use('/api/upload-image', require('./routes/imageUpload'));
 app.use('/api/pdf', require('./routes/sendVastuPdf'));
 
+// for user form type
+app.use('/api/form-type', require('./routes/userFormType'));
+
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
