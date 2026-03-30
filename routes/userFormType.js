@@ -1,5 +1,5 @@
-const UserFormType = required('../models/UserFormType')
-const express = required("express")
+const UserFormType = require('../models/UserFormType')
+const express = require("express")
 const router = express.Router()
 
 
