@@ -10,7 +10,15 @@ const crypto = require("crypto")
 // Save user submission (after mobile verification)
 router.post('/', async (req, res) => {
     try {
-        const { session_id, email, answers, property_type, purpose } = req.body;
+        const { userAnswers,userDetails } = req.body;
+
+        const {
+        session_id,
+        email,
+        answers,
+        property_type,
+        purpose
+        } = userAnswers;
 
         // Check if session already exists
         const existingSubmission = await UserSubmission.findOne({ session_id });
@@ -59,6 +67,46 @@ router.post('/', async (req, res) => {
         });
 
         await userSubmission.save();
+
+        if (userDetails && Object.keys(userDetails).length >= 0) 
+        {
+            const {
+            members,
+            adults,
+            children,
+            elders,
+            ...restData
+            } = userDetails;
+
+            let userDetailsExist = await UserDetails.findOne({ userId: userSubmission._id });
+
+            if(userDetailsExist)
+            {
+               userDetailsExist.family = {
+                    members,
+                    adults,
+                    children,
+                    elders
+                };
+
+                Object.assign(userDetailsExist, restData);
+            await userDetailsExist.save();
+            } else{
+                  const newEntry = new UserDetails({
+            userId: userSubmission._id,
+            family: {
+                members,
+                adults,
+                children,
+                elders
+            },
+            ...restData
+            });
+            await newEntry.save();
+            }
+        }
+
+         
 
         res.status(201).json({
             success: true,
@@ -162,6 +210,8 @@ router.post('/:session_id/add-answers', async (req, res) => {
         const { session_id } = req.params;
         const { answers,propertyType,purpose,userDetails } = req.body;
 
+        
+
         const user = await UserSubmission.findOne({ session_id });
         
         if (!user) {
@@ -235,7 +285,9 @@ if (toiletCountAnswer) {
             user.purpose = purpose
         }
 
-        const {
+        if (userDetails && Object.keys(userDetails).length >= 0) 
+        {
+            const {
             members,
             adults,
             children,
@@ -269,6 +321,7 @@ if (toiletCountAnswer) {
             });
             await newEntry.save();
             }
+        }
 
 
          user.report_check = false;
