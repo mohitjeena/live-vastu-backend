@@ -5,7 +5,8 @@ const userFormTypeSchema =  new mongoose.Schema({
     {
       type: String,
       enum: ["basic","premium"],
-      required: true
+      required: true,
+      default: "basic"
     } 
 })
 
