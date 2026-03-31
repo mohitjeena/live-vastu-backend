@@ -68,7 +68,9 @@ router.post('/', async (req, res) => {
 
         await userSubmission.save();
 
-        if (userDetails && Object.keys(userDetails).length >= 0) 
+        console.log("userDetails ",userDetails)
+
+        if (userDetails && Object.keys(userDetails).length > 0) 
         {
             const {
             members,
