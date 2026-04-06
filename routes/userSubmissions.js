@@ -287,7 +287,7 @@ if (toiletCountAnswer) {
             user.purpose = purpose
         }
 
-        if (userDetails && Object.keys(userDetails).length >= 0) 
+        if (userDetails && Object.keys(userDetails).length > 0) 
         {
             const {
             members,

@@ -46,7 +46,7 @@ const userDetailsSchema = new mongoose.Schema({
 
   family: {
     members: { type: Number, required: true },
-    adults: { type: Number, required: true },
+    adults: { type: Number, default: 0 },
     children: { type: Number, default: 0 },
     elders: { type: Number, default: 0 }
   },
