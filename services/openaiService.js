@@ -193,26 +193,35 @@ console.log(uniqueTopics);
   if(plan_type === "basic"){
 
     let prompt = `
-    Analyze this home for Vastu Shastra compliance and return JSON with exactly this structure:
+ Analyze this home for Vastu Shastra compliance and return JSON with exactly this structure:
+
 {
-    "score": 85,
+    "score": "<calculated_score_between_0_to_100>",
     "report": "Your analysis report here..."
 }
 
+SCORING RULES:
+- Start from 100
+- Deduct points for each Vastu violation
+- Major issue: -10 to -15
+- Minor issue: -3 to -5
+
 CRITICAL INSTRUCTION:
-You MUST generate the Vastu report ONLY using the information provided
-in the CONTEXT section below, combined with the user's answers.
-Do NOT rely on external knowledge.
-If something is missing, infer carefully using Vastu principles
+- Score MUST be dynamically calculated based on user answers
+- Do NOT use any fixed/default value like 85
+- Score should reflect actual vastu compliance
+- You MUST generate the Vastu report ONLY using the information provided in the CONTEXT section below, combined with the user's answers.
+- Do NOT rely on external knowledge.
+- If something is missing, infer carefully using Vastu principles
 from the CONTEXT only.
 
 REPORT FORMAT RULES:
 - "score": Number between 0-100 representing Vastu compliance
 - "report": 
-- report MUST contain exactly TWO sections with 15-20 lines
+- report MUST contain exactly TWO sections with 140-150 lines
 - Use <h3> for section titles
 - Use <p> for paragraphs
-- Each section should have 5–7 lines
+- Each section should have 70–80 lines
 - Keep language professional and easy to understand
 
 SECTION STRUCTURE:
