@@ -6,7 +6,7 @@ const UserDetails = require("../models/userDetails")
 router.get('/:id',async (req,res)=>{
     try {
         const { id } = req.params;
-       const exist =  await UserDetails.findById(id)
+       const exist =  await UserDetails.findOne( {userId: id} )
        if(exist)
        {
         res.status(200).json({
