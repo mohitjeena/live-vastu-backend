@@ -70,6 +70,9 @@ app.use('/api/pdf', require('./routes/sendVastuPdf'));
 // for user form type
 app.use('/api/form-type', require('./routes/userFormType'));
 
+// for fetching user details
+app.use('/api/user-details', require('./routes/userDetailsRoute'));
+
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
