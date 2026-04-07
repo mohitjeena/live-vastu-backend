@@ -38,6 +38,9 @@ router.post('/', async (req, res) => {
             try {
                 console.log('Generating AI Vastu report...');
                 const aiResponse = await generateVastuReport({ session_id, answers, property_type, purpose },plan_type);
+
+                console.log(aiResponse);
+                
                 ai_score = aiResponse.score  || ai_score;
                 ai_report = aiResponse.report || ai_report;
                 if(!aiResponse.report)
