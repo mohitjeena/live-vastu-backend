@@ -88,7 +88,7 @@ function getFastCloudinaryUrl(url) {
             - Keep it subtle: “Mars-type agitation”, “Moon-type restlessness”, “Saturn-type delay”.
 
             ${plan_type === 'basic' ? 
-              'Provide concise analysis in 2 paragraphs.' : 
+              'Provide concise analysis in 4-5 pages.' : 
               'Provide detailed, comprehensive analysis in 15-20 pages.'}`,
         },
         {
@@ -203,8 +203,8 @@ console.log(uniqueTopics);
 SCORING RULES:
 - Start from 100
 - Deduct points for each Vastu violation
-- Major issue: -10 to -15
-- Minor issue: -3 to -5
+- Major issue: -2 to -3
+- Minor issue: -1 to -2
 
 CRITICAL INSTRUCTION:
 - Score MUST be dynamically calculated based on user answers
@@ -224,13 +224,19 @@ REPORT FORMAT RULES:
 - Each section should have 70–80 lines
 - Keep language professional and easy to understand
 
-SECTION STRUCTURE:
+REPORT SECTION STRUCTURE:
 
 <h3>Current Vastu Analysis</h3>
-<p>Paragraph content here...</p>
+<p>...</p>
+
+<h3>Vastu Strengths</h3>
+<p>...</p>
+
+<h3>Energy Flow & Space Utilization</h3>
+<p>...</p>
 
 <h3>Remedies & Recommendations</h3>
-<p>Paragraph content here...</p>
+<p>...</p>
 
 CONTENT GUIDELINES:
 - Analysis should explain current vastu compliance clearly

@@ -29,7 +29,7 @@ router.post('/', async (req, res) => {
             });
         }
 
-           let ai_score = 0;
+           let ai_score = 70;
         let ai_report = "Vastu analysis report will be available soon.";
         let plan_type = 'basic';
         let ai_free_report_txt = ''
@@ -45,7 +45,7 @@ router.post('/', async (req, res) => {
                 ai_report = aiResponse.report || ai_report;
                 if(!aiResponse.report)
                 {
-                   ai_free_report_txt = aiResponse
+                   ai_report = aiResponse
                 }
             } catch (aiError) {
                 console.error('OpenAI error, using default response:', aiError);
