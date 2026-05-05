@@ -7,7 +7,7 @@ const planSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['gold', 'premium', 'premium_plus'],
+        enum: ['basic', 'gold', 'premium', 'premium_plus'],
         required: true,
         unique: true
     },
@@ -19,6 +19,10 @@ const planSchema = new mongoose.Schema({
         type: String,
         required: true
     }],
+    recommend: {
+        type: Boolean,
+        default: false
+    },
     is_active: {
         type: Boolean,
         default: true

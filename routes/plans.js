@@ -19,6 +19,25 @@ router.get('/', async (req, res) => {
     }
 });
 
+
+// Get Specific plan by id
+router.get('/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const plan = await Plan.findOneById({id});
+        
+        res.json({
+            success: true,
+            data: plan
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching plan'
+        });
+    }
+});
+
 // Create or update plan (Admin only)
 router.post('/', async (req, res) => {
     try {
