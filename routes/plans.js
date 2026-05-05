@@ -24,8 +24,13 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const id = req.params.id;
-        const plan = await Plan.findOneById(id);
-        
+        const plan = await Plan.findById(id);
+        if (!plan) {
+    return res.status(404).json({
+        success: false,
+        message: 'Plan not found'
+    });
+}
         res.json({
             success: true,
             data: plan
