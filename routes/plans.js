@@ -89,4 +89,42 @@ router.post('/', async (req, res) => {
     }
 });
 
+
+// update plan (Admin only)
+router.put('/:id', async (req, res) => {
+    try {
+        const id = req.params.id
+        const { type, name, price, features, recommend, is_active } = req.body;
+        
+        // Check if plan exists
+        const existingPlan = await Plan.findOne({ _id: id });
+        
+        if (existingPlan) {
+            // Update existing plan
+            const plan = await Plan.findOneAndUpdate(
+                { _id: id },
+                { type, name, price, features, recommend, is_active },
+                { new: true }
+            );
+            
+            res.json({
+                success: true,
+                data: plan,
+                message: 'Plan updated successfully'
+            });
+        } else {
+    
+            res.status(404).json({
+                success: false,
+                message: 'Plan not found'
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error saving plan'
+        });
+    }
+});
+
 module.exports = router;
