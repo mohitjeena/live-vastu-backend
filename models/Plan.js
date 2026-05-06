@@ -7,7 +7,7 @@ const planSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['basic', 'gold', 'premium', 'premium_plus'],
+        enum: ['bronze', 'silver', 'gold', 'platinum'],
         required: true,
         unique: true
     },
