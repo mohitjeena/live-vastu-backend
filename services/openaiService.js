@@ -8,7 +8,7 @@ const generateVastuReport = async (userAnswers, plan_type = 'basic') => {
   try {
     const content = [];
 
-       if (plan_type === "premium_plus" && userAnswers.profile_image && userAnswers.map_images.length !== 0) {
+       if (plan_type === "platinum" && userAnswers.profile_image && userAnswers.map_images.length !== 0) {
         console.log('entered in images in premium plus')
 
         content.push({
