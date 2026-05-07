@@ -28,8 +28,8 @@ const userSubmissionSchema = new mongoose.Schema({
         // Plan Type
     plan_type: {
         type: String,
-        enum: ['basic', 'gold', 'premium', 'premium_plus'],
-        default: 'basic'
+        enum: ['bronze', 'silver', 'gold', 'platinum'],
+        default: 'bronze'
     },
     // ADD PAYMENT STATUS
     payment_status: {

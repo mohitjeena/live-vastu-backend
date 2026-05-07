@@ -12,8 +12,8 @@ const questionSchema = new mongoose.Schema({
   },
   question_plan: {
     type: String,
-    enum: ['basic', 'gold', 'premium', 'premium_plus'],
-    default: 'basic'
+    enum: ['bronze', 'silver', 'gold', 'platinum'],
+    default: 'bronze'
 },
   question_key: {
     type: String,
