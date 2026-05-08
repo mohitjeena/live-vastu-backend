@@ -94,7 +94,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         const id = req.params.id
-        const { type, name, price, features, recommend, is_active } = req.body;
+        const { type, name, price, features, recommend, is_active, discount } = req.body;
         
         // Check if plan exists
         const existingPlan = await Plan.findOne({ _id: id });
@@ -103,7 +103,7 @@ router.put('/:id', async (req, res) => {
             // Update existing plan
             const plan = await Plan.findOneAndUpdate(
                 { _id: id },
-                { type, name, price, features, recommend, is_active },
+                { type, name, price, features, recommend, is_active, discount },
                 { new: true }
             );
             

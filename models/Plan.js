@@ -23,6 +23,10 @@ const planSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    discount: {
+        type: Number,
+        default: 0
+    },
     is_active: {
         type: Boolean,
         default: true
