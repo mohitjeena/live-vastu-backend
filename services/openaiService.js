@@ -87,9 +87,7 @@ function getFastCloudinaryUrl(url) {
             - Mention planetary tendencies only as supporting language (Sun/Moon/Mars/Venus/Saturn) and only 1–2 times total.
             - Keep it subtle: “Mars-type agitation”, “Moon-type restlessness”, “Saturn-type delay”.
 
-            ${plan_type === 'basic' ? 
-              'Provide concise analysis in 4-5 pages.' : 
-              'Provide detailed, comprehensive analysis in 15-20 pages.'}`,
+            ${plan_type === 'basic' ? 'Provide concise analysis in 4-5 pages.' : 'Provide detailed, comprehensive analysis in 15-20 pages.'}`,
         },
         {
           role: "user",
@@ -262,6 +260,9 @@ ${finalContext}
 return prompt;
   }
   else {
+    let primaryColor = '#D60000';
+    let headerBackgroundColor = '#010101';
+    let headerTextColor = '#C88200';
           prompt = `
 IMPORTANT RULES (STRICT):
 
@@ -282,14 +283,54 @@ Length must be equivalent to 15–20 pages.
 CRITICAL INSTRUCTION:
 You MUST generate the Vastu report ONLY using the information provided
 in the CONTEXT section below, combined with the user's answers.
-Do NOT rely on external knowledge.
-If something is missing, infer carefully using Vastu principles
-from the CONTEXT only.
+Use the provided CONTEXT as the primary source of analysis.
+You may apply general Vastu reasoning only where necessary
+to connect findings naturally and professionally.
+Do not invent unrelated facts.
+
+HTML & DESIGN RULES
+
+- Use only these colors:
+  Primary Color: ${primaryColor}
+  for any header use only these colors: background: ${headerBackgroundColor};
+color: ${headerTextColor};
+
+- Do NOT use any other colors
+- Use minimal inline CSS only where necessary
+- Keep layout elegant and premium
+- Use readable spacing and typography
+- Use section dividers and headings properly
+- Report must look professional when converted to PDF
 
 
 IMPORTANT LENGTH REQUIREMENT:
-- The report must be long: approximately **14,000 words** (~14 pages).
+
+${plan_type === 'silver' ? `
+- The report must be long: approximately **12,000 words** (~12 pages).
+- Moderate detail level
+- Focus on practical Vastu analysis and remedies
+- Each major section below should be ~800–1000 words.
+`
+:
+plan_type === 'gold' ? `
+- The report must be long: approximately **13,000 words** (~13 pages).
+- Deep and highly personalized analysis
+- Include financial, health, relationship, and energy impact analysis
+- Include advanced remedies and reasoning
+- Each major section below should be ~1000–1100 words.
+`
+:
+`
+- The report must be long: approximately **14,000 - 15,000 words** (~14 - 15 pages).
+- Ultra-premium consultation-style report
+- Include map-based analysis
+- Include personalized energy insights
+- Include advanced lifestyle and spiritual suggestions
+- Include luxury-level remedies
 - Each major section below should be ~1200–1400 words.
+`
+}
+
 - Keep writing until you have covered all sections in depth; do not stop early.
 - Use professional, non-repetitive language.
 
