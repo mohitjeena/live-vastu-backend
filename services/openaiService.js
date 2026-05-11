@@ -288,7 +288,15 @@ You may apply general Vastu reasoning only where necessary
 to connect findings naturally and professionally.
 Do not invent unrelated facts.
 
-HTML & DESIGN RULES
+HTML & DESIGN RULES :
+
+- Use ONLY inline CSS
+- Do NOT use <style> tags
+- Do NOT use external CSS
+- Do NOT use class selectors
+- Apply styling directly inside elements using the style attribute
+- Maintain a premium and elegant layout
+- Use proper spacing, borders, typography, and section separation
 
 - Use only these colors:
   Primary Color: ${primaryColor}
@@ -296,7 +304,6 @@ HTML & DESIGN RULES
 color: ${headerTextColor};
 
 - Do NOT use any other colors
-- Use minimal inline CSS only where necessary
 - Keep layout elegant and premium
 - Use readable spacing and typography
 - Use section dividers and headings properly
