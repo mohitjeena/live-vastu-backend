@@ -8,7 +8,7 @@
 <title>Live Vaastu Report</title>
 <style>
 
-*{
+  *{
 -webkit-print-color-adjust: exact;
 print-color-adjust: exact;
 }
@@ -16,6 +16,16 @@ print-color-adjust: exact;
 @page {
     size: A4;
     margin: 0;
+}
+
+.ai-report::before {
+ content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 2px;
+    border: 6px solid #D60000;
 }
 
 body {
@@ -185,9 +195,8 @@ body {
    align-items: center;
    /* margin: 0 40px; */
 }
-.footer span b a{
+.footer span b {
     color: #D60000;
-    text-decoration: none;
 }
 
 /* page-2 */
@@ -317,6 +326,11 @@ body {
     color:#d50000;
 }
 
+.footer span b a{
+    color: #D60000;
+    text-decoration: none;
+}
+
 /* page-3 */
 
 .vastu-page{
@@ -327,10 +341,9 @@ body {
     /* padding:0 40px; */
     box-sizing:border-box;
     position:relative;
+    background-color: #f7f3ef;
     
 }
-
-
 
 /* logo */
 .logo{
@@ -343,7 +356,10 @@ body {
 
 /* top layout */
 
-
+.top-section{
+    /* display:flex; */
+    /* margin-top:40px; */
+}
 
 /* left text */
 
@@ -441,7 +457,6 @@ position: relative;
 .timeline-title{
     top: -21px;
     left: 47%;
-    transform: rotate(3deg);
     z-index: 3000;
     background: #B7191A;
     display: inline-block;
@@ -615,6 +630,13 @@ object-fit:cover;
     right: -40px;}
 
 
+/* .guideline-page{
+width:794px;
+height:1123px;
+background:#f6f6f6;
+position:relative;
+font-family:sans-serif;
+} */
 
 
 /* header */
@@ -1178,13 +1200,15 @@ color:#444;
 
 /* ai-report-style */
 .ai-report{
-    height: auto !important;
+       height: auto !important;
     overflow: visible !important;
-    width: 100%; 
-    max-width: 1100px; 
-    margin: 0 auto; 
-    padding: 40px;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px 40px 40px;
     box-sizing: border-box;
+    page-break-after: always;
+    position: relative;
 }
 .ai-report h1 ,.ai-report h2,.ai-report h3{
     color: #D60000;
@@ -1238,6 +1262,10 @@ color:#AC7F5E;
 font-weight:bold;
 }
 
+
+
+
+ 
 
     .page-title{
       text-align:center;
@@ -1341,6 +1369,7 @@ font-weight:bold;
       width:100%;
       border-radius:4px;
       display:block;
+      margin: auto;
     }
 
 
@@ -1349,7 +1378,7 @@ font-weight:bold;
     }
 
     .kitchen-container{
-        background-color: #F9F6F1;
+        background-color: #f7f3ef;
     }
 
 
@@ -1413,7 +1442,7 @@ font-weight:bold;
     }
 
     .remedy-title{
-      font-size:24px;
+      font-size:17px;
       font-weight:700;
       margin-bottom:8px;
       color:#222;
@@ -1421,7 +1450,7 @@ font-weight:bold;
     }
 
     .remedy-desc{
-      font-size:18px;
+      font-size:15px;
       line-height:1.5;
       color:#444;
     }
@@ -1440,6 +1469,8 @@ font-weight:bold;
       border-radius:8px;
       overflow:hidden;
       min-height:210px;
+    
+
     }
 
     .planet-card{
@@ -1486,7 +1517,7 @@ font-weight:bold;
       text-align:center;
       padding:16px;
       position:relative;
-      background-size: contain;
+         background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
     }
@@ -1554,8 +1585,7 @@ font-weight:bold;
       padding-bottom:0;
     }
 
-
-         .number-box{
+     .number-box{
       width:38px;
       height:38px;
       min-width:38px;
@@ -1567,6 +1597,8 @@ font-weight:bold;
       display:flex;
       align-items:center;
       justify-content:center;
+      background: radial-gradient(circle at 30% 30%, #d9a243 0%, #c7851c 40%, #a96b0f 75%, #8b5608 100%);
+    box-shadow: inset 2px 2px 4px rgba(255, 255, 255, .25), inset -3px -3px 5px rgba(0, 0, 0, .15), 0 2px 4px rgba(0, 0, 0, .15);
     }
 
     .door-remedy-item{
@@ -1584,7 +1616,7 @@ font-weight:bold;
       margin-bottom: 28px;
     }
 
-         .card-box{
+      .card-box{
       background:#f7f3ef;
       border:1.5px solid #dccfc1;
       border-radius:12px;
@@ -1609,8 +1641,8 @@ font-weight:bold;
       border:1px solid #d7c6ac;
       background:#fff;
       display:flex;
-      align-items: flex-start;
-      justify-content: flex-start;
+      align-items: center;
+      justify-content: center;
     }
 
     .icon-circle img{
@@ -1637,7 +1669,7 @@ font-weight:bold;
     /* ================= SIDE IMAGE ================= */
 
     .side-image{
-      width:120px;
+      width:150px;
       min-width:120px;
       height:100px;
       border-radius:6px;
@@ -1725,7 +1757,7 @@ font-weight:bold;
     .info-title{
       font-size:16px;
       font-weight:700;
-      color:#2d2d2d;
+      color:#4E2D21;
       margin-bottom:4px;
     }
 
@@ -1738,7 +1770,7 @@ font-weight:bold;
     /* ================= BIG IMAGE ================= */
 
     .big-image{
-      width:210px;
+      width:240px;
       min-width:150px;
       border-radius:8px;
       overflow:hidden;
@@ -1767,9 +1799,9 @@ font-weight:bold;
     }
 
     .small-preview{
-      width:110px;
+      width:160px;
       min-width:110px;
-      height:72px;
+      height:auto;
       border-radius:6px;
       overflow:hidden;
     }
@@ -1829,12 +1861,357 @@ font-weight:bold;
       height: 80px;
   
     }
-    
     .door-inner-image img{
       width: 100%;
       height: 100%;
       border-radius: 50%;
     }
+
+    /* ================= ISSUE BAR ================= */
+
+.issue-strip{
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    background:#efd6c0;
+    border-radius:6px;
+
+    padding:5px 12px;
+
+    font-size:11px;
+    font-weight:600;
+    color:#7a5630;
+
+    margin-bottom:10px;
+}
+
+.issue-icon{
+    width:14px;
+    height:14px;
+    border-radius:50%;
+
+    border:1px solid #b97d44;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:10px;
+}
+
+/* ================= REMEDY LAYOUT ================= */
+
+.remedy-layout{
+    display:flex;
+    gap:18px;
+}
+
+.remedy-left{
+    flex:1;
+    
+}
+
+.remedy-right{
+    width:245px;
+    flex-shrink:0;
+}
+
+.remedy-right img{
+    width:100%;
+    display:block;
+    border-radius:8px;
+}
+
+/* ================= SMALL REMEDY ITEM ================= */
+
+.remedy-small{
+    display:flex;
+    gap:12px;
+    padding:10px 0;
+}
+
+.remedy-small:not(:last-child){
+    border-bottom:1px solid #eadfce;
+}
+
+/* ================= DECOR ICON ================= */
+
+.side-symbol{
+    width:38px;
+    margin-left:auto;
+    opacity:.7;
+    margin-right: 25px;
+}
+
+.side-symbol img{
+    width:100%;
+    display:block;
+}
+
+/* ================= IMPORTANT BOX ================= */
+
+.important-box{
+    display:flex;
+    gap:10px;
+
+    margin-top:8px;
+    padding-top:10px;
+
+    border-top:1px solid #eadfce;
+}
+
+.important-icon{
+    width:22px;
+    height:22px;
+
+    border-radius:50%;
+
+    background:#c18443;
+    color:#fff;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:12px;
+}
+
+.important-content{
+    flex:1;
+}
+
+.important-title{
+    font-size:13px;
+    font-weight:700;
+    color:#6a4928;
+
+    margin-bottom:3px;
+}
+
+.important-desc{
+    font-size:12px;
+    line-height:1.4;
+    color:#666;
+}
+
+.energy-card{
+  display:flex;
+  gap:18px;
+  background:#f7f3ef;
+  border:1.5px solid #dccfc1;
+  border-radius:10px;
+  padding:16px;
+  margin-bottom:14px;
+}
+
+.energy-left{
+  width:150px;
+  flex-shrink:0;
+}
+
+.energy-left img{
+  width:100%;
+  border-radius:50%;
+  display:block;
+}
+
+.energy-content{
+  flex:1;
+}
+
+.energy-side-img{
+  width:180px;
+  flex-shrink:0;
+}
+
+.energy-side-img img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:6px;
+}
+
+.energy-title{
+  font-size:16px;
+  font-weight:700;
+  margin-bottom:8px;
+  color:#2b2b2b;
+}
+
+.energy-desc{
+  font-size:12px;
+  line-height:1.55;
+  color:#444;
+}
+
+.warning-box{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  background:#f3dfc5;
+  border-radius:8px;
+  padding:8px 10px;
+  margin-top:8px;
+}
+
+.warning-icon{
+  width:28px;
+  height:28px;
+  min-width:28px;
+  border-radius:50%;
+  background:#c58a2f;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+}
+
+.warning-text{
+  font-size:10px;
+  line-height:1.4;
+  color:#6a4b2a;
+}
+
+.bedroom-remedy-card{
+  display:flex;
+  gap:12px;
+  background:#f7f3ef;
+  border:1.5px solid #d6a85a;
+  border-radius:10px;
+  padding:10px;
+  margin-bottom:8px;
+}
+
+.bedroom-img{
+  width:200px;
+  min-width:200px;
+  border-radius:8px;
+  overflow:hidden;
+  position: relative;
+}
+
+.bedroom-img img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.bedroom-text{
+  flex:1;
+  padding-top:4px;
+}
+
+.bedroom-title-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:6px;
+}
+
+.round-small-icon{
+  width:34px;
+  height:34px;
+  min-width:34px;
+  border-radius:50%;
+  background:#c58a2f;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:17px;
+}
+
+.bedroom-title{
+  font-size:15px;
+  font-weight:700;
+  color:#2b2b2b;
+  line-height:1.2;
+}
+
+.bedroom-desc{
+  font-size:11px;
+  line-height:1.45;
+  color:#333;
+}
+
+.replace-box{
+  display:flex;
+  gap:8px;
+  background:#f3dfc5;
+  border-radius:8px;
+  padding:7px 9px;
+  margin-top:8px;
+}
+
+.replace-icon{
+  width:30px;
+  height:30px;
+  min-width:30px;
+  border-radius:50%;
+  background:#c58a2f;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+}
+
+.replace-text{
+  font-size:9.5px;
+  line-height:1.35;
+  color:#5c3e22;
+}
+
+.general-list{
+  padding:15px 30px;
+  background: #FEF7EF;
+}
+
+.general-item{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  border:1.5px solid #ead7b8;
+  border-radius:12px;
+  padding:12px 16px;
+  margin-bottom:8px;
+}
+
+.general-svg{
+  width:85px;
+  min-width:85px;
+  height:85px;
+  border-right:1px dashed #d9a24f;
+  padding-right:14px;
+}
+
+.general-content{
+  flex:1;
+  font-size:18px;
+  line-height:1.55;
+  color:#222;
+}
+
+.divider-star{
+  width:120px;
+  height:1px;
+  background:#e3c99c;
+  margin:8px auto 0;
+  position:relative;
+}
+
+.divider-star:after{
+  content:"◆";
+  position:absolute;
+  left:50%;
+  top:-7px;
+  transform:translateX(-50%);
+  color:#d59a43;
+  font-size:10px;
+}
 
 
 </style>
