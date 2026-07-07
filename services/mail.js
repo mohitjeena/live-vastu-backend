@@ -16,84 +16,78 @@ const Brevo = require("@getbrevo/brevo");
             to: [{ email: toEmail }],
             subject: "Your Vastu Report",
              htmlContent: `
-            <!DOCTYPE html>
+          <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8" />
   <title>Your Vastu Scan Report is Ready</title>
 </head>
-<body style="margin:0; padding:0; background:#f5f5f5; font-family:Arial, sans-serif; color:#222;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f5; padding:30px 15px;">
+<body style="margin:0; padding:0; background:#ffffff; font-family:Arial, sans-serif; color:#222;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;">
     <tr>
       <td align="center">
-        <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px; width:100%; background:#ffffff; border-radius:12px; overflow:hidden;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:870px; border:1px solid #eeeeee;">
           
           <tr>
-            <td style="background:#B32A2D; padding:28px 25px; text-align:center;">
-              <h1 style="margin:0; color:#ffffff; font-size:26px; line-height:34px;">
-                Your Vastu Scan Report is Ready
-              </h1>
+            <td style="background:#2f4156; color:#ffffff; text-align:center; padding:18px 20px; font-size:20px; font-weight:bold;">
+              Your Vastu Scan Report is Ready
             </td>
           </tr>
 
           <tr>
-            <td style="padding:30px 28px;">
-              <p style="font-size:16px; line-height:26px; margin:0 0 18px;">Namaste 🙏</p>
+            <td style="padding:28px 22px 30px 22px; font-size:13px; line-height:1.7;">
+              <p>Dear User,</p>
 
-              <p style="font-size:16px; line-height:26px; margin:0 0 18px;">
-                Thank you for using our <strong>Vastu Scan</strong> service. We have successfully analyzed your property details, and your personalized <strong>Vastu Scan Report</strong> is now ready.
+              <p>
+                Thank you for using <strong>Live Vaastu</strong>.
               </p>
 
-              <p style="font-size:16px; line-height:26px; margin:0 0 22px;">
-                This report includes a detailed analysis of your space based on key Vastu principles and highlights important observations related to energy balance, direction alignment, and areas that may need attention.
+              <p>
+                Your <strong>Vastu Scan Report</strong> has been successfully prepared based on the information you provided during your Vastu assessment.
               </p>
 
-              <h2 style="font-size:20px; color:#B32A2D; margin:0 0 15px;">
-                What’s Included in Your Report:
-              </h2>
-
-              <table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:25px;">
-                <tr><td style="font-size:15px; line-height:26px;">✅ Direction-wise Vastu Analysis</td></tr>
-                <tr><td style="font-size:15px; line-height:26px;">✅ Identification of Positive & Negative Energy Zones</td></tr>
-                <tr><td style="font-size:15px; line-height:26px;">✅ Key Vastu Observations for Your Property</td></tr>
-                <tr><td style="font-size:15px; line-height:26px;">✅ Areas That May Be Causing Imbalance</td></tr>
-                <tr><td style="font-size:15px; line-height:26px;">✅ Personalized Recommendations for Improvement</td></tr>
-              </table>
-
-              <p style="font-size:16px; line-height:26px; margin:0 0 24px;">
-                You can download your complete report by clicking the button below.
+              <p>
+                Our system has analyzed your property details according to Vastu principles. Your personalized report is now available for download.
               </p>
 
-              <div style="text-align:center; margin:30px 0;">
-                <a href="${pdfUrl}" 
-                   style="background:#FDB913; color:#000000; text-decoration:none; padding:14px 28px; border-radius:6px; font-weight:bold; display:inline-block; font-size:16px;">
+              <p style="margin-bottom:8px;"><strong>Report Includes:</strong></p>
+
+              <ul style="padding-left:20px; margin-top:0;">
+                <li>Direction-wise Vastu Analysis</li>
+                <li>Energy Balance Assessment</li>
+                <li>Positive &amp; Negative Zones</li>
+                <li>Key Vastu Observations</li>
+                <li>Personalized Recommendations</li>
+              </ul>
+
+              <p>
+                To access your report, please click the link below.
+              </p>
+
+              <p style="margin:18px 0;">
+                <a href="${pdfUrl}" style="color:#0056b3; text-decoration:underline; font-weight:bold;">
                   Download Your Vastu Report
                 </a>
-              </div>
-
-              <p style="font-size:16px; line-height:26px; margin:0 0 18px;">
-                We hope this report helps you create a more balanced, peaceful, and prosperous environment for your home or workplace.
               </p>
 
-              <p style="font-size:16px; line-height:26px; margin:0 0 22px;">
-                If you would like a detailed consultation or guidance on remedies, feel free to connect with our team.
+              <p>
+                If you have any questions or would like a detailed consultation, our team will be happy to assist you.
               </p>
 
-              <p style="font-size:16px; line-height:26px; margin:0 0 8px;">
-                <strong>Wishing you positivity, prosperity, and harmony.</strong> ✨
+              <p>
+                Thank you for choosing Live Vaastu.
               </p>
 
-              <p style="font-size:16px; line-height:26px; margin:0;">
-                <strong>Team Live Vaastu</strong>
+              <p style="margin-top:22px;">
+                Warm regards,<br />
+                <strong>Live Vaastu Team</strong>
               </p>
             </td>
           </tr>
 
           <tr>
-            <td style="background:#222222; padding:18px 25px; text-align:center;">
-              <p style="margin:0; color:#ffffff; font-size:13px; line-height:20px;">
-                © Live Vaastu. All rights reserved.
-              </p>
+            <td style="background:#f1f1f1; text-align:center; padding:14px 20px; font-size:11px; color:#555;">
+              © 2026 Live Vaastu. All rights reserved.
             </td>
           </tr>
 
