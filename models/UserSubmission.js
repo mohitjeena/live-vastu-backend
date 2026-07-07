@@ -121,6 +121,17 @@ const userSubmissionSchema = new mongoose.Schema({
     pdf_url: {
         type: String
     },
+    pdf_report: {
+  url: String,
+  public_id: String,
+  filename: String,
+  generated_at: Date,
+  expires_at: Date,
+  deleted_at: Date,
+  is_deleted: {
+    type: Boolean,
+    default: false
+  }},
     created_at: {
         type: Date,
         default: Date.now
