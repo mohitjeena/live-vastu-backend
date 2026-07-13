@@ -2,28 +2,18 @@ const axios = require("axios");
 const drive = require("../config/googleDrive");
 
 async function uploadPdfToDrive(pdfUrl, sessionId) {
-  if (!pdfUrl) {
-    throw new Error("PDF URL is required");
-  }
-
-  if (!sessionId) {
-    throw new Error("Session ID is required");
-  }
-
-  if (!process.env.GOOGLE_DRIVE_FOLDER_ID) {
-    throw new Error("GOOGLE_DRIVE_FOLDER_ID is missing");
-  }
-
   try {
-    // Doppio temporary URL se PDF stream download
+    if (!process.env.GOOGLE_DRIVE_FOLDER_ID) {
+      throw new Error("GOOGLE_DRIVE_FOLDER_ID is missing");
+    }
+
     const pdfResponse = await axios.get(pdfUrl, {
       responseType: "stream",
-      timeout: 120000,
+      timeout: 180000,
     });
 
     const filename = `vastu-report-${sessionId}.pdf`;
 
-    // Google Drive me upload
     const uploadResponse = await drive.files.create({
       requestBody: {
         name: filename,
@@ -39,7 +29,6 @@ async function uploadPdfToDrive(pdfUrl, sessionId) {
 
     const fileId = uploadResponse.data.id;
 
-    // File ko public read access dena
     await drive.permissions.create({
       fileId,
       requestBody: {
@@ -48,7 +37,6 @@ async function uploadPdfToDrive(pdfUrl, sessionId) {
       },
     });
 
-    // Permission update ke baad links dobara fetch karo
     const fileResponse = await drive.files.get({
       fileId,
       fields: "id,name,size,mimeType,webViewLink,webContentLink",
@@ -71,7 +59,7 @@ async function uploadPdfToDrive(pdfUrl, sessionId) {
       error.response?.data || error.message
     );
 
-    throw new Error("Failed to upload PDF to Google Drive");
+    throw error;
   }
 }
 

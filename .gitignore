@@ -3,3 +3,4 @@ node_modules/
 .DS_Store
 *.log
 config/service-account.json
+generateGoogleToken.js
