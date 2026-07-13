@@ -8,7 +8,7 @@ const sendPdfMail = require("../services/mail");
 const { generateFinalHtml,extractAnswers } =require("../utils/generatePdf")
 const UserDetails = require("../models/userDetails")
 const generatePdfFromUrl = require("../utils/buildPdf")
-const uploadPdfFromUrlToCloudinary = require("../utils/uploadPdfFromUrlToCloudinary")
+const uploadPdfToDrive = require("../utils/uploadPdfToDrive");
 
 const axios = require('axios')
 
@@ -96,24 +96,24 @@ router.post('/generate-report/:sessionId', async (req, res) => {
 
     if(result.renderStatus == 'SUCCESS')
     {
-       const cloudinaryResult = await uploadPdfFromUrlToCloudinary(
-        result.documentUrl,
-        sessionId
-      );
+         const driveResult = await uploadPdfToDrive(
+      result.documentUrl,
+      sessionId
+    );
 
       const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
       user.pdf_report = {
-        url: cloudinaryResult.secure_url,
-        public_id: cloudinaryResult.public_id,
-        filename: `report-${sessionId}.pdf`,
-        generated_at: new Date(),
-        expires_at: expiresAt,
-        is_deleted: false,
+      url: driveResult.url,
+      file_id: driveResult.file_id,
+      filename: driveResult.filename,
+      generated_at: new Date(),
+      expires_at: expiresAt,
+      is_deleted: false,
       };
 
       
-      user.pdf_url = cloudinaryResult.secure_url;
+      user.pdf_url = driveResult.url;
 
 
        user.save();

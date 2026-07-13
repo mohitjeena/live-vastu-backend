@@ -123,7 +123,7 @@ const userSubmissionSchema = new mongoose.Schema({
     },
     pdf_report: {
   url: String,
-  public_id: String,
+  file_id: String,
   filename: String,
   generated_at: Date,
   expires_at: Date,
