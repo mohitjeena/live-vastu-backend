@@ -67,7 +67,8 @@ router.get("/temp-pdf/:id",async (req, res) => {
     const finalHtml = generateFinalHtml(
       userAnswers,
       details?.toObject() || {},
-      aiHtml
+      aiHtml,
+      user.plan_type
     );
 
     res.send(finalHtml); 

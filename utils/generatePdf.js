@@ -112,7 +112,7 @@ function cleanHtml(html) {
 }
 
 
-function generateFinalHtml(userAnswers, detailsData, aiHtml) {
+function generateFinalHtml(userAnswers, detailsData, aiHtml, planType = 'basic') {
   let html = "";
   console.log('userAnswers',userAnswers);
   
@@ -163,13 +163,22 @@ function generateFinalHtml(userAnswers, detailsData, aiHtml) {
 
   // 7️⃣ AI REPORT (LAST)
   const aiClean = cleanHtml(aiHtml);
-const aiBody = extractBodyContent(aiClean);
+  const aiBody = extractBodyContent(aiClean);
 
-  html += `
-  <div class="vastu-page ai-report">
-    ${aiBody}
-  </div>
-`;
+  if (planType === 'basic') {
+    html += `
+    <div class="vastu-page">
+      ${aiBody}
+    </div>
+  `;
+  } else {
+    // For non-basic (premium) plans, use flowable .ai-report page and apply the requested background color
+    html += `
+    <div class="ai-report" style="background-color: #f7f3ef; min-height: 100vh;">
+      ${aiBody}
+    </div>
+  `;
+  }
 
   html += "</body></html>";
 

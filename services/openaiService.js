@@ -1,5 +1,8 @@
 const OpenAI = require("openai");
-const Chunk = require("../models/Chunk")
+const Chunk = require("../models/Chunk");
+const { marked } = require("marked");
+const juiceModule = require("juice");
+const juice = juiceModule.default || juiceModule;
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -98,21 +101,121 @@ function getFastCloudinaryUrl(url) {
        
     });
     let report = null;
-    let raw_text = response.output_text
+    let raw_text = response.output_text;
     try {
-      if(plan_type === 'basic')
-      {
-      report =await JSON.parse(raw_text);
+      if (plan_type === 'basic') {
+        report = await JSON.parse(raw_text);
+      } else {
+        // Parse markdown to HTML
+        const htmlContent = marked.parse(raw_text);
+        
+        // Define stylesheet for premium reports to be inlined by Juice
+        const cssRules = `
+          .ai-report-content {
+            font-family: 'Josefin Sans', sans-serif;
+            color: #333333;
+            line-height: 1.7;
+            font-size: 16px;
+            background-color: #f7f3ef;
+          }
+          .ai-report-content h1, 
+          .ai-report-content h2, 
+          .ai-report-content h3 {
+            color: #D60000;
+            font-weight: bold;
+            page-break-after: avoid;
+            break-after: avoid;
+          }
+          .ai-report-content h1 {
+            font-size: 28px;
+            margin-top: 0;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #D60000;
+            padding-bottom: 8px;
+          }
+          .ai-report-content h2 {
+            font-size: 22px;
+            margin-top: 28px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #D60000;
+            padding-bottom: 4px;
+          }
+          .ai-report-content h3 {
+            font-size: 18px;
+            margin-top: 22px;
+            margin-bottom: 10px;
+          }
+          .ai-report-content p {
+            margin: 12px 0;
+            text-align: justify;
+            text-justify: inter-word;
+            font-size: 16px;
+            line-height: 1.7;
+            color: #333333;
+            font-weight: 500;
+          }
+          .ai-report-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 12px 0;
+            padding-left: 20px;
+          }
+          .ai-report-content ol {
+            padding: 0;
+            margin: 12px 0;
+            padding-left: 20px;
+          }
+          .ai-report-content ul li, 
+          .ai-report-content ol li {
+            margin: 10px 0;
+            font-size: 16px;
+            color: #333333;
+            position: relative;
+            font-weight: 600;
+            line-height: 1.6;
+            page-break-inside: avoid;
+            break-inside: avoid;
+          }
+          .ai-report-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #ffffff;
+          }
+          .ai-report-content tr {
+            page-break-inside: avoid;
+            break-inside: avoid;
+          }
+          .ai-report-content th, 
+          .ai-report-content td {
+            border: 1px solid #cccccc;
+            padding: 10px;
+            text-align: left;
+          }
+          .ai-report-content th {
+            background-color: #010101;
+            color: #C88200;
+            font-weight: bold;
+          }
+        `;
+
+        // Wrap the HTML with the style block and container
+        const wrappedHtml = `
+          <style>${cssRules}</style>
+          <div class="ai-report-content">
+            ${htmlContent}
+          </div>
+        `;
+
+        // Inline all styles using juice
+        report = juice(wrappedHtml);
       }
-      else{
-        report = raw_text;
-      }
-      
     } catch (error) {
-      console.log('error while report parsing to json');
-       report = raw_text;
+      console.log('error while report parsing or styling');
+      console.error(error);
+      report = raw_text;
     }
-   return report;
+    return report;
     
     
   } catch (error) {
@@ -260,24 +363,19 @@ ${finalContext}
 return prompt;
   }
   else {
-    let primaryColor = '#D60000';
-    let headerBackgroundColor = '#010101';
-    let headerTextColor = '#C88200';
-          prompt = `
+    prompt = `
 IMPORTANT RULES (STRICT):
 
-- Return ONLY a COMPLETE and VALID HTML document
+- Return ONLY a clean, professional, and well-structured Markdown document.
 - Do NOT return JSON
-- Do NOT return markdown
+- Do NOT return HTML or code blocks
 - Do NOT add explanations, comments, or extra text
-- The response MUST start with <html> and end with </html>
-- Use proper semantic HTML tags (h1, h2, h3, p, ul, li, table, tr, td)
+- Use proper Markdown headings (#, ##, ###), bold text, bulleted lists (-), numbered lists (1.), and tables where appropriate to structure the report.
 - Ensure well-structured formatting suitable for a 10–15 page professional report
-- Do NOT include code blocks
 - Do NOT mention OpenAI or AI in the report
 
 TASK:
-Generate a PROFESSIONAL Vastu Shastra report in HTML format.
+Generate a PROFESSIONAL Vastu Shastra report in Markdown format.
 Length must be equivalent to 15–20 pages.
 
 CRITICAL INSTRUCTION:
@@ -288,27 +386,11 @@ You may apply general Vastu reasoning only where necessary
 to connect findings naturally and professionally.
 Do not invent unrelated facts.
 
-HTML & DESIGN RULES :
-
-- Use ONLY inline CSS
-- Do NOT use <style> tags
-- Do NOT use external CSS
-- Do NOT use class selectors
-- Apply styling directly inside elements using the style attribute
-- Maintain a premium and elegant layout
-- Use proper spacing, borders, typography, and section separation
-
-- Use only these colors:
-  Primary Color: ${primaryColor}
-  for any header use only these colors: background: ${headerBackgroundColor};
-color: ${headerTextColor};
-
-- Do NOT use any other colors
-- Keep layout elegant and premium
-- Use readable spacing and typography
-- Use section dividers and headings properly
-- Report must look professional when converted to PDF
-
+DESIGN & FORMATTING GUIDELINES:
+- Structure the report cleanly with section dividers and headers
+- Use Markdown bolding for key findings or priorities
+- Use tables to structure data (like priorities or short-term action plans)
+- Use standard bullet lists (-) for remedies and recommendations
 
 IMPORTANT LENGTH REQUIREMENT:
 
