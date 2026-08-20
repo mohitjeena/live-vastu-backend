@@ -23,7 +23,7 @@ const planSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    discount: {
+    cut_price: {
         type: Number,
         default: 0
     },
