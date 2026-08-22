@@ -102,7 +102,7 @@ router.post('/generate-report/:sessionId', async (req, res) => {
       sessionId
     );
 
-      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+      const expiresAt = new Date(Date.now() + 10 * 24 * 60 * 60 * 1000);
 
       user.pdf_report = {
       url: driveResult.url,
@@ -162,5 +162,39 @@ router.get('/download-report/:sessionId', async (req, res) => {
     }
 });
 
+
+// Temporary Test Route: Expire PDF manually and trigger cleanup task
+router.post("/test-cleanup-delete/:sessionId", async (req, res) => {
+    try {
+        const { sessionId } = req.params;
+        const user = await UserSubmission.findOne({ session_id: sessionId });
+        if (!user) {
+            return res.status(404).send('user not found');
+        }
+
+        if (!user.pdf_report || !user.pdf_report.file_id) {
+            return res.status(400).send('No PDF report exists for this session');
+        }
+
+        // Artificially change the expiry to 1 second ago (expired)
+        user.pdf_report.expires_at = new Date(Date.now() - 1000);
+        await user.save();
+
+        console.log(`[TEST] Expired PDF report manually for session: ${sessionId}`);
+
+        // Import and run the cleanup task immediately
+        const { cleanupExpiredPdfs } = require("../utils/cleanupScheduler");
+        await cleanupExpiredPdfs();
+
+        res.status(200).json({
+            success: true,
+            message: "Test cleanup run complete. Check Google Drive and database for changes."
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Failed to manually trigger test cleanup');
+    }
+});
 
 module.exports = router;

@@ -78,7 +78,16 @@ mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('MongoDB Connected Successfully'))
+.then(() => {
+  console.log('MongoDB Connected Successfully');
+  // Start the automated 10-day PDF cleanup task
+  try {
+    const { startCleanupScheduler } = require("./utils/cleanupScheduler");
+    startCleanupScheduler();
+  } catch (error) {
+    console.error("Failed to start cleanup scheduler:", error);
+  }
+})
 .catch(err => console.log('MongoDB Connection Error:', err));
 
 // Basic route
