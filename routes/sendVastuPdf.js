@@ -97,6 +97,21 @@ router.post('/generate-report/:sessionId', async (req, res) => {
 
     if(result.renderStatus == 'SUCCESS')
     {
+        // Delete the old PDF from Google Drive if it exists
+        if (user.pdf_report && user.pdf_report.file_id && !user.pdf_report.is_deleted) {
+            try {
+                const oldFileId = user.pdf_report.file_id;
+                console.log(`[RE-GENERATE] Deleting old PDF ${oldFileId} from Google Drive...`);
+                const drive = require("../config/googleDrive");
+                await drive.files.delete({ fileId: oldFileId });
+                console.log(`[RE-GENERATE] Successfully deleted old PDF: ${oldFileId}`);
+            } catch (deleteError) {
+                if (deleteError.code !== 404 && !deleteError.message?.includes("File not found")) {
+                    console.error("[RE-GENERATE] Failed to delete old PDF:", deleteError.message || deleteError);
+                }
+            }
+        }
+
          const driveResult = await uploadPdfToDrive(
       result.documentUrl,
       sessionId
