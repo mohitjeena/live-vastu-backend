@@ -12,8 +12,15 @@ for (const variable of requiredEnvVariables) {
   }
 }
 
-// Format the private key to handle both literal newlines and raw \\n strings
-const privateKey = process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n');
+// Format the private key to handle both literal newlines, raw \\n strings, and surrounding quotes
+let privateKey = process.env.GOOGLE_PRIVATE_KEY.trim();
+if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
+  privateKey = privateKey.slice(1, -1);
+}
+if (privateKey.startsWith("'") && privateKey.endsWith("'")) {
+  privateKey = privateKey.slice(1, -1);
+}
+privateKey = privateKey.replace(/\\n/g, '\n');
 
 const jwtClient = new google.auth.JWT(
   process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
