@@ -1,10 +1,9 @@
 const { google } = require("googleapis");
 
 const requiredEnvVariables = [
-  "GOOGLE_CLIENT_ID",
-  "GOOGLE_CLIENT_SECRET",
-  "GOOGLE_REDIRECT_URI",
-  "GOOGLE_REFRESH_TOKEN",
+  "GOOGLE_SERVICE_ACCOUNT_EMAIL",
+  "GOOGLE_PRIVATE_KEY",
+  "GOOGLE_DRIVE_FOLDER_ID",
 ];
 
 for (const variable of requiredEnvVariables) {
@@ -13,19 +12,19 @@ for (const variable of requiredEnvVariables) {
   }
 }
 
-const oauth2Client = new google.auth.OAuth2(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-  process.env.GOOGLE_REDIRECT_URI
-);
+// Format the private key to handle both literal newlines and raw \\n strings
+const privateKey = process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n');
 
-oauth2Client.setCredentials({
-  refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
-});
+const jwtClient = new google.auth.JWT(
+  process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+  null,
+  privateKey,
+  ["https://www.googleapis.com/auth/drive"]
+);
 
 const drive = google.drive({
   version: "v3",
-  auth: oauth2Client,
+  auth: jwtClient,
 });
 
 module.exports = drive;
