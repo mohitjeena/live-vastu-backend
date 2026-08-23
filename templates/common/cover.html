@@ -1198,128 +1198,194 @@ font-size:13px;
 color:#444;
 }
 
-/* ai-report-style */
-.ai-report{
-       height: auto !important;
-    overflow: visible !important;
-    width: 100%;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 20px 40px 40px;
-    box-sizing: border-box;
-    page-break-after: always;
+/* AI Report Continuous Flow Styles */
+.ai-report-wrapper {
     position: relative;
+    background-color: #f7f3ef;
+    width: 100%;
 }
-.ai-report h1 ,.ai-report h2,.ai-report h3{
+
+.ai-print-border {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 6px solid #D60000;
+    pointer-events: none;
+    box-sizing: border-box;
+    z-index: 9999;
+}
+
+.ai-print-header {
+    position: fixed;
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    height: 55px;
+    background-color: #f7f3ef;
+    border-bottom: 1px solid #cfcfcf;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 35px;
+    box-sizing: border-box;
+    z-index: 9998;
+}
+
+.ai-print-header img {
+    width: 120px;
+    display: block;
+}
+
+.ai-print-header span {
     color: #D60000;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.ai-print-footer {
+    position: fixed;
+    bottom: 6px;
+    left: 6px;
+    right: 6px;
+    height: 45px;
+    background-color: #f7f3ef;
+    border-top: 1px solid #cfcfcf;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 35px;
+    font-size: 11px;
+    color: #9b9b9b;
+    font-family: 'Josefin Sans', sans-serif;
+    box-sizing: border-box;
+    z-index: 9998;
+}
+
+.ai-print-footer a {
+    color: #D60000;
+    text-decoration: none;
     font-weight: bold;
 }
 
-.ai-report h1 { font-size: 28px; margin-bottom: 6px; }
- .ai-report h2 { font-size: 22px; margin-top: 28px; }
- .ai-report h3 { font-size: 18px; margin-top: 22px; }
- .ai-report p 
- { margin: 12px 0; text-align: justify; text-justify: inter-word;
-font-size:16px;
-    line-height:1.7;
-    color:#333;
-    font-weight: 500;
-}
-
-.ai-report ul{
-    list-style:none;
-    padding:0;
-    margin:0;
-    text-align: left;
-    padding-left: 20px;
-}
-
-
-.ai-report ol{
-    padding:0;
-    margin:0;
-    text-align: left;
-    padding-left: 20px;
-}
-
-.ai-report ul li,.ai-report ol li{
-margin:15px 0;
-font-size:16px;
-color:#333;
-position:relative;
-padding-left:22px;
-font-weight: 600;
-line-height: 1.6rem;
-}
-
-/* check icon */
-
-.ai-report ul li:before{
-content:"✓";
-position:absolute;
-left:0;
-color:#AC7F5E;
-font-weight:bold;
-}
-
-/* ai-report-page styles */
-.ai-report-page{
-    border: 6px solid #D60000 !important;
-    background-color: #f7f3ef !important;
-    min-height: 1123px;
-    height: auto !important;
-    overflow: visible !important;
-    width: 100%;
-    box-sizing: border-box;
-    position: relative;
-    padding: 30px 40px 90px 40px !important;
-}
-.ai-report-page h1, .ai-report-page h2, .ai-report-page h3{
-    color: #D60000 !important;
-    font-weight: bold !important;
-    font-family: "Josefin Sans", sans-serif;
-}
-.ai-report-page h1 { font-size: 24px; margin-top: 0; margin-bottom: 10px; border-bottom: 2px solid #D60000; padding-bottom: 6px; }
-.ai-report-page h2 { font-size: 20px; margin-top: 10px; margin-bottom: 10px; border-bottom: 1px solid #D60000; padding-bottom: 4px; }
-.ai-report-page h3 { font-size: 17px; margin-top: 15px; margin-bottom: 8px; }
-.ai-report-page p { 
-    margin: 10px 0; 
-    text-align: justify; 
-    text-justify: inter-word;
-    font-size: 15px;
+.ai-report-flow {
+    padding: 75px 45px 65px 45px;
+    background-color: #f7f3ef;
+    font-family: 'Josefin Sans', sans-serif;
+    color: #333333;
     line-height: 1.6;
-    color: #333;
-    font-weight: 500;
-}
-.ai-report-page ul{
-    list-style: none;
-    padding: 0;
-    margin: 10px 0;
-    text-align: left;
-    padding-left: 20px;
-}
-.ai-report-page ol{
-    padding: 0;
-    margin: 10px 0;
-    text-align: left;
-    padding-left: 20px;
-}
-.ai-report-page ul li, .ai-report-page ol li{
-    margin: 10px 0;
     font-size: 15px;
-    color: #333;
-    position: relative;
-    padding-left: 22px;
-    font-weight: 600;
-    line-height: 1.5rem;
+    box-sizing: border-box;
+}
+
+.ai-report-flow h1,
+.ai-report-flow h2,
+.ai-report-flow h3 {
+    color: #D60000;
+    font-weight: bold;
+    font-family: 'Josefin Sans', sans-serif;
+    page-break-after: avoid;
+    break-after: avoid;
+}
+
+.ai-report-flow h1 {
+    font-size: 24px;
+    margin-top: 0;
+    margin-bottom: 12px;
+    border-bottom: 2px solid #D60000;
+    padding-bottom: 6px;
+}
+
+.ai-report-flow h2 {
+    font-size: 19px;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #D60000;
+    padding-bottom: 4px;
     page-break-inside: avoid;
     break-inside: avoid;
 }
-.ai-report-page ul li:before{
+
+.ai-report-flow h3 {
+    font-size: 16px;
+    margin-top: 18px;
+    margin-bottom: 8px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+.ai-report-flow p {
+    margin: 10px 0;
+    text-align: justify;
+    text-justify: inter-word;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #333333;
+    font-weight: 500;
+}
+
+.ai-report-flow ul,
+.ai-report-flow ol {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.ai-report-flow ul li,
+.ai-report-flow ol li {
+    margin: 8px 0;
+    font-size: 15px;
+    color: #333333;
+    position: relative;
+    font-weight: 600;
+    line-height: 1.5;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+.ai-report-flow ul li:before {
     content: "✓";
     position: absolute;
-    left: 0;
+    left: -18px;
     color: #AC7F5E;
+    font-weight: bold;
+}
+
+.ai-report-flow hr {
+    border: 0;
+    height: 1px;
+    background: #cfcfcf;
+    margin: 20px 0;
+}
+
+.ai-report-flow table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    background-color: #ffffff;
+}
+
+.ai-report-flow tr {
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+.ai-report-flow th,
+.ai-report-flow td {
+    border: 1px solid #cccccc;
+    padding: 8px 10px;
+    text-align: left;
+    font-size: 14px;
+}
+
+.ai-report-flow th {
+    background-color: #010101;
+    color: #C88200;
     font-weight: bold;
 }
 
