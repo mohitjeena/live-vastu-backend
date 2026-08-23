@@ -9,14 +9,23 @@
 <style>
 
   *{
-    box-sizing: border-box;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+-webkit-print-color-adjust: exact;
+print-color-adjust: exact;
 }
 
 @page {
     size: A4;
     margin: 0;
+}
+
+.ai-report::before {
+ content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 2px;
+    border: 6px solid #D60000;
 }
 
 body {
@@ -1189,121 +1198,92 @@ font-size:13px;
 color:#444;
 }
 
-/* AI Report Dedicated Page Styles (Scoped only to AI pages) */
-.ai-vastu-page {
-    width: 100%;
-    min-height: 1123px;
-    height: auto !important;
-    overflow: visible !important;
-    box-sizing: border-box;
-    position: relative;
-    page-break-after: always;
-    border: 6px solid #D60000;
+/* AI Report Styles */
+.ai-report-container {
     background-color: #f7f3ef;
-    padding: 30px 40px 30px 40px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    border: 6px solid #D60000;
+    padding: 30px 40px;
+    box-sizing: border-box;
+    min-height: 100vh;
+    position: relative;
     font-family: 'Josefin Sans', sans-serif;
     color: #333333;
-    line-height: 1.5;
-    font-size: 13.5px;
 }
 
-.ai-page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid #D60000;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-}
-
-.ai-page-header img {
-    width: 120px;
-    display: block;
-}
-
-.ai-page-header h3 {
-    color: #D60000;
+.ai-report-flow-body {
     font-family: 'Josefin Sans', sans-serif;
-    font-size: 17px;
-    font-weight: 700;
-    margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    text-align: right;
-    max-width: 65%;
-}
-
-.ai-page-body {
-    padding: 0;
-    flex: 1;
-}
-
-.ai-page-body h1 {
-    font-size: 22px;
-    color: #D60000;
-    font-weight: bold;
-    margin-top: 0;
-    margin-bottom: 10px;
-    border-bottom: 2px solid #D60000;
-    padding-bottom: 4px;
-}
-
-.ai-page-body h2 {
-    font-size: 17px;
-    color: #D60000;
-    font-weight: bold;
-    margin-top: 15px;
-    margin-bottom: 8px;
-    border-bottom: 1px solid #D60000;
-    padding-bottom: 3px;
-    page-break-inside: avoid;
-    break-inside: avoid;
-}
-
-.ai-page-body h3 {
+    color: #333333;
+    line-height: 1.6;
     font-size: 15px;
+}
+
+.ai-report-flow-body h1,
+.ai-report-flow-body h2,
+.ai-report-flow-body h3 {
     color: #D60000;
     font-weight: bold;
-    margin-top: 12px;
-    margin-bottom: 6px;
+    font-family: 'Josefin Sans', sans-serif;
+    page-break-after: avoid;
+    break-after: avoid;
+}
+
+.ai-report-flow-body h1 {
+    font-size: 24px;
+    margin-top: 15px;
+    margin-bottom: 12px;
+    border-bottom: 2px solid #D60000;
+    padding-bottom: 6px;
+}
+
+.ai-report-flow-body h2 {
+    font-size: 19px;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #D60000;
+    padding-bottom: 4px;
     page-break-inside: avoid;
     break-inside: avoid;
 }
 
-.ai-page-body p {
-    margin: 6px 0;
+.ai-report-flow-body h3 {
+    font-size: 16px;
+    margin-top: 18px;
+    margin-bottom: 8px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+.ai-report-flow-body p {
+    margin: 10px 0;
     text-align: justify;
     text-justify: inter-word;
-    font-size: 13.5px;
-    line-height: 1.5;
+    font-size: 15px;
+    line-height: 1.6;
     color: #333333;
     font-weight: 500;
 }
 
-.ai-page-body ul,
-.ai-page-body ol {
+.ai-report-flow-body ul,
+.ai-report-flow-body ol {
     list-style: none;
     padding: 0;
-    margin: 6px 0;
+    margin: 10px 0;
     padding-left: 20px;
 }
 
-.ai-page-body ul li,
-.ai-page-body ol li {
-    margin: 5px 0;
-    font-size: 13.5px;
+.ai-report-flow-body ul li,
+.ai-report-flow-body ol li {
+    margin: 8px 0;
+    font-size: 15px;
     color: #333333;
     position: relative;
     font-weight: 600;
-    line-height: 1.45;
+    line-height: 1.5;
     page-break-inside: avoid;
     break-inside: avoid;
 }
 
-.ai-page-body ul li:before {
+.ai-report-flow-body ul li:before {
     content: "✓";
     position: absolute;
     left: -18px;
@@ -1311,57 +1291,36 @@ color:#444;
     font-weight: bold;
 }
 
-.ai-page-body hr {
+.ai-report-flow-body hr {
     border: 0;
     height: 1px;
     background: #cfcfcf;
-    margin: 15px 0;
+    margin: 20px 0;
 }
 
-.ai-page-body table {
+.ai-report-flow-body table {
     width: 100%;
     border-collapse: collapse;
-    margin: 12px 0;
+    margin: 15px 0;
     background-color: #ffffff;
 }
 
-.ai-page-body tr {
+.ai-report-flow-body tr {
     page-break-inside: avoid;
     break-inside: avoid;
 }
 
-.ai-page-body th,
-.ai-page-body td {
+.ai-report-flow-body th,
+.ai-report-flow-body td {
     border: 1px solid #cccccc;
-    padding: 6px 8px;
+    padding: 8px 10px;
     text-align: left;
-    font-size: 13px;
+    font-size: 14px;
 }
 
-.ai-page-body th {
+.ai-report-flow-body th {
     background-color: #010101;
     color: #C88200;
-    font-weight: bold;
-}
-
-.ai-page-footer {
-    margin-top: 30px;
-    padding-top: 12px;
-    border-top: 1px solid #cfcfcf;
-    box-sizing: border-box;
-}
-
-.ai-page-footer .footer-contacts {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: #9b9b9b;
-    font-family: 'Josefin Sans', sans-serif;
-}
-
-.ai-page-footer .footer-contacts a {
-    color: #D60000;
-    text-decoration: none;
     font-weight: bold;
 }
 

@@ -119,74 +119,44 @@ function formatAiReportToPages(aiHtml) {
   let clean = cleanHtml(aiHtml);
   clean = extractBodyContent(clean);
 
-  // Strip any old outer wrappers
+  // If there's an outer <div class="ai-report-content"...>, strip the outer div wrapper
   clean = clean.replace(/<div[^>]*class=["']ai-report-content["'][^>]*>/gi, "");
-  clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-wrapper[^"']*["'][^>]*>/gi, "");
-  clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-flow[^"']*["'][^>]*>/gi, "");
-  clean = clean.replace(/<div[^>]*class=["'][^"']*vastu-page[^"']*["'][^>]*>/gi, "");
-  clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-page[^"']*["'][^>]*>/gi, "");
   clean = clean.replace(/<\/div>\s*$/gi, "");
 
-  // Split content into section blocks by <h2> tags (representing the 15 major sections)
-  let rawSections = clean
-    .split(/(?=<h2[^>]*>)/i)
-    .map(s => s.trim())
-    .filter(s => s.length > 0);
+  // If there are legacy .vastu-page or .ai-report-page wrappers inside (from old stored reports), clean them
+  clean = clean.replace(/<div[^>]*class=["'][^"']*vastu-page[^"']*["'][^>]*>/gi, "");
+  clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-page[^"']*["'][^>]*>/gi, "");
 
-  if (rawSections.length === 0) {
-    rawSections = [clean];
-  }
-
-  // If the first section does NOT have an <h2> (e.g. it is the <h1> Title & subtitle block),
-  // merge it with the first <h2> section (Executive Summary) so it fills page 1 without creating blank pages
-  if (rawSections.length > 1 && !rawSections[0].match(/<h2[^>]*>/i)) {
-    rawSections[1] = rawSections[0] + "<br>" + rawSections[1];
-    rawSections.shift();
-  }
-
-  let pagesHtml = "";
-
-  for (let i = 0; i < rawSections.length; i++) {
-    const sectionHtml = rawSections[i];
-    if (!sectionHtml || sectionHtml.trim().length === 0) continue;
-
-    // Extract title from the <h2> tag for the top header
-    let sectionTitle = "Vastu Shastra Report";
-    const headingMatch = sectionHtml.match(/<h2[^>]*>(.*?)<\/h2>/i);
-    if (headingMatch) {
-      sectionTitle = headingMatch[1].replace(/<\/?[^>]+(>|$)/g, "").trim();
-      if (sectionTitle.length > 42) {
-        sectionTitle = sectionTitle.substring(0, 39) + "...";
-      }
-    }
-
-    pagesHtml += `
-      <div style="page-break-after: always;"></div>
-      <div class="ai-vastu-page">
-        <!-- Header -->
-        <div class="ai-page-header">
-          <img src="https://cdn.shopify.com/s/files/1/0758/2911/7240/files/vastu-site-logo.png" alt="Live Vaastu">
-          <h3>${sectionTitle}</h3>
+  return `
+    <div style="page-break-before: always;"></div>
+    <div class="ai-report-container">
+      
+      <!-- AI Report Top Header -->
+      <div class="effect-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #D60000; padding-bottom: 12px; margin-bottom: 25px;">
+        <div>
+          <img src="https://cdn.shopify.com/s/files/1/0758/2911/7240/files/vastu-site-logo.png" style="width: 130px; display: block;" alt="Live Vaastu">
         </div>
+        <h3 style="color: #D60000; font-family: 'Josefin Sans', sans-serif; font-size: 18px; font-weight: 700; margin: 0; text-transform: uppercase; letter-spacing: 1px;">
+          Vastu Shastra Diagnostic Report
+        </h3>
+      </div>
 
-        <!-- Content -->
-        <div class="ai-page-body">
-          ${sectionHtml}
-        </div>
+      <!-- Flowing Content -->
+      <div class="ai-report-flow-body">
+        ${clean}
+      </div>
 
-        <!-- Footer -->
-        <div class="ai-page-footer">
-          <div class="footer-contacts">
-            <span>WEB: <br><a href="https://livevaastu.in/" target="_blank">livevaastu.in</a></span>
-            <span>EMAIL: <br><a href="mailto:contact@livevaastu.com">contact@livevaastu.com</a></span>
-            <span>MOBILE: <br><a href="tel:9555666667">95556 66667</a></span>
-          </div>
+      <!-- AI Report Bottom Footer -->
+      <div class="footer-container-inline" style="margin-top: 40px; padding-top: 15px; border-top: 1px solid #cfcfcf;">
+        <div class="footer" style="display: flex; justify-content: space-between; font-size: 11px; color: #9b9b9b; font-family: 'Josefin Sans', sans-serif;">
+          <span>WEB: <br><b><a href="https://livevaastu.in/" target="_blank" style="color: #D60000; text-decoration: none;">livevaastu.in</a></b></span>
+          <span>EMAIL: <br><b><a href="mailto:contact@livevaastu.com" style="color: #D60000; text-decoration: none;">contact@livevaastu.com</a></b></span>
+          <span>MOBILE: <br><b><a href="tel:9555666667" style="color: #D60000; text-decoration: none;">95556 66667</a></b></span>
         </div>
       </div>
-    `;
-  }
 
-  return pagesHtml;
+    </div>
+  `;
 }
 
 
