@@ -90,7 +90,7 @@ function getFastCloudinaryUrl(url) {
             - Mention planetary tendencies only as supporting language (Sun/Moon/Mars/Venus/Saturn) and only 1–2 times total.
             - Keep it subtle: “Mars-type agitation”, “Moon-type restlessness”, “Saturn-type delay”.
 
-            ${plan_type === 'basic' ? 'Provide concise analysis in 4-5 pages.' : 'Provide detailed, comprehensive analysis in 15-20 pages.'}`,
+            ${plan_type === 'basic' || plan_type === 'bronze' ? 'Provide concise analysis in 4-5 pages.' : 'Provide detailed, comprehensive analysis in 15-20 pages.'}`,
         },
         {
           role: "user",
@@ -103,7 +103,7 @@ function getFastCloudinaryUrl(url) {
     let report = null;
     let raw_text = response.output_text;
     try {
-      if (plan_type === 'basic') {
+      if (plan_type === 'basic' || plan_type === 'bronze') {
         report = await JSON.parse(raw_text);
       } else {
         // Parse markdown to HTML
@@ -347,7 +347,7 @@ const finalContext = Object.entries(topicContexts)
 
 console.log(uniqueTopics);
 
-  if(plan_type === "basic"){
+  if (plan_type === "basic" || plan_type === "bronze") {
 
     let prompt = `
  Analyze this home for Vastu Shastra compliance and return JSON with exactly this structure:
