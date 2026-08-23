@@ -172,12 +172,8 @@ function generateFinalHtml(userAnswers, detailsData, aiHtml, planType = 'basic')
     </div>
   `;
   } else {
-    // For non-basic (premium) plans, use flowable .ai-report page and apply the requested background color
-    html += `
-    <div class="ai-report" style="background-color: #f7f3ef; min-height: 100vh;">
-      ${aiBody}
-    </div>
-  `;
+    // For paid plans, aiBody already contains fully formatted .vastu-page sections with headers, borders, and footers
+    html += aiBody;
   }
 
   html += "</body></html>";

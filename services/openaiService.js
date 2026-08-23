@@ -109,90 +109,146 @@ function getFastCloudinaryUrl(url) {
         // Parse markdown to HTML
         const htmlContent = marked.parse(raw_text);
         
+        // Split markdown content into logical section pages by h1, h2, or h3
+        const rawSections = htmlContent
+          .split(/(?=<h[1-3][^>]*>)/i)
+          .filter(s => s && s.trim().length > 0);
+
+        const sectionsToRender = rawSections.length > 0 ? rawSections : [htmlContent];
+
+        let pagesHtml = "";
+
+        for (const section of sectionsToRender) {
+          // Extract heading text for the top header
+          let sectionTitle = "Vastu Shastra Report";
+          const headingMatch = section.match(/<h[1-3][^>]*>(.*?)<\/h[1-3]>/i);
+          if (headingMatch) {
+            sectionTitle = headingMatch[1].replace(/<\/?[^>]+(>|$)/g, "").trim();
+            if (sectionTitle.length > 38) {
+              sectionTitle = sectionTitle.substring(0, 35) + "...";
+            }
+          }
+
+          pagesHtml += `
+            <div class="vastu-page ai-report-page" style="border: 6px solid #D60000; background-color: #f7f3ef; min-height: 1123px; height: auto !important; overflow: visible !important; width: 100%; box-sizing: border-box; position: relative; page-break-after: always; padding: 30px 40px 80px 40px;">
+              <!-- Header -->
+              <div class="effect-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #cfcfcf; padding-bottom: 10px; margin-bottom: 25px;">
+                <div>
+                  <img src="https://cdn.shopify.com/s/files/1/0758/2911/7240/files/vastu-site-logo.png" style="width: 120px; display: block;" alt="Live Vaastu">
+                </div>
+                <h3 style="color: #D60000; font-family: 'Josefin Sans', sans-serif; font-size: 20px; font-weight: 700; margin: 0; text-transform: uppercase; letter-spacing: 1px;">
+                  ${sectionTitle}
+                </h3>
+              </div>
+
+              <!-- Content -->
+              <div class="usage-content" style="padding: 0;">
+                ${section}
+              </div>
+
+              <!-- Footer -->
+              <div class="footer-container" style="position: absolute; bottom: 20px; left: 40px; right: 40px; box-sizing: border-box;">
+                <div class="line" style="height: 1px; background: #cfcfcf; margin-bottom: 12px;"></div>
+                <div class="footer" style="display: flex; justify-content: space-between; font-size: 11px; color: #9b9b9b; font-family: 'Josefin Sans', sans-serif;">
+                  <span>WEB: <br><b><a href="https://livevaastu.in/" target="_blank" style="color: #D60000; text-decoration: none;">livevaastu.in</a></b></span>
+                  <span>EMAIL: <br><b><a href="mailto:contact@livevaastu.com" style="color: #D60000; text-decoration: none;">contact@livevaastu.com</a></b></span>
+                  <span>MOBILE: <br><b><a href="tel:9555666667" style="color: #D60000; text-decoration: none;">95556 66667</a></b></span>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
         // Define stylesheet for premium reports to be inlined by Juice
         const cssRules = `
-          .ai-report-content {
+          .ai-report-page {
             font-family: 'Josefin Sans', sans-serif;
             color: #333333;
-            line-height: 1.7;
-            font-size: 16px;
-            background-color: #f7f3ef;
+            line-height: 1.6;
+            font-size: 15px;
           }
-          .ai-report-content h1, 
-          .ai-report-content h2, 
-          .ai-report-content h3 {
+          .ai-report-page h1, 
+          .ai-report-page h2, 
+          .ai-report-page h3 {
             color: #D60000;
             font-weight: bold;
-            page-break-after: avoid;
-            break-after: avoid;
+            font-family: 'Josefin Sans', sans-serif;
           }
-          .ai-report-content h1 {
-            font-size: 28px;
+          .ai-report-page h1 {
+            font-size: 22px;
             margin-top: 0;
             margin-bottom: 12px;
             border-bottom: 2px solid #D60000;
-            padding-bottom: 8px;
+            padding-bottom: 6px;
           }
-          .ai-report-content h2 {
-            font-size: 22px;
-            margin-top: 28px;
-            margin-bottom: 12px;
+          .ai-report-page h2 {
+            font-size: 19px;
+            margin-top: 5px;
+            margin-bottom: 10px;
             border-bottom: 1px solid #D60000;
             padding-bottom: 4px;
           }
-          .ai-report-content h3 {
-            font-size: 18px;
-            margin-top: 22px;
-            margin-bottom: 10px;
+          .ai-report-page h3 {
+            font-size: 16px;
+            margin-top: 10px;
+            margin-bottom: 6px;
           }
-          .ai-report-content p {
-            margin: 12px 0;
+          .ai-report-page p {
+            margin: 10px 0;
             text-align: justify;
             text-justify: inter-word;
-            font-size: 16px;
-            line-height: 1.7;
+            font-size: 15px;
+            line-height: 1.6;
             color: #333333;
             font-weight: 500;
           }
-          .ai-report-content ul {
+          .ai-report-page ul {
             list-style: none;
             padding: 0;
-            margin: 12px 0;
-            padding-left: 20px;
-          }
-          .ai-report-content ol {
-            padding: 0;
-            margin: 12px 0;
-            padding-left: 20px;
-          }
-          .ai-report-content ul li, 
-          .ai-report-content ol li {
             margin: 10px 0;
-            font-size: 16px;
+            padding-left: 20px;
+          }
+          .ai-report-page ol {
+            padding: 0;
+            margin: 10px 0;
+            padding-left: 20px;
+          }
+          .ai-report-page ul li, 
+          .ai-report-page ol li {
+            margin: 8px 0;
+            font-size: 15px;
             color: #333333;
             position: relative;
             font-weight: 600;
-            line-height: 1.6;
+            line-height: 1.5;
             page-break-inside: avoid;
             break-inside: avoid;
           }
-          .ai-report-content table {
+          .ai-report-page ul li:before {
+            content: "✓";
+            position: absolute;
+            left: -18px;
+            color: #AC7F5E;
+            font-weight: bold;
+          }
+          .ai-report-page table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            margin: 15px 0;
             background-color: #ffffff;
           }
-          .ai-report-content tr {
+          .ai-report-page tr {
             page-break-inside: avoid;
             break-inside: avoid;
           }
-          .ai-report-content th, 
-          .ai-report-content td {
+          .ai-report-page th, 
+          .ai-report-page td {
             border: 1px solid #cccccc;
-            padding: 10px;
+            padding: 8px 10px;
             text-align: left;
+            font-size: 14px;
           }
-          .ai-report-content th {
+          .ai-report-page th {
             background-color: #010101;
             color: #C88200;
             font-weight: bold;
@@ -202,8 +258,8 @@ function getFastCloudinaryUrl(url) {
         // Wrap the HTML with the style block and container
         const wrappedHtml = `
           <style>${cssRules}</style>
-          <div class="ai-report-content">
-            ${htmlContent}
+          <div>
+            ${pagesHtml}
           </div>
         `;
 
