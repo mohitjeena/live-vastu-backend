@@ -4,3 +4,4 @@ node_modules/
 *.log
 config/service-account.json
 generateGoogleToken.js
+ai-report.html

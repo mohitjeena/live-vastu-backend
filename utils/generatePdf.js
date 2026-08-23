@@ -114,64 +114,78 @@ function cleanHtml(html) {
 
 function formatAiReportToPages(aiHtml) {
   if (!aiHtml) return "";
-  
-  // If aiHtml already contains formatted .ai-report-page sections, clean and return body content
-  if (aiHtml.includes("ai-report-page")) {
-    const aiClean = cleanHtml(aiHtml);
-    return extractBodyContent(aiClean);
+
+  // Strip wrapping outer containers and headers
+  let clean = cleanHtml(aiHtml);
+  clean = extractBodyContent(clean);
+
+  // If there's an outer <div class="ai-report-content"...>, strip the outer div wrapper
+  clean = clean.replace(/<div[^>]*class=["']ai-report-content["'][^>]*>/gi, "");
+  clean = clean.replace(/<\/div>\s*$/gi, "");
+
+  // Split content into section blocks by <h2> tags (representing the 15 major sections)
+  let rawSections = clean
+    .split(/(?=<h2[^>]*>)/i)
+    .map(s => s.trim())
+    .filter(s => s.length > 0);
+
+  if (rawSections.length === 0) {
+    rawSections = [clean];
   }
 
-  // Clean raw html tags from aiHtml
-  const aiClean = cleanHtml(aiHtml);
-  const rawContent = extractBodyContent(aiClean);
-
-  // Split content into section blocks by h1, h2, or h3 tags
-  const rawSections = rawContent
-    .split(/(?=<h[1-3][^>]*>)/i)
-    .filter(s => s && s.trim().length > 0);
-
-  const sectionsToRender = rawSections.length > 0 ? rawSections : [rawContent];
+  // If the first section does NOT have an <h2> (e.g. it is the <h1> Title & subtitle block),
+  // merge it with the first <h2> section (Executive Summary) so it fills page 1 without creating blank pages
+  if (rawSections.length > 1 && !rawSections[0].match(/<h2[^>]*>/i)) {
+    rawSections[1] = rawSections[0] + "<br>" + rawSections[1];
+    rawSections.shift();
+  }
 
   let pagesHtml = "";
 
-  for (const section of sectionsToRender) {
-    // Extract heading text for the top header
+  for (let i = 0; i < rawSections.length; i++) {
+    const sectionHtml = rawSections[i];
+    if (!sectionHtml || sectionHtml.trim().length === 0) continue;
+
+    // Extract title from the <h2> tag for the top header
     let sectionTitle = "Vastu Shastra Report";
-    const headingMatch = section.match(/<h[1-3][^>]*>(.*?)<\/h[1-3]>/i);
+    const headingMatch = sectionHtml.match(/<h2[^>]*>(.*?)<\/h2>/i);
     if (headingMatch) {
       sectionTitle = headingMatch[1].replace(/<\/?[^>]+(>|$)/g, "").trim();
-      if (sectionTitle.length > 38) {
-        sectionTitle = sectionTitle.substring(0, 35) + "...";
+      if (sectionTitle.length > 42) {
+        sectionTitle = sectionTitle.substring(0, 39) + "...";
       }
     }
 
     pagesHtml += `
       <div style="page-break-after: always;"></div>
-      <div class="vastu-page ai-report-page" style="border: 6px solid #D60000; background-color: #f7f3ef; min-height: 1123px; height: auto !important; overflow: visible !important; width: 100%; box-sizing: border-box; position: relative; padding: 30px 40px 90px 40px;">
-        <!-- Header -->
-        <div class="effect-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #cfcfcf; padding-bottom: 10px; margin-bottom: 25px;">
-          <div>
-            <img src="https://cdn.shopify.com/s/files/1/0758/2911/7240/files/vastu-site-logo.png" style="width: 120px; display: block;" alt="Live Vaastu">
+      <div class="vastu-page ai-report-page" style="border: 6px solid #D60000; background-color: #f7f3ef; min-height: 1100px; height: auto !important; overflow: visible !important; width: 100%; box-sizing: border-box; padding: 30px 40px 30px 40px; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+        
+        <div>
+          <!-- Header -->
+          <div class="effect-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #D60000; padding-bottom: 12px; margin-bottom: 25px;">
+            <div>
+              <img src="https://cdn.shopify.com/s/files/1/0758/2911/7240/files/vastu-site-logo.png" style="width: 130px; display: block;" alt="Live Vaastu">
+            </div>
+            <h3 style="color: #D60000; font-family: 'Josefin Sans', sans-serif; font-size: 18px; font-weight: 700; margin: 0; text-transform: uppercase; letter-spacing: 1px; text-align: right; max-width: 65%;">
+              ${sectionTitle}
+            </h3>
           </div>
-          <h3 style="color: #D60000; font-family: 'Josefin Sans', sans-serif; font-size: 20px; font-weight: 700; margin: 0; text-transform: uppercase; letter-spacing: 1px;">
-            ${sectionTitle}
-          </h3>
-        </div>
 
-        <!-- Content -->
-        <div class="usage-content" style="padding: 0;">
-          ${section}
+          <!-- Section Content -->
+          <div class="usage-content" style="padding: 0;">
+            ${sectionHtml}
+          </div>
         </div>
 
         <!-- Footer -->
-        <div class="footer-container" style="position: absolute; bottom: 20px; left: 40px; right: 40px; box-sizing: border-box;">
-          <div class="line" style="height: 1px; background: #cfcfcf; margin-bottom: 12px;"></div>
+        <div class="footer-container-inline" style="margin-top: 35px; padding-top: 15px; border-top: 1px solid #cfcfcf;">
           <div class="footer" style="display: flex; justify-content: space-between; font-size: 11px; color: #9b9b9b; font-family: 'Josefin Sans', sans-serif;">
             <span>WEB: <br><b><a href="https://livevaastu.in/" target="_blank" style="color: #D60000; text-decoration: none;">livevaastu.in</a></b></span>
             <span>EMAIL: <br><b><a href="mailto:contact@livevaastu.com" style="color: #D60000; text-decoration: none;">contact@livevaastu.com</a></b></span>
             <span>MOBILE: <br><b><a href="tel:9555666667" style="color: #D60000; text-decoration: none;">95556 66667</a></b></span>
           </div>
         </div>
+
       </div>
     `;
   }
