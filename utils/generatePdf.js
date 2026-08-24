@@ -127,15 +127,15 @@ function estimateHeight(block) {
   if (/<hr[^>]*\/?>/i.test(block)) return 15;
   if (/<li[^>]*>/i.test(block)) {
     const words = countWords(block);
-    const lines = Math.ceil(words / 14) || 1;
-    return (lines * 22) + 7;
+    const lines = Math.ceil(words / 13) || 1;
+    return (lines * 22) + 9;
   }
   const words = countWords(block);
-  const lines = Math.ceil(words / 16) || 1;
-  return (lines * 22) + 8;
+  const lines = Math.ceil(words / 15) || 1;
+  return (lines * 22) + 10;
 }
 
-function paginateAiReportToPages(aiHtml, maxPageHeight = 870) {
+function paginateAiReportToPages(aiHtml, maxPageHeight = 840) {
   if (!aiHtml) return "";
 
   // Strip wrapping outer containers and headers
@@ -195,11 +195,11 @@ function paginateAiReportToPages(aiHtml, maxPageHeight = 870) {
       continue;
     }
 
-    // If it's a heading (h1, h2, h3) and the page is already 85% full, push heading to next page (prevents orphan headings)
+    // If it's a heading (h1, h2, h3) and the page is already 80% full, push heading to next page (prevents orphan headings)
     const isHeading = /<h[1-3][^>]*>/i.test(block);
     const bHeight = estimateHeight(block);
 
-    if (isHeading && currentHeight > 750) {
+    if (isHeading && currentHeight > 700) {
       pages.push(currentBlocks.join("\n"));
       currentBlocks = [block];
       currentHeight = bHeight;
@@ -247,8 +247,8 @@ function paginateAiReportToPages(aiHtml, maxPageHeight = 870) {
           </h3>
         </div>
 
-        <!-- Content Area (Height set to 890px with safety margin above footer) -->
-        <div class="usage-content" style="padding: 0; height: 890px; overflow: hidden;">
+        <!-- Content Area (Height expanded to 940px so content never gets clipped) -->
+        <div class="usage-content" style="padding: 0; height: 940px; overflow: hidden;">
           ${pageContent}
         </div>
 
