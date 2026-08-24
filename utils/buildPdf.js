@@ -26,7 +26,6 @@ async function generatePdfFromUrl(pdfPageUrl) {
         },
         timeout: 90000
       }
-      }
     );
 
     return response.data;
