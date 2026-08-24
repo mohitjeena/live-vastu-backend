@@ -131,10 +131,10 @@ function paginateAiReportToPages(aiHtml) {
     
     <div class="ai-report-wrapper" style="width: 100%; box-sizing: border-box; background-color: #f7f3ef; position: relative;">
       
-      <table class="ai-report-table" style="width: 100%; border-collapse: collapse; border-spacing: 0; box-sizing: border-box; border: 6px solid #D60000; -webkit-box-decoration-break: clone; box-decoration-break: clone; background-color: #f7f3ef; height: 100vh">
+      <table class="ai-report-table" style="width: 100%; border-collapse: collapse; border-spacing: 0; box-sizing: border-box; border: 6px solid #D60000; -webkit-box-decoration-break: clone; box-decoration-break: clone; background-color: #f7f3ef;>
         
         <!-- Repeating Header on Every Printed Page -->
-        <thead>
+        <thead style="display: table-header-group;">
           <tr>
             <td class="ai-report-header-cell" style="padding: 25px 40px 10px 40px; background-color: #f7f3ef;">
               <div class="effect-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #D60000; padding-bottom: 8px;">
@@ -150,7 +150,7 @@ function paginateAiReportToPages(aiHtml) {
         </thead>
 
         <!-- Repeating Footer on Every Printed Page with reserved bottom padding -->
-        <tfoot>
+        <tfoot style="display: table-footer-group;">
           <tr>
             <td class="ai-report-footer-cell" style="padding: 10px 40px 25px 40px; background-color: #f7f3ef;">
               <div class="footer-container" style="width: 100%; text-align: center;">
