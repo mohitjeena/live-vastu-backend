@@ -239,7 +239,10 @@ function paginateAiReportToPages(aiHtml) {
   let resultHtml = "";
 
   for (let i = 0; i < finalPages.length; i++) {
-    const pageContent = finalPages[i];
+    let pageContent = finalPages[i];
+
+    // Remove any trailing <hr> tags from the page content so they don't sit above the footer line
+    pageContent = pageContent.replace(/<hr[^>]*\/?>\s*$/gi, "").trim();
 
     // Only add page break between pages (kitchen/common.html already ends with a page break)
     if (i > 0) {
@@ -247,7 +250,7 @@ function paginateAiReportToPages(aiHtml) {
     }
 
     resultHtml += `
-      <div class="vastu-page ai-report-page" style="border: 6px solid #D60000; background-color: #f7f3ef; height: 1123px; width: 100%; box-sizing: border-box; position: relative; padding: 25px 40px 100px 40px; overflow: hidden;">
+      <div class="vastu-page ai-report-page" style="border: 6px solid #D60000; background-color: #f7f3ef; height: 1123px; width: 100%; box-sizing: border-box; position: relative; padding: 25px 40px 0 40px; overflow: hidden;">
         
         <!-- Header (Logo on Left, Consistent Main Title on Right) -->
         <div class="effect-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #D60000; padding-bottom: 8px; margin-bottom: 15px;">
@@ -259,15 +262,15 @@ function paginateAiReportToPages(aiHtml) {
           </h3>
         </div>
 
-        <!-- Content Area -->
-        <div class="usage-content" style="padding: 0; height: 860px; overflow: hidden;">
+        <!-- Content Area (Height expanded to 930px so content is fully visible) -->
+        <div class="usage-content" style="padding: 0; height: 930px; overflow: hidden;">
           ${pageContent}
         </div>
 
         <!-- Footer (Exact same as hardcoded pages) -->
-        <div class="footer-container" style="position: absolute; bottom: 20px; left: 40px; right: 40px; width: auto;">
-          <div class="line" style="height: 1px; background: #cfcfcf; margin-bottom: 10px;"></div>
-          <div class="footer" style="display: flex; justify-content: space-between; font-size: 11px; color: #9b9b9b; font-family: 'Josefin Sans', sans-serif;">
+        <div class="footer-container">
+          <div class="line"></div>
+          <div class="footer" style="position: static; margin-top: 30px; display: flex; justify-content: space-evenly; align-items: center; font-size: 11px; color: #9b9b9b; font-family: 'Josefin Sans', sans-serif;">
             <span>WEB: <br><b><a href="https://livevaastu.in/" target="_blank" style="color: #D60000; text-decoration: none;">livevaastu.in</a></b></span>
             <span>EMAIL: <br><b><a href="mailto:contact@livevaastu.com" style="color: #D60000; text-decoration: none;">contact@livevaastu.com</a></b></span>
             <span>MOBILE: <br><b><a href="tel:9555666667" style="color: #D60000; text-decoration: none;">95556 66667</a></b></span>
