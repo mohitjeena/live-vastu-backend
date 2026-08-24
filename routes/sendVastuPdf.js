@@ -49,35 +49,35 @@ router.post("/send-vastu-pdf", async (req, res) => {
 
 
 router.get("/temp-pdf/:id",async (req, res) => {
-
     try {
-         const { id } = req.params;
+        const { id } = req.params;
 
-   const user = await UserSubmission.findOne({ session_id: id });
+        const user = await UserSubmission.findOne({ session_id: id });
+        if (!user) {
+            return res.status(404).send("User submission not found for session id: " + id);
+        }
 
-     // 👉 Details fetch (IMPORTANT)
-    const details = await UserDetails.findOne({ userId: user._id });
+        // 👉 Details fetch (IMPORTANT)
+        const details = await UserDetails.findOne({ userId: user._id });
 
-   // 👉 Extract answers
-    const userAnswers = extractAnswers(user.answers);
+        // 👉 Extract answers
+        const userAnswers = extractAnswers(user.answers || []);
 
-       const aiHtml = user.vastu_report;
+        const aiHtml = user.vastu_report || "";
 
         // 👉 Final HTML
-    const finalHtml = generateFinalHtml(
-      userAnswers,
-      details?.toObject() || {},
-      aiHtml,
-      user.plan_type
-    );
+        const finalHtml = generateFinalHtml(
+          userAnswers,
+          details?.toObject() || {},
+          aiHtml,
+          user.plan_type
+        );
 
-    res.send(finalHtml); 
+        res.send(finalHtml); 
     } catch (error) {
-         console.log(error);
-    res.status(500).send("Error");
+        console.error("Error in /temp-pdf/:id:", error);
+        res.status(500).send("Error: " + error.message);
     }
-
-   
 });
 
 router.post('/generate-report/:sessionId', async (req, res) => {

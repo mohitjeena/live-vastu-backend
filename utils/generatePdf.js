@@ -111,6 +111,40 @@ function cleanHtml(html) {
     .replace(/<\/body>/gi, "");
 }
 
+// Correctly splits top-level <li> elements even when they contain nested <ul> lists
+function splitTopLevelListItems(ulContent) {
+  const items = [];
+  let depth = 0;
+  let currentItem = "";
+
+  const tokens = ulContent.split(/(<\/?(?:li|ul|ol)[^>]*>)/i);
+
+  for (const token of tokens) {
+    if (/^<li[^>]*>/i.test(token)) {
+      if (depth === 0 && currentItem.trim().length > 0) {
+        items.push(currentItem.trim());
+        currentItem = "";
+      }
+      depth++;
+      currentItem += token;
+    } else if (/^<\/li>/i.test(token)) {
+      depth--;
+      currentItem += token;
+      if (depth === 0) {
+        items.push(currentItem.trim());
+        currentItem = "";
+      }
+    } else {
+      currentItem += token;
+    }
+  }
+
+  if (currentItem.trim().length > 0) {
+    items.push(currentItem.trim());
+  }
+
+  return items.filter(it => it.trim().length > 0);
+}
 
 // Estimate physical pixel height for any HTML element on A4 page (at 96 DPI)
 function estimateBlockHeight(block) {
