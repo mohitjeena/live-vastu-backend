@@ -116,6 +116,75 @@ function countWords(str) {
   return str.replace(/<[^>]*>/g, " ").trim().split(/\s+/).filter(Boolean).length;
 }
 
+function paginateSection(sectionHtml, maxWordsPerPage = 380) {
+  // If the whole section fits on 1 page (up to 420 words), keep it as 1 page
+  if (countWords(sectionHtml) <= 420) {
+    return [sectionHtml];
+  }
+
+  // Otherwise, split this section's blocks across multiple pages
+  const blockRegex = /<(h[1-3]|p|ul|ol|table|hr)[^>]*>[\s\S]*?<\/\1>|<hr[^>]*\/?>/gi;
+  const blocks = [];
+  let match;
+
+  while ((match = blockRegex.exec(sectionHtml)) !== null) {
+    blocks.push(match[0]);
+  }
+
+  if (blocks.length === 0) {
+    return [sectionHtml];
+  }
+
+  const subPages = [];
+  let currentBlocks = [];
+  let currentWords = 0;
+
+  for (const block of blocks) {
+    const listMatch = block.match(/<(ul|ol)[^>]*>([\s\S]*?)<\/\1>/i);
+    if (listMatch) {
+      const listTag = listMatch[1];
+      const liMatches = listMatch[2].match(/<li[^>]*>[\s\S]*?<\/li>/gi) || [];
+      let currentListItems = [];
+
+      for (const li of liMatches) {
+        const liWords = countWords(li);
+        if (currentWords + liWords > maxWordsPerPage && currentWords > 120) {
+          if (currentListItems.length > 0) {
+            currentBlocks.push(`<${listTag} class="fix-list" style="list-style:none;padding-left:20px;margin:8px 0;">${currentListItems.join("\n")}</${listTag}>`);
+            currentListItems = [];
+          }
+          subPages.push(currentBlocks.join("\n"));
+          currentBlocks = [];
+          currentWords = 0;
+        }
+        currentListItems.push(li);
+        currentWords += liWords;
+      }
+
+      if (currentListItems.length > 0) {
+        currentBlocks.push(`<${listTag} class="fix-list" style="list-style:none;padding-left:20px;margin:8px 0;">${currentListItems.join("\n")}</${listTag}>`);
+      }
+      continue;
+    }
+
+    const blockWords = countWords(block);
+    if (currentWords + blockWords > maxWordsPerPage && currentWords > 120) {
+      subPages.push(currentBlocks.join("\n"));
+      currentBlocks = [];
+      currentWords = 0;
+    }
+
+    currentBlocks.push(block);
+    currentWords += blockWords;
+  }
+
+  if (currentBlocks.length > 0) {
+    subPages.push(currentBlocks.join("\n"));
+  }
+
+  return subPages;
+}
+
 function paginateAiReportToPages(aiHtml) {
   if (!aiHtml) return "";
 
@@ -130,120 +199,47 @@ function paginateAiReportToPages(aiHtml) {
   clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-container[^"']*["'][^>]*>/gi, "");
   clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-flow-body[^"']*["'][^>]*>/gi, "");
 
-  // Match HTML blocks: h1, h2, h3, p, ul, ol, table, hr
-  const blockRegex = /<(h[1-3]|p|ul|ol|table|hr)[^>]*>[\s\S]*?<\/\1>|<hr[^>]*\/?>/gi;
-  const blocks = [];
-  let match;
+  // Split by <h2> sections (each major numbered section)
+  let rawSections = clean
+    .split(/(?=<h2[^>]*>)/i)
+    .map(s => s.trim())
+    .filter(s => s.length > 0);
 
-  while ((match = blockRegex.exec(clean)) !== null) {
-    blocks.push(match[0]);
+  if (rawSections.length === 0) {
+    rawSections = [clean];
   }
 
-  // If no blocks matched via regex, fallback
-  if (blocks.length === 0) {
-    blocks.push(clean);
+  // If the first section does NOT contain <h2> (e.g. it is the <h1> Title & subtitle block),
+  // merge it with the first <h2> section (1. Executive Summary) so page 1 starts with Title + Executive Summary
+  if (rawSections.length > 1 && !rawSections[0].match(/<h2[^>]*>/i)) {
+    rawSections[1] = rawSections[0] + "<br>" + rawSections[1];
+    rawSections.shift();
   }
 
-  const pages = [];
-  let currentPageBlocks = [];
-  let currentWords = 0;
-  let currentTitle = "Vastu Shastra Diagnostic Report";
-  let pageTitle = currentTitle;
-  const MAX_WORDS = 220; // Target words per A4 page
+  const finalPages = [];
 
-  for (const block of blocks) {
-    // Check if block is a heading
-    const hMatch = block.match(/<h([1-3])[^>]*>(.*?)<\/h\1>/i);
-    if (hMatch) {
-      const headingLevel = hMatch[1];
-      const headingText = hMatch[2].replace(/<[^>]*>/g, "").trim();
-
-      // If it's h1 or h2, update section title
-      if (headingLevel === "1" || headingLevel === "2") {
-        currentTitle = headingText;
-      }
-
-      // If current page is already fairly full, start a new page for this major heading
-      if (currentWords > 100) {
-        pages.push({ title: pageTitle, content: currentPageBlocks.join("\n") });
-        currentPageBlocks = [];
-        currentWords = 0;
-        pageTitle = currentTitle;
-      } else if (currentPageBlocks.length === 0) {
-        pageTitle = currentTitle;
-      }
-
-      currentPageBlocks.push(block);
-      currentWords += countWords(block) + 10;
-      continue;
+  for (const section of rawSections) {
+    const sectionPages = paginateSection(section, 380);
+    for (const sp of sectionPages) {
+      finalPages.push(sp);
     }
-
-    // Check if block is a list (ul or ol)
-    const listMatch = block.match(/<(ul|ol)[^>]*>([\s\S]*?)<\/\1>/i);
-    if (listMatch) {
-      const listTag = listMatch[1];
-      const listContent = listMatch[2];
-      const liMatches = listContent.match(/<li[^>]*>[\s\S]*?<\/li>/gi) || [];
-
-      let currentListItems = [];
-
-      for (const li of liMatches) {
-        const liWords = countWords(li);
-
-        if (currentWords + liWords > MAX_WORDS && currentWords > 60) {
-          if (currentListItems.length > 0) {
-            currentPageBlocks.push(`<${listTag} class="fix-list" style="list-style:none;padding-left:20px;margin:8px 0;">${currentListItems.join("\n")}</${listTag}>`);
-            currentListItems = [];
-          }
-
-          pages.push({ title: pageTitle, content: currentPageBlocks.join("\n") });
-          currentPageBlocks = [];
-          currentWords = 0;
-          pageTitle = currentTitle;
-        }
-
-        currentListItems.push(li);
-        currentWords += liWords + 5;
-      }
-
-      if (currentListItems.length > 0) {
-        currentPageBlocks.push(`<${listTag} class="fix-list" style="list-style:none;padding-left:20px;margin:8px 0;">${currentListItems.join("\n")}</${listTag}>`);
-      }
-      continue;
-    }
-
-    // Regular block (p, table, hr, etc.)
-    const blockWords = countWords(block);
-    if (currentWords + blockWords > MAX_WORDS && currentWords > 60) {
-      pages.push({ title: pageTitle, content: currentPageBlocks.join("\n") });
-      currentPageBlocks = [];
-      currentWords = 0;
-      pageTitle = currentTitle;
-    }
-
-    currentPageBlocks.push(block);
-    currentWords += blockWords;
   }
 
-  if (currentPageBlocks.length > 0) {
-    pages.push({ title: pageTitle, content: currentPageBlocks.join("\n") });
-  }
-
-  // Merge short pages into previous page if combined words <= 260
-  for (let i = pages.length - 1; i > 0; i--) {
-    const prevWords = countWords(pages[i - 1].content);
-    const currWords = countWords(pages[i].content);
-    if (currWords < 95 && prevWords + currWords <= 260) {
-      pages[i - 1].content += "\n<br>\n" + pages[i].content;
-      pages.splice(i, 1);
+  // Merge any very short trailing page into previous page if combined <= 380 words
+  for (let i = finalPages.length - 1; i > 0; i--) {
+    const prevWords = countWords(finalPages[i - 1]);
+    const currWords = countWords(finalPages[i]);
+    if (currWords < 120 && prevWords + currWords <= 380) {
+      finalPages[i - 1] += "\n<br>\n" + finalPages[i];
+      finalPages.splice(i, 1);
     }
   }
 
   // Render each page wrapped in standard vastu-page template with border, header, and footer
   let resultHtml = "";
 
-  for (let i = 0; i < pages.length; i++) {
-    const page = pages[i];
+  for (let i = 0; i < finalPages.length; i++) {
+    const pageContent = finalPages[i];
 
     // Only add page break between pages (kitchen/common.html already ends with a page break)
     if (i > 0) {
@@ -253,7 +249,7 @@ function paginateAiReportToPages(aiHtml) {
     resultHtml += `
       <div class="vastu-page ai-report-page" style="border: 6px solid #D60000; background-color: #f7f3ef; height: 1123px; width: 100%; box-sizing: border-box; position: relative; padding: 25px 40px 100px 40px; overflow: hidden;">
         
-        <!-- Header (Logo on Left, Main Heading on Right on all pages) -->
+        <!-- Header (Logo on Left, Consistent Main Title on Right) -->
         <div class="effect-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #D60000; padding-bottom: 8px; margin-bottom: 15px;">
           <div>
             <img src="https://cdn.shopify.com/s/files/1/0758/2911/7240/files/vastu-site-logo.png" style="width: 120px; display: block;" alt="Live Vaastu">
@@ -265,7 +261,7 @@ function paginateAiReportToPages(aiHtml) {
 
         <!-- Content Area -->
         <div class="usage-content" style="padding: 0; height: 860px; overflow: hidden;">
-          ${page.content}
+          ${pageContent}
         </div>
 
         <!-- Footer (Exact same as hardcoded pages) -->
