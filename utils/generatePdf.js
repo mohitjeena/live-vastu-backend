@@ -317,33 +317,10 @@ function paginateAiReportToPages(aiHtml) {
     }
 
     resultHtml += `
-      <div class="vastu-page ai-report-page" style="border: 6px solid #D60000; background-color: #f7f3ef; height: 1123px; width: 100%; box-sizing: border-box; position: relative; padding: 25px 40px 0 40px; overflow: hidden;">
-        
-        <!-- Header (Logo on Left, Consistent Main Title on Right) -->
-        <div class="effect-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #D60000; padding-bottom: 8px; margin-bottom: 15px;">
-          <div>
-            <img src="https://cdn.shopify.com/s/files/1/0758/2911/7240/files/vastu-site-logo.png" style="width: 120px; display: block;" alt="Live Vaastu">
-          </div>
-          <h3 style="color: #D60000; font-family: 'Josefin Sans', sans-serif; font-size: 16px; font-weight: 700; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; text-align: right;">
-            VASTU SHASTRA REPORT
-          </h3>
-        </div>
-
-        <!-- Content Area (Safe headroom, no artificial overflow cut) -->
-        <div class="usage-content" style="padding: 0; min-height: 750px; max-height: 880px;">
+      <div class="vastu-page ai-report-page" style="border: 6px solid #D60000; background-color: #f7f3ef; height: 1123px; width: 100%; box-sizing: border-box; position: relative; padding: 40px; overflow: hidden;">
+        <div class="usage-content" style="padding: 0;">
           ${pageContent}
         </div>
-
-        <!-- Footer (Exact same as hardcoded pages, centered with left: 0) -->
-        <div class="footer-container" style="position: absolute; bottom: 20px; left: 0; right: 0; width: 100%; text-align: center;">
-          <div class="line" style="width: 90%; margin: 0 auto; height: 1px; background: #ddd;"></div>
-          <div class="footer" style="position: static; margin-top: 25px; display: flex; justify-content: space-evenly; align-items: center; font-size: 13.5px; color: #777; font-family: 'Josefin Sans', sans-serif; width: 100%;">
-            <span style="font-size: 12.5px; color: #777;">WEB: <br><b style="font-size: 13.5px;"><a href="https://livevaastu.in/" target="_blank" style="color: #D60000; text-decoration: none;">livevaastu.in</a></b></span>
-            <span style="font-size: 12.5px; color: #777;">EMAIL: <br><b style="font-size: 13.5px;"><a href="mailto:contact@livevaastu.com" style="color: #D60000; text-decoration: none;">contact@livevaastu.com</a></b></span>
-            <span style="font-size: 12.5px; color: #777;">MOBILE: <br><b style="font-size: 13.5px;"><a href="tel:9555666667" style="color: #D60000; text-decoration: none;">95556 66667</a></b></span>
-          </div>
-        </div>
-
       </div>
     `;
   }
