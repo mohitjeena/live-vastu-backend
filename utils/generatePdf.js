@@ -111,163 +111,25 @@ function cleanHtml(html) {
     .replace(/<\/body>/gi, "");
 }
 
-// Correctly splits top-level <li> elements even when they contain nested <ul> lists
-function splitTopLevelListItems(ulContent) {
-  const items = [];
-  let depth = 0;
-  let currentItem = "";
-
-  const tokens = ulContent.split(/(<\/?(?:li|ul|ol)[^>]*>)/i);
-
-  for (const token of tokens) {
-    if (/^<li[^>]*>/i.test(token)) {
-      if (depth === 0 && currentItem.trim().length > 0) {
-        items.push(currentItem.trim());
-        currentItem = "";
-      }
-      depth++;
-      currentItem += token;
-    } else if (/^<\/li>/i.test(token)) {
-      depth--;
-      currentItem += token;
-      if (depth === 0) {
-        items.push(currentItem.trim());
-        currentItem = "";
-      }
-    } else {
-      currentItem += token;
-    }
-  }
-
-  if (currentItem.trim().length > 0) {
-    items.push(currentItem.trim());
-  }
-
-  return items.filter(it => it.trim().length > 0);
-}
-
-// Estimate physical pixel height for any HTML element on A4 page (at 96 DPI)
-function estimateBlockHeight(block) {
-  if (/<h1[^>]*>/i.test(block)) return 55;
-  if (/<h2[^>]*>/i.test(block)) return 45;
-  if (/<h3[^>]*>/i.test(block)) return 35;
-  if (/<hr[^>]*\/?>/i.test(block)) return 15;
-  if (/<table[^>]*>/i.test(block)) {
-    const rowCount = (block.match(/<tr[^>]*>/gi) || []).length;
-    return Math.max(rowCount * 36 + 20, 50);
-  }
-  if (/<li[^>]*>/i.test(block)) {
-    const plain = block.replace(/<[^>]*>/g, "").trim();
-    const lines = Math.max(1, Math.ceil(plain.length / 80));
-    return lines * 24 + 10;
-  }
-  // Paragraph (<p>) or other text
-  const plain = block.replace(/<[^>]*>/g, "").trim();
-  const lines = Math.max(1, Math.ceil(plain.length / 80));
-  return lines * 24 + 14;
-}
-
-function paginateAiReportToPages(aiHtml) {
+function formatAiReportNaturalFlow(aiHtml) {
   if (!aiHtml) return "";
 
   // Strip wrapping outer containers and headers
   let clean = cleanHtml(aiHtml);
   clean = extractBodyContent(clean);
 
-  // Clean old wrappers
-  clean = clean.replace(/<div[^>]*class=["']ai-report-content["'][^>]*>/gi, "");
+  // Clean old wrappers if present
   clean = clean.replace(/<div[^>]*class=["'][^"']*vastu-page[^"']*["'][^>]*>/gi, "");
   clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-page[^"']*["'][^>]*>/gi, "");
   clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-container[^"']*["'][^>]*>/gi, "");
   clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-flow-body[^"']*["'][^>]*>/gi, "");
+  clean = clean.replace(/<div[^>]*class=["']usage-content["'][^>]*>/gi, "");
 
-  // Extract all blocks in one continuous sequence (no artificial splitting per h2)
-  const blockRegex = /<(h[1-3]|p|ul|ol|table|hr)[^>]*>[\s\S]*?<\/\1>|<hr[^>]*\/?>/gi;
-  const rawBlocks = [];
-  let match;
-
-  while ((match = blockRegex.exec(clean)) !== null) {
-    rawBlocks.push(match[0]);
-  }
-
-  if (rawBlocks.length === 0) {
-    rawBlocks.push(clean);
-  }
-
-  // A4 page printable height capacity (1123px - 80px padding = 1043px available, safety target = 970px)
-  const PAGE_CAPACITY = 970;
-  const finalPages = [];
-  let currentBlocks = [];
-  let currentHeight = 0;
-
-  for (const block of rawBlocks) {
-    const listMatch = block.match(/<(ul|ol)[^>]*>([\s\S]*?)<\/\1>/i);
-    if (listMatch) {
-      const listTag = listMatch[1];
-      const liMatches = splitTopLevelListItems(listMatch[2]);
-      let currentListItems = [];
-
-      for (const li of liMatches) {
-        const liHeight = estimateBlockHeight(li);
-
-        if (currentHeight + liHeight > PAGE_CAPACITY && currentBlocks.length > 0) {
-          if (currentListItems.length > 0) {
-            currentBlocks.push(`<${listTag} class="fix-list" style="list-style:none;padding-left:18px;margin:8px 0;">${currentListItems.join("\n")}</${listTag}>`);
-            currentListItems = [];
-          }
-          finalPages.push(currentBlocks.join("\n"));
-          currentBlocks = [];
-          currentHeight = 0;
-        }
-
-        currentListItems.push(li);
-        currentHeight += liHeight;
-      }
-
-      if (currentListItems.length > 0) {
-        currentBlocks.push(`<${listTag} class="fix-list" style="list-style:none;padding-left:18px;margin:8px 0;">${currentListItems.join("\n")}</${listTag}>`);
-      }
-      continue;
-    }
-
-    const bHeight = estimateBlockHeight(block);
-    const isHeading = /<h[1-3][^>]*>/i.test(block);
-
-    // If block doesn't fit, OR if it's a heading near the bottom (> 820px), start a fresh page
-    if (currentBlocks.length > 0 && (currentHeight + bHeight > PAGE_CAPACITY || (isHeading && currentHeight > 820))) {
-      finalPages.push(currentBlocks.join("\n"));
-      currentBlocks = [];
-      currentHeight = 0;
-    }
-
-    currentBlocks.push(block);
-    currentHeight += bHeight;
-  }
-
-  if (currentBlocks.length > 0) {
-    finalPages.push(currentBlocks.join("\n"));
-  }
-
-  // Render each page with crisp red border and clean padding
-  let resultHtml = "";
-
-  for (let i = 0; i < finalPages.length; i++) {
-    let pageContent = finalPages[i].replace(/<hr[^>]*\/?>\s*$/gi, "").trim();
-
-    if (i > 0) {
-      resultHtml += `<div style="page-break-after: always;"></div>`;
-    }
-
-    resultHtml += `
-      <div class="vastu-page ai-report-page" style="border: 6px solid #D60000; background-color: #f7f3ef; height: 1123px; width: 100%; box-sizing: border-box; position: relative; padding: 40px; overflow: hidden;">
-        <div class="usage-content" style="padding: 0;">
-          ${pageContent}
-        </div>
-      </div>
-    `;
-  }
-
-  return resultHtml;
+  return `
+    <div class="ai-report-flow" style="background-color: #f7f3ef; padding: 40px 45px; min-height: 1123px; box-sizing: border-box; width: 100%;">
+      ${clean}
+    </div>
+  `;
 }
 
 
@@ -320,18 +182,18 @@ function generateFinalHtml(userAnswers, detailsData, aiHtml, planType = 'basic')
     html += loadHtml(mapping.kitchen.common);
   
 
-  // 7️⃣ AI REPORT (LAST)
+  // 7️⃣ AI REPORT (LAST - Natural flow without red border or fixed slicing)
   if (planType === 'basic' || planType === 'bronze') {
     const aiClean = cleanHtml(aiHtml);
     const aiBody = extractBodyContent(aiClean);
     html += `
-    <div class="vastu-page">
+    <div class="vastu-page" style="background-color: #f7f3ef; padding: 40px 45px; box-sizing: border-box;">
       ${aiBody}
     </div>
   `;
   } else {
-    // For paid plans (silver, gold, platinum), format sections into complete styled pages
-    html += paginateAiReportToPages(aiHtml);
+    // For paid plans (silver, gold, platinum), format sections with natural flow
+    html += formatAiReportNaturalFlow(aiHtml);
   }
 
   html += "</body></html>";

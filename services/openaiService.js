@@ -124,6 +124,8 @@ function getFastCloudinaryUrl(url) {
             color: #D60000;
             font-weight: bold;
             font-family: 'Josefin Sans', sans-serif;
+            page-break-after: avoid;
+            break-after: avoid;
           }
           .ai-report-content h1 {
             font-size: 24px;
