@@ -117,25 +117,25 @@ function countWords(str) {
 }
 
 function estimateHeight(block) {
-  if (/<h1[^>]*>/i.test(block)) return 55;
-  if (/<h2[^>]*>/i.test(block)) return 48;
-  if (/<h3[^>]*>/i.test(block)) return 38;
+  if (/<h1[^>]*>/i.test(block)) return 45;
+  if (/<h2[^>]*>/i.test(block)) return 40;
+  if (/<h3[^>]*>/i.test(block)) return 30;
   if (/<table[^>]*>/i.test(block)) {
     const rowCount = (block.match(/<tr[^>]*>/gi) || []).length;
-    return Math.max(rowCount * 32, 60);
+    return Math.max(rowCount * 28, 50);
   }
-  if (/<hr[^>]*\/?>/i.test(block)) return 20;
+  if (/<hr[^>]*\/?>/i.test(block)) return 15;
   if (/<li[^>]*>/i.test(block)) {
     const words = countWords(block);
-    const lines = Math.ceil(words / 12) || 1;
-    return (lines * 22) + 12;
+    const lines = Math.ceil(words / 14) || 1;
+    return (lines * 22) + 7;
   }
   const words = countWords(block);
-  const lines = Math.ceil(words / 14) || 1;
-  return (lines * 22) + 14;
+  const lines = Math.ceil(words / 16) || 1;
+  return (lines * 22) + 8;
 }
 
-function paginateAiReportToPages(aiHtml, maxPageHeight = 820) {
+function paginateAiReportToPages(aiHtml, maxPageHeight = 870) {
   if (!aiHtml) return "";
 
   // Strip wrapping outer containers and headers
@@ -195,11 +195,11 @@ function paginateAiReportToPages(aiHtml, maxPageHeight = 820) {
       continue;
     }
 
-    // If it's a heading (h1, h2, h3) and the page is already 75% full, push heading to next page (prevents orphan headings)
+    // If it's a heading (h1, h2, h3) and the page is already 85% full, push heading to next page (prevents orphan headings)
     const isHeading = /<h[1-3][^>]*>/i.test(block);
     const bHeight = estimateHeight(block);
 
-    if (isHeading && currentHeight > 620) {
+    if (isHeading && currentHeight > 750) {
       pages.push(currentBlocks.join("\n"));
       currentBlocks = [block];
       currentHeight = bHeight;
