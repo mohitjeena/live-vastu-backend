@@ -116,13 +116,26 @@ function countWords(str) {
   return str.replace(/<[^>]*>/g, " ").trim().split(/\s+/).filter(Boolean).length;
 }
 
-function paginateSection(sectionHtml, maxWordsPerPage = 280) {
-  // If the whole section fits on 1 page (up to 300 words), keep it as 1 page
-  if (countWords(sectionHtml) <= 300) {
-    return [sectionHtml];
+function estimateHeight(block) {
+  if (/<h1[^>]*>/i.test(block)) return 55;
+  if (/<h2[^>]*>/i.test(block)) return 48;
+  if (/<h3[^>]*>/i.test(block)) return 38;
+  if (/<table[^>]*>/i.test(block)) {
+    const rowCount = (block.match(/<tr[^>]*>/gi) || []).length;
+    return Math.max(rowCount * 32, 60);
   }
+  if (/<hr[^>]*\/?>/i.test(block)) return 20;
+  if (/<li[^>]*>/i.test(block)) {
+    const words = countWords(block);
+    const lines = Math.ceil(words / 11) || 1;
+    return (lines * 22) + 14;
+  }
+  const words = countWords(block);
+  const lines = Math.ceil(words / 13) || 1;
+  return (lines * 22) + 16;
+}
 
-  // Otherwise, split this section's blocks across multiple pages
+function paginateSection(sectionHtml, maxSectionHeight = 750) {
   const blockRegex = /<(h[1-3]|p|ul|ol|table|hr)[^>]*>[\s\S]*?<\/\1>|<hr[^>]*\/?>/gi;
   const blocks = [];
   let match;
@@ -135,9 +148,26 @@ function paginateSection(sectionHtml, maxWordsPerPage = 280) {
     return [sectionHtml];
   }
 
+  // Calculate total section height
+  let totalSectionHeight = 0;
+  for (const b of blocks) {
+    if (/<(ul|ol)[^>]*>/i.test(b)) {
+      const lis = b.match(/<li[^>]*>[\s\S]*?<\/li>/gi) || [];
+      for (const li of lis) totalSectionHeight += estimateHeight(li);
+    } else {
+      totalSectionHeight += estimateHeight(b);
+    }
+  }
+
+  // If the whole section fits on 1 page (up to 780px), keep it as 1 single page!
+  if (totalSectionHeight <= 780) {
+    return [sectionHtml];
+  }
+
+  // Otherwise, split into sub-pages using weighted height
   const subPages = [];
   let currentBlocks = [];
-  let currentWords = 0;
+  let currentHeight = 0;
 
   for (const block of blocks) {
     const listMatch = block.match(/<(ul|ol)[^>]*>([\s\S]*?)<\/\1>/i);
@@ -147,18 +177,18 @@ function paginateSection(sectionHtml, maxWordsPerPage = 280) {
       let currentListItems = [];
 
       for (const li of liMatches) {
-        const liWords = countWords(li);
-        if (currentWords + liWords > maxWordsPerPage && currentWords > 80) {
+        const liHeight = estimateHeight(li);
+        if (currentHeight + liHeight > maxSectionHeight && currentHeight > 250) {
           if (currentListItems.length > 0) {
             currentBlocks.push(`<${listTag} class="fix-list" style="list-style:none;padding-left:20px;margin:8px 0;">${currentListItems.join("\n")}</${listTag}>`);
             currentListItems = [];
           }
           subPages.push(currentBlocks.join("\n"));
           currentBlocks = [];
-          currentWords = 0;
+          currentHeight = 0;
         }
         currentListItems.push(li);
-        currentWords += liWords;
+        currentHeight += liHeight;
       }
 
       if (currentListItems.length > 0) {
@@ -167,15 +197,15 @@ function paginateSection(sectionHtml, maxWordsPerPage = 280) {
       continue;
     }
 
-    const blockWords = countWords(block);
-    if (currentWords + blockWords > maxWordsPerPage && currentWords > 80) {
+    const bHeight = estimateHeight(block);
+    if (currentHeight + bHeight > maxSectionHeight && currentHeight > 250) {
       subPages.push(currentBlocks.join("\n"));
       currentBlocks = [];
-      currentWords = 0;
+      currentHeight = 0;
     }
 
     currentBlocks.push(block);
-    currentWords += blockWords;
+    currentHeight += bHeight;
   }
 
   if (currentBlocks.length > 0) {
@@ -219,17 +249,17 @@ function paginateAiReportToPages(aiHtml) {
   const finalPages = [];
 
   for (const section of rawSections) {
-    const sectionPages = paginateSection(section, 280);
+    const sectionPages = paginateSection(section, 750);
     for (const sp of sectionPages) {
       finalPages.push(sp);
     }
   }
 
-  // Merge any very short trailing page into previous page if combined <= 300 words
+  // Merge any very short trailing page into previous page if combined <= 320 words
   for (let i = finalPages.length - 1; i > 0; i--) {
     const prevWords = countWords(finalPages[i - 1]);
     const currWords = countWords(finalPages[i]);
-    if (currWords < 90 && prevWords + currWords <= 300) {
+    if (currWords < 90 && prevWords + currWords <= 320) {
       finalPages[i - 1] += "\n<br>\n" + finalPages[i];
       finalPages.splice(i, 1);
     }
