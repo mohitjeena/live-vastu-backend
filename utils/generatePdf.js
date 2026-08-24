@@ -116,6 +116,41 @@ function countWords(str) {
   return str.replace(/<[^>]*>/g, " ").trim().split(/\s+/).filter(Boolean).length;
 }
 
+// Correctly splits top-level <li> elements even when they contain nested <ul> lists
+function splitTopLevelListItems(ulContent) {
+  const items = [];
+  let depth = 0;
+  let currentItem = "";
+
+  const tokens = ulContent.split(/(<\/?(?:li|ul|ol)[^>]*>)/i);
+
+  for (const token of tokens) {
+    if (/^<li[^>]*>/i.test(token)) {
+      if (depth === 0 && currentItem.trim().length > 0) {
+        items.push(currentItem.trim());
+        currentItem = "";
+      }
+      depth++;
+      currentItem += token;
+    } else if (/^<\/li>/i.test(token)) {
+      depth--;
+      currentItem += token;
+      if (depth === 0) {
+        items.push(currentItem.trim());
+        currentItem = "";
+      }
+    } else {
+      currentItem += token;
+    }
+  }
+
+  if (currentItem.trim().length > 0) {
+    items.push(currentItem.trim());
+  }
+
+  return items.filter(it => it.trim().length > 0);
+}
+
 // Calculate exact Physical Line Units for any block
 function getLineUnits(block) {
   if (/<h1[^>]*>/i.test(block)) return 3.0;
@@ -127,14 +162,15 @@ function getLineUnits(block) {
     return Math.max(rowCount * 1.5, 3.0);
   }
   if (/<li[^>]*>/i.test(block)) {
+    const innerLis = (block.match(/<li[^>]*>/gi) || []).length;
     const words = countWords(block);
     const textLines = Math.ceil(words / 13) || 1;
-    return textLines + 0.8; // Text lines + bullet item vertical margin/padding
+    return textLines + (innerLis * 0.8);
   }
   // Paragraph (<p>) or other text
   const words = countWords(block);
   const textLines = Math.ceil(words / 14) || 1;
-  return textLines + 0.8; // Text lines + paragraph vertical margin
+  return textLines + 0.8;
 }
 
 function paginateSection(sectionHtml, maxLinesPerPage = 28) {
@@ -154,7 +190,7 @@ function paginateSection(sectionHtml, maxLinesPerPage = 28) {
   let totalSectionLines = 0;
   for (const b of blocks) {
     if (/<(ul|ol)[^>]*>/i.test(b)) {
-      const lis = b.match(/<li[^>]*>[\s\S]*?<\/li>/gi) || [];
+      const lis = splitTopLevelListItems(b);
       for (const li of lis) totalSectionLines += getLineUnits(li);
     } else {
       totalSectionLines += getLineUnits(b);
@@ -175,12 +211,12 @@ function paginateSection(sectionHtml, maxLinesPerPage = 28) {
     const listMatch = block.match(/<(ul|ol)[^>]*>([\s\S]*?)<\/\1>/i);
     if (listMatch) {
       const listTag = listMatch[1];
-      const liMatches = listMatch[2].match(/<li[^>]*>[\s\S]*?<\/li>/gi) || [];
+      const liMatches = splitTopLevelListItems(listMatch[2]);
       let currentListItems = [];
 
       for (const li of liMatches) {
         const liLines = getLineUnits(li);
-        if (currentLines + liLines > maxLinesPerPage && currentLines > 8) {
+        if (currentLines + liLines > maxLinesPerPage && currentLines > 6) {
           if (currentListItems.length > 0) {
             currentBlocks.push(`<${listTag} class="fix-list" style="list-style:none;padding-left:18px;margin:8px 0;">${currentListItems.join("\n")}</${listTag}>`);
             currentListItems = [];
@@ -200,7 +236,7 @@ function paginateSection(sectionHtml, maxLinesPerPage = 28) {
     }
 
     const bLines = getLineUnits(block);
-    if (currentLines + bLines > maxLinesPerPage && currentLines > 8) {
+    if (currentLines + bLines > maxLinesPerPage && currentLines > 6) {
       subPages.push(currentBlocks.join("\n"));
       currentBlocks = [];
       currentLines = 0;
