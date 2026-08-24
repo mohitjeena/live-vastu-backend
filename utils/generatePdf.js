@@ -112,51 +112,176 @@ function cleanHtml(html) {
 }
 
 
-function formatAiReportToPages(aiHtml) {
+function countWords(str) {
+  return str.replace(/<[^>]*>/g, " ").trim().split(/\s+/).filter(Boolean).length;
+}
+
+function paginateAiReportToPages(aiHtml) {
   if (!aiHtml) return "";
 
   // Strip wrapping outer containers and headers
   let clean = cleanHtml(aiHtml);
   clean = extractBodyContent(clean);
 
-  // If there's an outer <div class="ai-report-content"...>, strip the outer div wrapper
+  // Clean old wrappers
   clean = clean.replace(/<div[^>]*class=["']ai-report-content["'][^>]*>/gi, "");
-  clean = clean.replace(/<\/div>\s*$/gi, "");
-
-  // If there are legacy .vastu-page or .ai-report-page wrappers inside (from old stored reports), clean them
   clean = clean.replace(/<div[^>]*class=["'][^"']*vastu-page[^"']*["'][^>]*>/gi, "");
   clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-page[^"']*["'][^>]*>/gi, "");
+  clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-container[^"']*["'][^>]*>/gi, "");
+  clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-flow-body[^"']*["'][^>]*>/gi, "");
 
-  return `
-    <div style="page-break-before: always;"></div>
-    <div class="ai-report-container">
-      
-      <!-- AI Report Top Header -->
-      <div class="effect-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #D60000; padding-bottom: 12px; margin-bottom: 25px;">
-        <div>
-          <img src="https://cdn.shopify.com/s/files/1/0758/2911/7240/files/vastu-site-logo.png" style="width: 130px; display: block;" alt="Live Vaastu">
+  // Match HTML blocks: h1, h2, h3, p, ul, ol, table, hr
+  const blockRegex = /<(h[1-3]|p|ul|ol|table|hr)[^>]*>[\s\S]*?<\/\1>|<hr[^>]*\/?>/gi;
+  const blocks = [];
+  let match;
+
+  while ((match = blockRegex.exec(clean)) !== null) {
+    blocks.push(match[0]);
+  }
+
+  // If no blocks matched via regex, fallback
+  if (blocks.length === 0) {
+    blocks.push(clean);
+  }
+
+  const pages = [];
+  let currentPageBlocks = [];
+  let currentWords = 0;
+  let currentTitle = "Vastu Shastra Diagnostic Report";
+  let pageTitle = currentTitle;
+  const MAX_WORDS = 220; // Target words per A4 page
+
+  for (const block of blocks) {
+    // Check if block is a heading
+    const hMatch = block.match(/<h([1-3])[^>]*>(.*?)<\/h\1>/i);
+    if (hMatch) {
+      const headingLevel = hMatch[1];
+      const headingText = hMatch[2].replace(/<[^>]*>/g, "").trim();
+
+      // If it's h1 or h2, update section title
+      if (headingLevel === "1" || headingLevel === "2") {
+        currentTitle = headingText;
+      }
+
+      // If current page is already fairly full, start a new page for this major heading
+      if (currentWords > 100) {
+        pages.push({ title: pageTitle, content: currentPageBlocks.join("\n") });
+        currentPageBlocks = [];
+        currentWords = 0;
+        pageTitle = currentTitle;
+      } else if (currentPageBlocks.length === 0) {
+        pageTitle = currentTitle;
+      }
+
+      currentPageBlocks.push(block);
+      currentWords += countWords(block) + 10;
+      continue;
+    }
+
+    // Check if block is a list (ul or ol)
+    const listMatch = block.match(/<(ul|ol)[^>]*>([\s\S]*?)<\/\1>/i);
+    if (listMatch) {
+      const listTag = listMatch[1];
+      const listContent = listMatch[2];
+      const liMatches = listContent.match(/<li[^>]*>[\s\S]*?<\/li>/gi) || [];
+
+      let currentListItems = [];
+
+      for (const li of liMatches) {
+        const liWords = countWords(li);
+
+        if (currentWords + liWords > MAX_WORDS && currentWords > 60) {
+          if (currentListItems.length > 0) {
+            currentPageBlocks.push(`<${listTag} class="fix-list" style="list-style:none;padding-left:20px;margin:8px 0;">${currentListItems.join("\n")}</${listTag}>`);
+            currentListItems = [];
+          }
+
+          pages.push({ title: pageTitle, content: currentPageBlocks.join("\n") });
+          currentPageBlocks = [];
+          currentWords = 0;
+          pageTitle = currentTitle;
+        }
+
+        currentListItems.push(li);
+        currentWords += liWords + 5;
+      }
+
+      if (currentListItems.length > 0) {
+        currentPageBlocks.push(`<${listTag} class="fix-list" style="list-style:none;padding-left:20px;margin:8px 0;">${currentListItems.join("\n")}</${listTag}>`);
+      }
+      continue;
+    }
+
+    // Regular block (p, table, hr, etc.)
+    const blockWords = countWords(block);
+    if (currentWords + blockWords > MAX_WORDS && currentWords > 60) {
+      pages.push({ title: pageTitle, content: currentPageBlocks.join("\n") });
+      currentPageBlocks = [];
+      currentWords = 0;
+      pageTitle = currentTitle;
+    }
+
+    currentPageBlocks.push(block);
+    currentWords += blockWords;
+  }
+
+  if (currentPageBlocks.length > 0) {
+    pages.push({ title: pageTitle, content: currentPageBlocks.join("\n") });
+  }
+
+  // Merge short pages into previous page if combined words <= 260
+  for (let i = pages.length - 1; i > 0; i--) {
+    const prevWords = countWords(pages[i - 1].content);
+    const currWords = countWords(pages[i].content);
+    if (currWords < 95 && prevWords + currWords <= 260) {
+      pages[i - 1].content += "\n<br>\n" + pages[i].content;
+      pages.splice(i, 1);
+    }
+  }
+
+  // Render each page wrapped in standard vastu-page template with border, header, and footer
+  let resultHtml = "";
+
+  for (const page of pages) {
+    let cleanTitle = page.title;
+    if (cleanTitle.length > 40) {
+      cleanTitle = cleanTitle.substring(0, 37) + "...";
+    }
+
+    resultHtml += `
+      <div style="page-break-after: always;"></div>
+      <div class="vastu-page ai-report-page" style="border: 6px solid #D60000; background-color: #f7f3ef; height: 1123px; width: 100%; box-sizing: border-box; position: relative; padding: 25px 40px 100px 40px; overflow: hidden;">
+        
+        <!-- Header (Logo on Left, Section Title on Right) -->
+        <div class="effect-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #D60000; padding-bottom: 8px; margin-bottom: 15px;">
+          <div>
+            <img src="https://cdn.shopify.com/s/files/1/0758/2911/7240/files/vastu-site-logo.png" style="width: 120px; display: block;" alt="Live Vaastu">
+          </div>
+          <h3 style="color: #D60000; font-family: 'Josefin Sans', sans-serif; font-size: 16px; font-weight: 700; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; text-align: right; max-width: 65%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            ${cleanTitle}
+          </h3>
         </div>
-        <h3 style="color: #D60000; font-family: 'Josefin Sans', sans-serif; font-size: 18px; font-weight: 700; margin: 0; text-transform: uppercase; letter-spacing: 1px;">
-          Vastu Shastra Diagnostic Report
-        </h3>
-      </div>
 
-      <!-- Flowing Content -->
-      <div class="ai-report-flow-body">
-        ${clean}
-      </div>
-
-      <!-- AI Report Bottom Footer -->
-      <div class="footer-container-inline" style="margin-top: 40px; padding-top: 15px; border-top: 1px solid #cfcfcf;">
-        <div class="footer" style="display: flex; justify-content: space-between; font-size: 11px; color: #9b9b9b; font-family: 'Josefin Sans', sans-serif;">
-          <span>WEB: <br><b><a href="https://livevaastu.in/" target="_blank" style="color: #D60000; text-decoration: none;">livevaastu.in</a></b></span>
-          <span>EMAIL: <br><b><a href="mailto:contact@livevaastu.com" style="color: #D60000; text-decoration: none;">contact@livevaastu.com</a></b></span>
-          <span>MOBILE: <br><b><a href="tel:9555666667" style="color: #D60000; text-decoration: none;">95556 66667</a></b></span>
+        <!-- Content Area -->
+        <div class="usage-content" style="padding: 0; height: 860px; overflow: hidden;">
+          ${page.content}
         </div>
-      </div>
 
-    </div>
-  `;
+        <!-- Footer (Exact same as hardcoded pages) -->
+        <div class="footer-container" style="position: absolute; bottom: 20px; left: 40px; right: 40px; width: auto;">
+          <div class="line" style="height: 1px; background: #cfcfcf; margin-bottom: 10px;"></div>
+          <div class="footer" style="display: flex; justify-content: space-between; font-size: 11px; color: #9b9b9b; font-family: 'Josefin Sans', sans-serif;">
+            <span>WEB: <br><b><a href="https://livevaastu.in/" target="_blank" style="color: #D60000; text-decoration: none;">livevaastu.in</a></b></span>
+            <span>EMAIL: <br><b><a href="mailto:contact@livevaastu.com" style="color: #D60000; text-decoration: none;">contact@livevaastu.com</a></b></span>
+            <span>MOBILE: <br><b><a href="tel:9555666667" style="color: #D60000; text-decoration: none;">95556 66667</a></b></span>
+          </div>
+        </div>
+
+      </div>
+    `;
+  }
+
+  return resultHtml;
 }
 
 
@@ -220,7 +345,7 @@ function generateFinalHtml(userAnswers, detailsData, aiHtml, planType = 'basic')
   `;
   } else {
     // For paid plans (silver, gold, platinum), format sections into complete styled pages
-    html += formatAiReportToPages(aiHtml);
+    html += paginateAiReportToPages(aiHtml);
   }
 
   html += "</body></html>";
