@@ -123,16 +123,14 @@ function paginateAiReportToPages(aiHtml) {
   clean = clean.replace(/<div[^>]*class=["'][^"']*vastu-page[^"']*["'][^>]*>/gi, "");
   clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-page[^"']*["'][^>]*>/gi, "");
   clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-container[^"']*["'][^>]*>/gi, "");
-  clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-flow-body[^"']*["'][^>]*>/gi, "")
-  clean = clean.replace(/<div[^>]*class=["']ai-report-pure-flow["'][^>]*>/gi, "")
-  clean = clean.replace(/<div[^>]*class=["']ai-report-natural-flow["'][^>]*>/gi, "");
+  clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-flow-body[^"']*["'][^>]*>/gi, "");
 
   return `
     <div style="page-break-after: always;"></div>
     
-    <div class="ai-report-natural-flow" style="width: 100%; box-sizing: border-box; background-color: #f7f3ef; padding: 25px 40px;">
+    <div class="ai-report-pure-flow" style="width: 100%; box-sizing: border-box; background-color: #f7f3ef; padding: 25px 40px 30px 40px;">
       
-      <!-- Header -->
+      <!-- Top Header for AI Report Section -->
       <div class="effect-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #D60000; padding-bottom: 8px; margin-bottom: 20px;">
         <div>
           <img src="https://cdn.shopify.com/s/files/1/0758/2911/7240/files/vastu-site-logo.png" style="width: 120px; display: block;" alt="Live Vaastu">
@@ -142,7 +140,7 @@ function paginateAiReportToPages(aiHtml) {
         </h3>
       </div>
 
-      <!-- Pure Natural Content Flow -->
+      <!-- Pure Natural Content Flow (Browser automatically breaks pages when content exceeds) -->
       <div class="ai-report-flow-content">
         ${clean}
       </div>
