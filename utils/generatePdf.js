@@ -127,15 +127,15 @@ function estimateHeight(block) {
   if (/<hr[^>]*\/?>/i.test(block)) return 20;
   if (/<li[^>]*>/i.test(block)) {
     const words = countWords(block);
-    const lines = Math.ceil(words / 11) || 1;
-    return (lines * 22) + 14;
+    const lines = Math.ceil(words / 12) || 1;
+    return (lines * 22) + 12;
   }
   const words = countWords(block);
-  const lines = Math.ceil(words / 13) || 1;
-  return (lines * 22) + 16;
+  const lines = Math.ceil(words / 14) || 1;
+  return (lines * 22) + 14;
 }
 
-function paginateSection(sectionHtml, maxSectionHeight = 750) {
+function paginateSection(sectionHtml, maxSectionHeight = 830) {
   const blockRegex = /<(h[1-3]|p|ul|ol|table|hr)[^>]*>[\s\S]*?<\/\1>|<hr[^>]*\/?>/gi;
   const blocks = [];
   let match;
@@ -159,8 +159,8 @@ function paginateSection(sectionHtml, maxSectionHeight = 750) {
     }
   }
 
-  // If the whole section fits on 1 page (up to 780px), keep it as 1 single page!
-  if (totalSectionHeight <= 780) {
+  // If the whole section fits on 1 page (up to 850px), keep it as 1 single page!
+  if (totalSectionHeight <= 850) {
     return [sectionHtml];
   }
 
@@ -178,7 +178,7 @@ function paginateSection(sectionHtml, maxSectionHeight = 750) {
 
       for (const li of liMatches) {
         const liHeight = estimateHeight(li);
-        if (currentHeight + liHeight > maxSectionHeight && currentHeight > 250) {
+        if (currentHeight + liHeight > maxSectionHeight && currentHeight > 300) {
           if (currentListItems.length > 0) {
             currentBlocks.push(`<${listTag} class="fix-list" style="list-style:none;padding-left:20px;margin:8px 0;">${currentListItems.join("\n")}</${listTag}>`);
             currentListItems = [];
@@ -198,7 +198,7 @@ function paginateSection(sectionHtml, maxSectionHeight = 750) {
     }
 
     const bHeight = estimateHeight(block);
-    if (currentHeight + bHeight > maxSectionHeight && currentHeight > 250) {
+    if (currentHeight + bHeight > maxSectionHeight && currentHeight > 300) {
       subPages.push(currentBlocks.join("\n"));
       currentBlocks = [];
       currentHeight = 0;
@@ -249,7 +249,7 @@ function paginateAiReportToPages(aiHtml) {
   const finalPages = [];
 
   for (const section of rawSections) {
-    const sectionPages = paginateSection(section, 750);
+    const sectionPages = paginateSection(section, 830);
     for (const sp of sectionPages) {
       finalPages.push(sp);
     }
