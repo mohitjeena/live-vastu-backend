@@ -116,9 +116,9 @@ function countWords(str) {
   return str.replace(/<[^>]*>/g, " ").trim().split(/\s+/).filter(Boolean).length;
 }
 
-function paginateSection(sectionHtml, maxWordsPerPage = 380) {
-  // If the whole section fits on 1 page (up to 420 words), keep it as 1 page
-  if (countWords(sectionHtml) <= 420) {
+function paginateSection(sectionHtml, maxWordsPerPage = 280) {
+  // If the whole section fits on 1 page (up to 300 words), keep it as 1 page
+  if (countWords(sectionHtml) <= 300) {
     return [sectionHtml];
   }
 
@@ -148,7 +148,7 @@ function paginateSection(sectionHtml, maxWordsPerPage = 380) {
 
       for (const li of liMatches) {
         const liWords = countWords(li);
-        if (currentWords + liWords > maxWordsPerPage && currentWords > 120) {
+        if (currentWords + liWords > maxWordsPerPage && currentWords > 80) {
           if (currentListItems.length > 0) {
             currentBlocks.push(`<${listTag} class="fix-list" style="list-style:none;padding-left:20px;margin:8px 0;">${currentListItems.join("\n")}</${listTag}>`);
             currentListItems = [];
@@ -168,7 +168,7 @@ function paginateSection(sectionHtml, maxWordsPerPage = 380) {
     }
 
     const blockWords = countWords(block);
-    if (currentWords + blockWords > maxWordsPerPage && currentWords > 120) {
+    if (currentWords + blockWords > maxWordsPerPage && currentWords > 80) {
       subPages.push(currentBlocks.join("\n"));
       currentBlocks = [];
       currentWords = 0;
@@ -219,17 +219,17 @@ function paginateAiReportToPages(aiHtml) {
   const finalPages = [];
 
   for (const section of rawSections) {
-    const sectionPages = paginateSection(section, 380);
+    const sectionPages = paginateSection(section, 280);
     for (const sp of sectionPages) {
       finalPages.push(sp);
     }
   }
 
-  // Merge any very short trailing page into previous page if combined <= 380 words
+  // Merge any very short trailing page into previous page if combined <= 300 words
   for (let i = finalPages.length - 1; i > 0; i--) {
     const prevWords = countWords(finalPages[i - 1]);
     const currWords = countWords(finalPages[i]);
-    if (currWords < 120 && prevWords + currWords <= 380) {
+    if (currWords < 90 && prevWords + currWords <= 300) {
       finalPages[i - 1] += "\n<br>\n" + finalPages[i];
       finalPages.splice(i, 1);
     }
@@ -262,18 +262,18 @@ function paginateAiReportToPages(aiHtml) {
           </h3>
         </div>
 
-        <!-- Content Area (Height expanded to 930px so content is fully visible) -->
-        <div class="usage-content" style="padding: 0; height: 930px; overflow: hidden;">
+        <!-- Content Area (Height set to 890px with safety margin above footer) -->
+        <div class="usage-content" style="padding: 0; height: 890px; overflow: hidden;">
           ${pageContent}
         </div>
 
-        <!-- Footer (Exact same as hardcoded pages) -->
-        <div class="footer-container">
-          <div class="line"></div>
-          <div class="footer" style="position: static; margin-top: 30px; display: flex; justify-content: space-evenly; align-items: center; font-size: 11px; color: #9b9b9b; font-family: 'Josefin Sans', sans-serif;">
-            <span>WEB: <br><b><a href="https://livevaastu.in/" target="_blank" style="color: #D60000; text-decoration: none;">livevaastu.in</a></b></span>
-            <span>EMAIL: <br><b><a href="mailto:contact@livevaastu.com" style="color: #D60000; text-decoration: none;">contact@livevaastu.com</a></b></span>
-            <span>MOBILE: <br><b><a href="tel:9555666667" style="color: #D60000; text-decoration: none;">95556 66667</a></b></span>
+        <!-- Footer (Exact same as hardcoded pages, centered with left: 0) -->
+        <div class="footer-container" style="position: absolute; bottom: 20px; left: 0; right: 0; width: 100%; text-align: center;">
+          <div class="line" style="width: 90%; margin: 0 auto; height: 1px; background: #ddd;"></div>
+          <div class="footer" style="position: static; margin-top: 25px; display: flex; justify-content: space-evenly; align-items: center; font-size: 13.5px; color: #777; font-family: 'Josefin Sans', sans-serif; width: 100%;">
+            <span style="font-size: 12.5px; color: #777;">WEB: <br><b style="font-size: 13.5px;"><a href="https://livevaastu.in/" target="_blank" style="color: #D60000; text-decoration: none;">livevaastu.in</a></b></span>
+            <span style="font-size: 12.5px; color: #777;">EMAIL: <br><b style="font-size: 13.5px;"><a href="mailto:contact@livevaastu.com" style="color: #D60000; text-decoration: none;">contact@livevaastu.com</a></b></span>
+            <span style="font-size: 12.5px; color: #777;">MOBILE: <br><b style="font-size: 13.5px;"><a href="tel:9555666667" style="color: #D60000; text-decoration: none;">95556 66667</a></b></span>
           </div>
         </div>
 
