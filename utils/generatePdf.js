@@ -117,25 +117,25 @@ function countWords(str) {
 }
 
 function estimateHeight(block) {
-  if (/<h1[^>]*>/i.test(block)) return 50;
-  if (/<h2[^>]*>/i.test(block)) return 45;
-  if (/<h3[^>]*>/i.test(block)) return 35;
+  if (/<h1[^>]*>/i.test(block)) return 55;
+  if (/<h2[^>]*>/i.test(block)) return 50;
+  if (/<h3[^>]*>/i.test(block)) return 40;
   if (/<table[^>]*>/i.test(block)) {
     const rowCount = (block.match(/<tr[^>]*>/gi) || []).length;
-    return Math.max(rowCount * 28, 50);
+    return Math.max(rowCount * 32, 60);
   }
-  if (/<hr[^>]*\/?>/i.test(block)) return 15;
+  if (/<hr[^>]*\/?>/i.test(block)) return 20;
   if (/<li[^>]*>/i.test(block)) {
     const words = countWords(block);
-    const lines = Math.ceil(words / 13) || 1;
-    return (lines * 22) + 8;
+    const lines = Math.ceil(words / 12) || 1;
+    return (lines * 24) + 14;
   }
   const words = countWords(block);
-  const lines = Math.ceil(words / 15) || 1;
-  return (lines * 22) + 10;
+  const lines = Math.ceil(words / 14) || 1;
+  return (lines * 24) + 16;
 }
 
-function paginateSection(sectionHtml, maxSectionHeight = 780) {
+function paginateSection(sectionHtml, maxSectionHeight = 680) {
   const blockRegex = /<(h[1-3]|p|ul|ol|table|hr)[^>]*>[\s\S]*?<\/\1>|<hr[^>]*\/?>/gi;
   const blocks = [];
   let match;
@@ -159,8 +159,8 @@ function paginateSection(sectionHtml, maxSectionHeight = 780) {
     }
   }
 
-  // If the whole section fits on 1 page (up to 820px), keep it as 1 single page!
-  if (totalSectionHeight <= 820) {
+  // If the whole section fits safely on 1 page (up to 720px), keep it as 1 single page!
+  if (totalSectionHeight <= 720) {
     return [sectionHtml];
   }
 
@@ -178,7 +178,7 @@ function paginateSection(sectionHtml, maxSectionHeight = 780) {
 
       for (const li of liMatches) {
         const liHeight = estimateHeight(li);
-        if (currentHeight + liHeight > maxSectionHeight && currentHeight > 220) {
+        if (currentHeight + liHeight > maxSectionHeight && currentHeight > 180) {
           if (currentListItems.length > 0) {
             currentBlocks.push(`<${listTag} class="fix-list" style="list-style:none;padding-left:18px;margin:8px 0;">${currentListItems.join("\n")}</${listTag}>`);
             currentListItems = [];
@@ -198,7 +198,7 @@ function paginateSection(sectionHtml, maxSectionHeight = 780) {
     }
 
     const bHeight = estimateHeight(block);
-    if (currentHeight + bHeight > maxSectionHeight && currentHeight > 220) {
+    if (currentHeight + bHeight > maxSectionHeight && currentHeight > 180) {
       subPages.push(currentBlocks.join("\n"));
       currentBlocks = [];
       currentHeight = 0;
@@ -248,17 +248,17 @@ function paginateAiReportToPages(aiHtml) {
   const finalPages = [];
 
   for (const section of rawSections) {
-    const sectionPages = paginateSection(section, 780);
+    const sectionPages = paginateSection(section, 680);
     for (const sp of sectionPages) {
       finalPages.push(sp);
     }
   }
 
-  // Merge any very short trailing page into previous page if combined <= 320 words
+  // Merge any very short trailing page into previous page if combined <= 280 words
   for (let i = finalPages.length - 1; i > 0; i--) {
     const prevWords = countWords(finalPages[i - 1]);
     const currWords = countWords(finalPages[i]);
-    if (currWords < 90 && prevWords + currWords <= 320) {
+    if (currWords < 80 && prevWords + currWords <= 280) {
       finalPages[i - 1] += "\n<br>\n" + finalPages[i];
       finalPages.splice(i, 1);
     }
@@ -291,8 +291,8 @@ function paginateAiReportToPages(aiHtml) {
           </h3>
         </div>
 
-        <!-- Content Area (Height expanded to 940px so content never gets clipped) -->
-        <div class="usage-content" style="padding: 0; height: 940px; overflow: hidden;">
+        <!-- Content Area (Safe headroom, no artificial overflow cut) -->
+        <div class="usage-content" style="padding: 0; min-height: 750px; max-height: 880px;">
           ${pageContent}
         </div>
 
