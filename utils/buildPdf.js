@@ -9,7 +9,8 @@ async function generatePdfFromUrl(pdfPageUrl) {
           goto: {
             url: pdfPageUrl,
             options: {
-              waitUntil: ["networkidle0"]
+              waitUntil: ["load", "domcontentloaded"],
+              timeout: 60000
             }
           },
           pdf: {
@@ -22,7 +23,9 @@ async function generatePdfFromUrl(pdfPageUrl) {
         headers: {
           Authorization: `Bearer ${process.env.DOPPIO_API_KEY}`,
           "Content-Type": "application/json"
-        }
+        },
+        timeout: 90000
+      }
       }
     );
 

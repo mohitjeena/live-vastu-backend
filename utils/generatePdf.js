@@ -156,24 +156,24 @@ function getLineUnits(block) {
   if (/<h1[^>]*>/i.test(block)) return 3.0;
   if (/<h2[^>]*>/i.test(block)) return 2.5;
   if (/<h3[^>]*>/i.test(block)) return 1.8;
-  if (/<hr[^>]*\/?>/i.test(block)) return 1.0;
+  if (/<hr[^>]*\/?>/i.test(block)) return 0.8;
   if (/<table[^>]*>/i.test(block)) {
     const rowCount = (block.match(/<tr[^>]*>/gi) || []).length;
-    return Math.max(rowCount * 1.5, 3.0);
+    return Math.max(rowCount * 1.4, 2.5);
   }
   if (/<li[^>]*>/i.test(block)) {
     const innerLis = (block.match(/<li[^>]*>/gi) || []).length;
     const words = countWords(block);
-    const textLines = Math.ceil(words / 13) || 1;
-    return textLines + (innerLis * 0.8);
+    const textLines = Math.ceil(words / 14) || 1;
+    return textLines + (innerLis * 0.5);
   }
   // Paragraph (<p>) or other text
   const words = countWords(block);
   const textLines = Math.ceil(words / 14) || 1;
-  return textLines + 0.8;
+  return textLines + 0.5;
 }
 
-function paginateSection(sectionHtml, maxLinesPerPage = 28) {
+function paginateSection(sectionHtml, maxLinesPerPage = 30) {
   const blockRegex = /<(h[1-3]|p|ul|ol|table|hr)[^>]*>[\s\S]*?<\/\1>|<hr[^>]*\/?>/gi;
   const blocks = [];
   let match;
@@ -197,8 +197,8 @@ function paginateSection(sectionHtml, maxLinesPerPage = 28) {
     }
   }
 
-  // If the whole section fits safely on 1 page (up to 30 lines), keep it as 1 single page!
-  if (totalSectionLines <= 30) {
+  // If the whole section fits safely on 1 page (up to 31 lines), keep it as 1 single page!
+  if (totalSectionLines <= 31) {
     return [sectionHtml];
   }
 
@@ -216,7 +216,7 @@ function paginateSection(sectionHtml, maxLinesPerPage = 28) {
 
       for (const li of liMatches) {
         const liLines = getLineUnits(li);
-        if (currentLines + liLines > maxLinesPerPage && currentLines > 6) {
+        if (currentLines + liLines > maxLinesPerPage && currentLines > 8) {
           if (currentListItems.length > 0) {
             currentBlocks.push(`<${listTag} class="fix-list" style="list-style:none;padding-left:18px;margin:8px 0;">${currentListItems.join("\n")}</${listTag}>`);
             currentListItems = [];
@@ -236,7 +236,7 @@ function paginateSection(sectionHtml, maxLinesPerPage = 28) {
     }
 
     const bLines = getLineUnits(block);
-    if (currentLines + bLines > maxLinesPerPage && currentLines > 6) {
+    if (currentLines + bLines > maxLinesPerPage && currentLines > 8) {
       subPages.push(currentBlocks.join("\n"));
       currentBlocks = [];
       currentLines = 0;
@@ -286,17 +286,17 @@ function paginateAiReportToPages(aiHtml) {
   const finalPages = [];
 
   for (const section of rawSections) {
-    const sectionPages = paginateSection(section, 28);
+    const sectionPages = paginateSection(section, 30);
     for (const sp of sectionPages) {
       finalPages.push(sp);
     }
   }
 
-  // Merge any very short trailing page into previous page if combined <= 28 lines
+  // Merge any very short trailing page into previous page if combined <= 300 words
   for (let i = finalPages.length - 1; i > 0; i--) {
     const prevWords = countWords(finalPages[i - 1]);
     const currWords = countWords(finalPages[i]);
-    if (currWords < 80 && prevWords + currWords <= 260) {
+    if (currWords < 90 && prevWords + currWords <= 300) {
       finalPages[i - 1] += "\n<br>\n" + finalPages[i];
       finalPages.splice(i, 1);
     }
