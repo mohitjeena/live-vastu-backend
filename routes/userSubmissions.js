@@ -371,12 +371,12 @@ if (toiletCountAnswer) {
                     <tr> 
                     <td style="padding:25px; color:#333333;"> 
                     <p style="font-size:15px; margin:0 0 15px;"> Dear User, </p> 
-                    <p style="font-size:14px; line-height:1.6;"> Thank you for successfully completing your <strong>paid Vastu consultation questionnaire</strong>. We have received all your responses and the details have been securely recorded. </p> <p style="font-size:14px; line-height:1.6;"> Our expert <strong>Dr. Puneet Chawla</strong> is now analyzing your inputs based on authentic Vastu Shastra principles to prepare your <strong>personalized Vastu report</strong>. </p> 
+                    <p style="font-size:14px; line-height:1.6;"> Thank you for successfully completing your <strong>Vastu consultation questionnaire(${user.plan_type})</strong>. We have received all your responses and the details have been securely recorded. </p> <p style="font-size:14px; line-height:1.6;"> Our expert <strong>Dr. Puneet Chawla</strong> is now analyzing your inputs based on authentic Vastu Shastra principles to prepare your <strong>personalized Vastu report</strong>. </p> 
                     <p style="font-size:14px; line-height:1.6;"> 🔍 <strong>Next: </strong> 
                     </p> 
                     <ul style="font-size:14px; line-height:1.6; padding-left:20px;"> 
                     <li>Your responses are under expert review</li> <li>A detailed Vastu analysis is being generated</li> 
-                    <li>You will receive your complete Vastu report shortly
+                    <li>You will receive your complete Vastu report shortly on Email
                     </li> 
                     <li>You can track your vastu report here <a href="https://account.livevaastu.in/orders/${user.order_id}" target="_blank">Click Here</a>
                     </li> 
