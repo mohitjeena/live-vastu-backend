@@ -112,145 +112,25 @@ function cleanHtml(html) {
 }
 
 
-function countWords(str) {
-  return str.replace(/<[^>]*>/g, " ").trim().split(/\s+/).filter(Boolean).length;
-}
-
-// Correctly splits top-level <li> elements even when they contain nested <ul> lists
-function splitTopLevelListItems(ulContent) {
-  const items = [];
-  let depth = 0;
-  let currentItem = "";
-
-  const tokens = ulContent.split(/(<\/?(?:li|ul|ol)[^>]*>)/i);
-
-  for (const token of tokens) {
-    if (/^<li[^>]*>/i.test(token)) {
-      if (depth === 0 && currentItem.trim().length > 0) {
-        items.push(currentItem.trim());
-        currentItem = "";
-      }
-      depth++;
-      currentItem += token;
-    } else if (/^<\/li>/i.test(token)) {
-      depth--;
-      currentItem += token;
-      if (depth === 0) {
-        items.push(currentItem.trim());
-        currentItem = "";
-      }
-    } else {
-      currentItem += token;
-    }
-  }
-
-  if (currentItem.trim().length > 0) {
-    items.push(currentItem.trim());
-  }
-
-  return items.filter(it => it.trim().length > 0);
-}
-
-// Calculate exact Physical Line Units for any block
-function getLineUnits(block) {
-  if (/<h1[^>]*>/i.test(block)) return 3.0;
-  if (/<h2[^>]*>/i.test(block)) return 2.5;
-  if (/<h3[^>]*>/i.test(block)) return 1.8;
-  if (/<hr[^>]*\/?>/i.test(block)) return 0.8;
+// Estimate physical pixel height for any HTML element on A4 page (at 96 DPI)
+function estimateBlockHeight(block) {
+  if (/<h1[^>]*>/i.test(block)) return 55;
+  if (/<h2[^>]*>/i.test(block)) return 45;
+  if (/<h3[^>]*>/i.test(block)) return 35;
+  if (/<hr[^>]*\/?>/i.test(block)) return 15;
   if (/<table[^>]*>/i.test(block)) {
     const rowCount = (block.match(/<tr[^>]*>/gi) || []).length;
-    return Math.max(rowCount * 1.4, 2.5);
+    return Math.max(rowCount * 36 + 20, 50);
   }
   if (/<li[^>]*>/i.test(block)) {
-    const innerLis = (block.match(/<li[^>]*>/gi) || []).length;
-    const words = countWords(block);
-    const textLines = Math.ceil(words / 14) || 1;
-    return textLines + (innerLis * 0.5);
+    const plain = block.replace(/<[^>]*>/g, "").trim();
+    const lines = Math.max(1, Math.ceil(plain.length / 80));
+    return lines * 24 + 10;
   }
   // Paragraph (<p>) or other text
-  const words = countWords(block);
-  const textLines = Math.ceil(words / 14) || 1;
-  return textLines + 0.5;
-}
-
-function paginateSection(sectionHtml, maxLinesPerPage = 30) {
-  const blockRegex = /<(h[1-3]|p|ul|ol|table|hr)[^>]*>[\s\S]*?<\/\1>|<hr[^>]*\/?>/gi;
-  const blocks = [];
-  let match;
-
-  while ((match = blockRegex.exec(sectionHtml)) !== null) {
-    blocks.push(match[0]);
-  }
-
-  if (blocks.length === 0) {
-    return [sectionHtml];
-  }
-
-  // Calculate total section line units
-  let totalSectionLines = 0;
-  for (const b of blocks) {
-    if (/<(ul|ol)[^>]*>/i.test(b)) {
-      const lis = splitTopLevelListItems(b);
-      for (const li of lis) totalSectionLines += getLineUnits(li);
-    } else {
-      totalSectionLines += getLineUnits(b);
-    }
-  }
-
-  // If the whole section fits safely on 1 page (up to 31 lines), keep it as 1 single page!
-  if (totalSectionLines <= 31) {
-    return [sectionHtml];
-  }
-
-  // Otherwise, split into sub-pages
-  const subPages = [];
-  let currentBlocks = [];
-  let currentLines = 0;
-
-  for (const block of blocks) {
-    const listMatch = block.match(/<(ul|ol)[^>]*>([\s\S]*?)<\/\1>/i);
-    if (listMatch) {
-      const listTag = listMatch[1];
-      const liMatches = splitTopLevelListItems(listMatch[2]);
-      let currentListItems = [];
-
-      for (const li of liMatches) {
-        const liLines = getLineUnits(li);
-        if (currentLines + liLines > maxLinesPerPage && currentLines > 8) {
-          if (currentListItems.length > 0) {
-            currentBlocks.push(`<${listTag} class="fix-list" style="list-style:none;padding-left:18px;margin:8px 0;">${currentListItems.join("\n")}</${listTag}>`);
-            currentListItems = [];
-          }
-          subPages.push(currentBlocks.join("\n"));
-          currentBlocks = [];
-          currentLines = 0;
-        }
-        currentListItems.push(li);
-        currentLines += liLines;
-      }
-
-      if (currentListItems.length > 0) {
-        currentBlocks.push(`<${listTag} class="fix-list" style="list-style:none;padding-left:18px;margin:8px 0;">${currentListItems.join("\n")}</${listTag}>`);
-      }
-      continue;
-    }
-
-    const bLines = getLineUnits(block);
-    if (currentLines + bLines > maxLinesPerPage && currentLines > 8) {
-      subPages.push(currentBlocks.join("\n"));
-      currentBlocks = [];
-      currentLines = 0;
-    }
-
-    currentBlocks.push(block);
-    currentLines += bLines;
-  }
-
-  if (currentBlocks.length > 0) {
-    subPages.push(currentBlocks.join("\n"));
-  }
-
-  return subPages;
+  const plain = block.replace(/<[^>]*>/g, "").trim();
+  const lines = Math.max(1, Math.ceil(plain.length / 80));
+  return lines * 24 + 14;
 }
 
 function paginateAiReportToPages(aiHtml) {
@@ -267,51 +147,79 @@ function paginateAiReportToPages(aiHtml) {
   clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-container[^"']*["'][^>]*>/gi, "");
   clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-flow-body[^"']*["'][^>]*>/gi, "");
 
-  // Split by <h2> sections so EVERY major title starts at the top of a page (perfect left alignment like Image 3!)
-  let rawSections = clean
-    .split(/(?=<h2[^>]*>)/i)
-    .map(s => s.trim())
-    .filter(s => s.length > 0);
+  // Extract all blocks in one continuous sequence (no artificial splitting per h2)
+  const blockRegex = /<(h[1-3]|p|ul|ol|table|hr)[^>]*>[\s\S]*?<\/\1>|<hr[^>]*\/?>/gi;
+  const rawBlocks = [];
+  let match;
 
-  if (rawSections.length === 0) {
-    rawSections = [clean];
+  while ((match = blockRegex.exec(clean)) !== null) {
+    rawBlocks.push(match[0]);
   }
 
-  // If the first section does NOT contain <h2> (it is the Title block), merge with 1. Executive Summary
-  if (rawSections.length > 1 && !rawSections[0].match(/<h2[^>]*>/i)) {
-    rawSections[1] = rawSections[0] + "<br>" + rawSections[1];
-    rawSections.shift();
+  if (rawBlocks.length === 0) {
+    rawBlocks.push(clean);
   }
 
+  // A4 page printable height capacity (1123px - 80px padding = 1043px available, safety target = 970px)
+  const PAGE_CAPACITY = 970;
   const finalPages = [];
+  let currentBlocks = [];
+  let currentHeight = 0;
 
-  for (const section of rawSections) {
-    const sectionPages = paginateSection(section, 30);
-    for (const sp of sectionPages) {
-      finalPages.push(sp);
+  for (const block of rawBlocks) {
+    const listMatch = block.match(/<(ul|ol)[^>]*>([\s\S]*?)<\/\1>/i);
+    if (listMatch) {
+      const listTag = listMatch[1];
+      const liMatches = splitTopLevelListItems(listMatch[2]);
+      let currentListItems = [];
+
+      for (const li of liMatches) {
+        const liHeight = estimateBlockHeight(li);
+
+        if (currentHeight + liHeight > PAGE_CAPACITY && currentBlocks.length > 0) {
+          if (currentListItems.length > 0) {
+            currentBlocks.push(`<${listTag} class="fix-list" style="list-style:none;padding-left:18px;margin:8px 0;">${currentListItems.join("\n")}</${listTag}>`);
+            currentListItems = [];
+          }
+          finalPages.push(currentBlocks.join("\n"));
+          currentBlocks = [];
+          currentHeight = 0;
+        }
+
+        currentListItems.push(li);
+        currentHeight += liHeight;
+      }
+
+      if (currentListItems.length > 0) {
+        currentBlocks.push(`<${listTag} class="fix-list" style="list-style:none;padding-left:18px;margin:8px 0;">${currentListItems.join("\n")}</${listTag}>`);
+      }
+      continue;
     }
+
+    const bHeight = estimateBlockHeight(block);
+    const isHeading = /<h[1-3][^>]*>/i.test(block);
+
+    // If block doesn't fit, OR if it's a heading near the bottom (> 820px), start a fresh page
+    if (currentBlocks.length > 0 && (currentHeight + bHeight > PAGE_CAPACITY || (isHeading && currentHeight > 820))) {
+      finalPages.push(currentBlocks.join("\n"));
+      currentBlocks = [];
+      currentHeight = 0;
+    }
+
+    currentBlocks.push(block);
+    currentHeight += bHeight;
   }
 
-  // Merge any very short trailing page into previous page if combined <= 300 words
-  for (let i = finalPages.length - 1; i > 0; i--) {
-    const prevWords = countWords(finalPages[i - 1]);
-    const currWords = countWords(finalPages[i]);
-    if (currWords < 90 && prevWords + currWords <= 300) {
-      finalPages[i - 1] += "\n<br>\n" + finalPages[i];
-      finalPages.splice(i, 1);
-    }
+  if (currentBlocks.length > 0) {
+    finalPages.push(currentBlocks.join("\n"));
   }
 
-  // Render each page wrapped in standard vastu-page template with border, header, and footer
+  // Render each page with crisp red border and clean padding
   let resultHtml = "";
 
   for (let i = 0; i < finalPages.length; i++) {
-    let pageContent = finalPages[i];
+    let pageContent = finalPages[i].replace(/<hr[^>]*\/?>\s*$/gi, "").trim();
 
-    // Remove any trailing <hr> tags from the page content so they don't sit above the footer line
-    pageContent = pageContent.replace(/<hr[^>]*\/?>\s*$/gi, "").trim();
-
-    // Only add page break between pages (kitchen/common.html already ends with a page break)
     if (i > 0) {
       resultHtml += `<div style="page-break-after: always;"></div>`;
     }
