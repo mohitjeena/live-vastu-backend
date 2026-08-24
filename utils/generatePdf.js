@@ -135,87 +135,7 @@ function estimateHeight(block) {
   return (lines * 22) + 14;
 }
 
-function paginateSection(sectionHtml, maxSectionHeight = 830) {
-  const blockRegex = /<(h[1-3]|p|ul|ol|table|hr)[^>]*>[\s\S]*?<\/\1>|<hr[^>]*\/?>/gi;
-  const blocks = [];
-  let match;
-
-  while ((match = blockRegex.exec(sectionHtml)) !== null) {
-    blocks.push(match[0]);
-  }
-
-  if (blocks.length === 0) {
-    return [sectionHtml];
-  }
-
-  // Calculate total section height
-  let totalSectionHeight = 0;
-  for (const b of blocks) {
-    if (/<(ul|ol)[^>]*>/i.test(b)) {
-      const lis = b.match(/<li[^>]*>[\s\S]*?<\/li>/gi) || [];
-      for (const li of lis) totalSectionHeight += estimateHeight(li);
-    } else {
-      totalSectionHeight += estimateHeight(b);
-    }
-  }
-
-  // If the whole section fits on 1 page (up to 850px), keep it as 1 single page!
-  if (totalSectionHeight <= 850) {
-    return [sectionHtml];
-  }
-
-  // Otherwise, split into sub-pages using weighted height
-  const subPages = [];
-  let currentBlocks = [];
-  let currentHeight = 0;
-
-  for (const block of blocks) {
-    const listMatch = block.match(/<(ul|ol)[^>]*>([\s\S]*?)<\/\1>/i);
-    if (listMatch) {
-      const listTag = listMatch[1];
-      const liMatches = listMatch[2].match(/<li[^>]*>[\s\S]*?<\/li>/gi) || [];
-      let currentListItems = [];
-
-      for (const li of liMatches) {
-        const liHeight = estimateHeight(li);
-        if (currentHeight + liHeight > maxSectionHeight && currentHeight > 300) {
-          if (currentListItems.length > 0) {
-            currentBlocks.push(`<${listTag} class="fix-list" style="list-style:none;padding-left:20px;margin:8px 0;">${currentListItems.join("\n")}</${listTag}>`);
-            currentListItems = [];
-          }
-          subPages.push(currentBlocks.join("\n"));
-          currentBlocks = [];
-          currentHeight = 0;
-        }
-        currentListItems.push(li);
-        currentHeight += liHeight;
-      }
-
-      if (currentListItems.length > 0) {
-        currentBlocks.push(`<${listTag} class="fix-list" style="list-style:none;padding-left:20px;margin:8px 0;">${currentListItems.join("\n")}</${listTag}>`);
-      }
-      continue;
-    }
-
-    const bHeight = estimateHeight(block);
-    if (currentHeight + bHeight > maxSectionHeight && currentHeight > 300) {
-      subPages.push(currentBlocks.join("\n"));
-      currentBlocks = [];
-      currentHeight = 0;
-    }
-
-    currentBlocks.push(block);
-    currentHeight += bHeight;
-  }
-
-  if (currentBlocks.length > 0) {
-    subPages.push(currentBlocks.join("\n"));
-  }
-
-  return subPages;
-}
-
-function paginateAiReportToPages(aiHtml) {
+function paginateAiReportToPages(aiHtml, maxPageHeight = 820) {
   if (!aiHtml) return "";
 
   // Strip wrapping outer containers and headers
@@ -229,47 +149,82 @@ function paginateAiReportToPages(aiHtml) {
   clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-container[^"']*["'][^>]*>/gi, "");
   clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-flow-body[^"']*["'][^>]*>/gi, "");
 
-  // Split by <h2> sections (each major numbered section)
-  let rawSections = clean
-    .split(/(?=<h2[^>]*>)/i)
-    .map(s => s.trim())
-    .filter(s => s.length > 0);
+  // Match all top-level blocks
+  const blockRegex = /<(h[1-3]|p|ul|ol|table|hr)[^>]*>[\s\S]*?<\/\1>|<hr[^>]*\/?>/gi;
+  const blocks = [];
+  let match;
 
-  if (rawSections.length === 0) {
-    rawSections = [clean];
+  while ((match = blockRegex.exec(clean)) !== null) {
+    blocks.push(match[0]);
   }
 
-  // If the first section does NOT contain <h2> (e.g. it is the <h1> Title & subtitle block),
-  // merge it with the first <h2> section (1. Executive Summary) so page 1 starts with Title + Executive Summary
-  if (rawSections.length > 1 && !rawSections[0].match(/<h2[^>]*>/i)) {
-    rawSections[1] = rawSections[0] + "<br>" + rawSections[1];
-    rawSections.shift();
+  if (blocks.length === 0) {
+    blocks.push(clean);
   }
 
-  const finalPages = [];
+  const pages = [];
+  let currentBlocks = [];
+  let currentHeight = 0;
 
-  for (const section of rawSections) {
-    const sectionPages = paginateSection(section, 830);
-    for (const sp of sectionPages) {
-      finalPages.push(sp);
+  for (const block of blocks) {
+    // If it's a list (ul or ol), handle individual list items so long lists split smoothly
+    const listMatch = block.match(/<(ul|ol)[^>]*>([\s\S]*?)<\/\1>/i);
+    if (listMatch) {
+      const listTag = listMatch[1];
+      const liMatches = listMatch[2].match(/<li[^>]*>[\s\S]*?<\/li>/gi) || [];
+      let currentListItems = [];
+
+      for (const li of liMatches) {
+        const liH = estimateHeight(li);
+        if (currentHeight + liH > maxPageHeight && currentHeight > 200) {
+          if (currentListItems.length > 0) {
+            currentBlocks.push(`<${listTag} class="fix-list" style="list-style:none;padding-left:20px;margin:8px 0;">${currentListItems.join("\n")}</${listTag}>`);
+            currentListItems = [];
+          }
+          pages.push(currentBlocks.join("\n"));
+          currentBlocks = [];
+          currentHeight = 0;
+        }
+        currentListItems.push(li);
+        currentHeight += liH;
+      }
+
+      if (currentListItems.length > 0) {
+        currentBlocks.push(`<${listTag} class="fix-list" style="list-style:none;padding-left:20px;margin:8px 0;">${currentListItems.join("\n")}</${listTag}>`);
+      }
+      continue;
     }
+
+    // If it's a heading (h1, h2, h3) and the page is already 75% full, push heading to next page (prevents orphan headings)
+    const isHeading = /<h[1-3][^>]*>/i.test(block);
+    const bHeight = estimateHeight(block);
+
+    if (isHeading && currentHeight > 620) {
+      pages.push(currentBlocks.join("\n"));
+      currentBlocks = [block];
+      currentHeight = bHeight;
+      continue;
+    }
+
+    if (currentHeight + bHeight > maxPageHeight && currentHeight > 200) {
+      pages.push(currentBlocks.join("\n"));
+      currentBlocks = [];
+      currentHeight = 0;
+    }
+
+    currentBlocks.push(block);
+    currentHeight += bHeight;
   }
 
-  // Merge any very short trailing page into previous page if combined <= 320 words
-  for (let i = finalPages.length - 1; i > 0; i--) {
-    const prevWords = countWords(finalPages[i - 1]);
-    const currWords = countWords(finalPages[i]);
-    if (currWords < 90 && prevWords + currWords <= 320) {
-      finalPages[i - 1] += "\n<br>\n" + finalPages[i];
-      finalPages.splice(i, 1);
-    }
+  if (currentBlocks.length > 0) {
+    pages.push(currentBlocks.join("\n"));
   }
 
   // Render each page wrapped in standard vastu-page template with border, header, and footer
   let resultHtml = "";
 
-  for (let i = 0; i < finalPages.length; i++) {
-    let pageContent = finalPages[i];
+  for (let i = 0; i < pages.length; i++) {
+    let pageContent = pages[i];
 
     // Remove any trailing <hr> tags from the page content so they don't sit above the footer line
     pageContent = pageContent.replace(/<hr[^>]*\/?>\s*$/gi, "").trim();
