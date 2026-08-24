@@ -559,9 +559,6 @@ position:relative;
 }
 
 
-
-
-
 /* header */
 
 .page-header{
@@ -1201,89 +1198,39 @@ font-size:13px;
 color:#444;
 }
 
-/* AI Report Dynamic Flow Section Styles */
-.ai-report-table {
-    width: 100%;
-    border-collapse: collapse;
-    border-spacing: 0;
-    box-sizing: border-box;
-    border: 6px solid #D60000;
-    -webkit-box-decoration-break: clone;
-    box-decoration-break: clone;
-    background-color: #f7f3ef;
-}
-
-.ai-report-table thead {
-    display: table-header-group !important;
-}
-
-.ai-report-table tfoot {
-    display: table-footer-group !important;
-}
-
-.ai-report-table tbody {
-    display: table-row-group !important;
-}
-
-.ai-report-header-cell {
-    padding: 25px 40px 10px 40px;
-    background-color: #f7f3ef;
-}
-
-.ai-report-footer-cell {
-    padding: 10px 40px 25px 40px;
-    background-color: #f7f3ef;
-}
-
-.ai-report-body-cell {
-    padding: 10px 40px;
-    vertical-align: top;
-    background-color: #f7f3ef;
-}
-
-.ai-report-page,
-.ai-report-flow-content {
+/* AI Report Page Styles */
+.ai-report-page {
     font-family: 'Josefin Sans', sans-serif;
     color: #333333;
 }
 
 .ai-report-page h1,
 .ai-report-page h2,
-.ai-report-page h3,
-.ai-report-flow-content h1,
-.ai-report-flow-content h2,
-.ai-report-flow-content h3,
-.ai-report-flow-content .section-title {
+.ai-report-page h3 {
     color: #D60000 !important;
     font-weight: bold !important;
     font-family: 'Josefin Sans', sans-serif;
-    margin-top: 18px;
+    margin-top: 12px;
     margin-bottom: 8px;
-    page-break-after: avoid;
-    break-after: avoid;
 }
 
-.ai-report-page h1,
-.ai-report-flow-content h1 {
+.ai-report-page h1 {
     font-size: 22px;
     border-bottom: 2px solid #D60000;
     padding-bottom: 4px;
 }
 
-.ai-report-page h2,
-.ai-report-flow-content h2 {
+.ai-report-page h2 {
     font-size: 18px;
     border-bottom: 1px solid #D60000;
     padding-bottom: 3px;
 }
 
-.ai-report-page h3,
-.ai-report-flow-content h3 {
+.ai-report-page h3 {
     font-size: 15px;
 }
 
-.ai-report-page p,
-.ai-report-flow-content p {
+.ai-report-page p {
     margin: 8px 0;
     text-align: justify;
     text-justify: inter-word;
@@ -1296,9 +1243,7 @@ color:#444;
 }
 
 .ai-report-page ul,
-.ai-report-page ol,
-.ai-report-flow-content ul,
-.ai-report-flow-content ol {
+.ai-report-page ol {
     list-style: none;
     padding: 0;
     margin: 8px 0;
@@ -1306,9 +1251,7 @@ color:#444;
 }
 
 .ai-report-page ul li,
-.ai-report-page ol li,
-.ai-report-flow-content ul li,
-.ai-report-flow-content ol li {
+.ai-report-page ol li {
     margin: 7px 0;
     font-size: 14.5px;
     color: #333333;
@@ -1319,8 +1262,7 @@ color:#444;
     break-inside: avoid;
 }
 
-.ai-report-page ul li:before,
-.ai-report-flow-content ul li:before {
+.ai-report-page ul li:before {
     content: "✓";
     position: absolute;
     left: -16px;
@@ -1328,42 +1270,29 @@ color:#444;
     font-weight: bold;
 }
 
-.ai-report-page hr,
-.ai-report-flow-content hr {
+.ai-report-page hr {
     border: 0;
     height: 1px;
     background: #cfcfcf;
     margin: 12px 0;
 }
 
-.ai-report-page table,
-.ai-report-flow-content table {
+.ai-report-page table {
     width: 100%;
     border-collapse: collapse;
     margin: 10px 0;
     background-color: #ffffff;
-    page-break-inside: auto;
-    break-inside: auto;
-}
-
-.ai-report-page tr,
-.ai-report-flow-content tr {
-    page-break-inside: avoid;
-    break-inside: avoid;
 }
 
 .ai-report-page th,
-.ai-report-page td,
-.ai-report-flow-content th,
-.ai-report-flow-content td {
+.ai-report-page td {
     border: 1px solid #cccccc;
     padding: 6px 8px;
     text-align: left;
     font-size: 13px;
 }
 
-.ai-report-page th,
-.ai-report-flow-content th {
+.ai-report-page th {
     background-color: #010101;
     color: #C88200;
     font-weight: bold;
