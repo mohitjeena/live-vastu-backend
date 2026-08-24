@@ -115,7 +115,6 @@ function cleanHtml(html) {
 function paginateAiReportToPages(aiHtml) {
   if (!aiHtml) return "";
 
-  // Strip wrapping outer containers and headers
   let clean = cleanHtml(aiHtml);
   clean = extractBodyContent(clean);
 
@@ -127,56 +126,95 @@ function paginateAiReportToPages(aiHtml) {
   clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-flow-body[^"']*["'][^>]*>/gi, "");
 
   return `
-    <div style="page-break-after: always;"></div>
-    
-    <div class="ai-report-wrapper" style="width: 100%; box-sizing: border-box; background-color: #f7f3ef; position: relative;">
+    <style>
+      .ai-report-wrapper {
+        page-break-before: always;
+        break-before: page;
+        position: relative;
+        background-color: #f7f3ef;
+      }
+
+      /* 1. Red Border har page par repeat hoga */
+      .page-border {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 6px solid #D60000;
+        pointer-events: none;
+        box-sizing: border-box;
+      }
+
+      /* 2. Header har page par repeat hoga */
+      .ai-header-fixed {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 70px;
+        padding: 20px 35px 0px 35px;
+        background-color: #f7f3ef;
+      }
+
+      /* 3. Footer har page par repeat hoga */
+      .ai-footer-fixed {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 75px;
+        padding: 0px 35px 15px 35px;
+        background-color: #f7f3ef;
+      }
+
+      /* 4. Content area - Padding header aur footer ke liye space banayegi */
+      .ai-content-body {
+        padding-top: 85px;
+        padding-bottom: 85px;
+        padding-left: 35px;
+        padding-right: 35px;
+      }
+
+      .ai-content-body p, 
+      .ai-content-body li,
+      .ai-content-body div {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+    </style>
+
+    <div class="ai-report-wrapper">
       
-      <table class="ai-report-table" style="width: 100%; border-collapse: collapse; border-spacing: 0; box-sizing: border-box; border: 6px solid #D60000; -webkit-box-decoration-break: clone; box-decoration-break: clone; background-color: #f7f3ef;>
-        
-        <!-- Repeating Header on Every Printed Page -->
-        <thead style="display: table-header-group;">
-          <tr>
-            <td class="ai-report-header-cell" style="padding: 25px 40px 10px 40px; background-color: #f7f3ef;">
-              <div class="effect-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #D60000; padding-bottom: 8px;">
-                <div>
-                  <img src="https://cdn.shopify.com/s/files/1/0758/2911/7240/files/vastu-site-logo.png" style="width: 120px; display: block;" alt="Live Vaastu">
-                </div>
-                <h3 style="color: #D60000; font-family: 'Josefin Sans', sans-serif; font-size: 16px; font-weight: 700; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; text-align: right;">
-                  VASTU SHASTRA REPORT
-                </h3>
-              </div>
-            </td>
-          </tr>
-        </thead>
+      <!-- Border -->
+      <div class="page-border"></div>
 
-        <!-- Repeating Footer on Every Printed Page with reserved bottom padding -->
-        <tfoot style="display: table-footer-group;">
-          <tr>
-            <td class="ai-report-footer-cell" style="padding: 10px 40px 25px 40px; background-color: #f7f3ef;">
-              <div class="footer-container" style="width: 100%; text-align: center;">
-                <div class="line" style="width: 100%; margin: 0 auto 15px auto; height: 1px; background: #ddd;"></div>
-                <div class="footer" style="display: flex; justify-content: space-evenly; align-items: center; font-size: 13.5px; color: #777; font-family: 'Josefin Sans', sans-serif; width: 100%;">
-                  <span style="font-size: 12.5px; color: #777;">WEB: <br><b style="font-size: 13.5px;"><a href="https://livevaastu.in/" target="_blank" style="color: #D60000; text-decoration: none;">livevaastu.in</a></b></span>
-                  <span style="font-size: 12.5px; color: #777;">EMAIL: <br><b style="font-size: 13.5px;"><a href="mailto:contact@livevaastu.com" style="color: #D60000; text-decoration: none;">contact@livevaastu.com</a></b></span>
-                  <span style="font-size: 12.5px; color: #777;">MOBILE: <br><b style="font-size: 13.5px;"><a href="tel:9555666667" style="color: #D60000; text-decoration: none;">95556 66667</a></b></span>
-                </div>
-              </div>
-            </td>
-          </tr>
-        </tfoot>
+      <!-- Header (Fixed to repeat on every page) -->
+      <div class="ai-header-fixed">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #D60000; padding-bottom: 8px;">
+          <div>
+            <img src="https://cdn.shopify.com/s/files/1/0758/2911/7240/files/vastu-site-logo.png" style="width: 120px; display: block;" alt="Live Vaastu">
+          </div>
+          <h3 style="color: #D60000; font-family: 'Josefin Sans', sans-serif; font-size: 16px; font-weight: 700; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+            VASTU SHASTRA REPORT
+          </h3>
+        </div>
+      </div>
 
-        <!-- Natural Content Flow Body (Doppio / Chromium engine handles page splitting automatically) -->
-        <tbody>
-          <tr>
-            <td class="ai-report-body-cell" style="padding: 10px 40px; vertical-align: top; background-color: #f7f3ef;">
-              <div class="ai-report-flow-content">
-                ${clean}
-              </div>
-            </td>
-          </tr>
-        </tbody>
+      <!-- Footer (Fixed to repeat on every page) -->
+      <div class="ai-footer-fixed">
+        <div style="width: 100%; margin: 0 auto 10px auto; height: 1px; background: #ddd;"></div>
+        <div style="display: flex; justify-content: space-evenly; align-items: center; font-size: 13.5px; color: #777; font-family: 'Josefin Sans', sans-serif; width: 100%;">
+          <span style="font-size: 12.5px; color: #777;">WEB: <br><b style="font-size: 13.5px;"><a href="https://livevaastu.in/" target="_blank" style="color: #D60000; text-decoration: none;">livevaastu.in</a></b></span>
+          <span style="font-size: 12.5px; color: #777;">EMAIL: <br><b style="font-size: 13.5px;"><a href="mailto:contact@livevaastu.com" style="color: #D60000; text-decoration: none;">contact@livevaastu.com</a></b></span>
+          <span style="font-size: 12.5px; color: #777;">MOBILE: <br><b style="font-size: 13.5px;"><a href="tel:9555666667" style="color: #D60000; text-decoration: none;">95556 66667</a></b></span>
+        </div>
+      </div>
 
-      </table>
+      <!-- Flowing Content -->
+      <div class="ai-content-body">
+        ${clean}
+      </div>
 
     </div>
   `;

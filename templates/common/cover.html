@@ -559,6 +559,79 @@ position:relative;
 }
 
 
+/* --- AI REPORT DYNAMIC PAGES CSS --- */
+
+.ai-report-wrapper {
+  page-break-before: always;
+  break-before: page;
+  position: relative;
+  background-color: #f7f3ef;
+}
+
+/* Red border sirf AI section ke context mein */
+.ai-report-wrapper .page-border {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 6px solid #D60000;
+  pointer-events: none;
+  box-sizing: border-box;
+  z-index: 999;
+}
+
+/* Header sirf AI pages ke liye */
+.ai-report-wrapper .ai-header-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  padding: 20px 35px 0px 35px;
+  background-color: #f7f3ef;
+  z-index: 1000;
+}
+
+/* Footer sirf AI pages ke liye */
+.ai-report-wrapper .ai-footer-fixed {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 75px;
+  padding: 0px 35px 15px 35px;
+  background-color: #f7f3ef;
+  z-index: 1000;
+}
+
+/* Content spacing - Header/Footer ke overlap se bachane ke liye */
+.ai-report-wrapper .ai-content-body {
+  padding-top: 85px;
+  padding-bottom: 85px;
+  padding-left: 35px;
+  padding-right: 35px;
+}
+
+/* Content cut protection */
+.ai-report-wrapper .ai-content-body p, 
+.ai-report-wrapper .ai-content-body li,
+.ai-report-wrapper .ai-content-body tr,
+.ai-report-wrapper .ai-content-body .point-row {
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+}
+
+.ai-report-wrapper .ai-content-body h1,
+.ai-report-wrapper .ai-content-body h2,
+.ai-report-wrapper .ai-content-body h3 {
+  break-inside: avoid !important;
+  break-after: avoid !important;
+  page-break-inside: avoid !important;
+  page-break-after: avoid !important;
+}
+
+
 /* header */
 
 .page-header{
