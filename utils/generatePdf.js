@@ -131,7 +131,7 @@ function paginateAiReportToPages(aiHtml) {
     
     <div class="ai-report-wrapper" style="width: 100%; box-sizing: border-box; background-color: #f7f3ef; position: relative;">
       
-      <table class="ai-report-table" style="width: 100%; border-collapse: collapse; border-spacing: 0; box-sizing: border-box; border: 6px solid #D60000; -webkit-box-decoration-break: clone; box-decoration-break: clone; background-color: #f7f3ef;">
+      <table class="ai-report-table" style="width: 100%; border-collapse: collapse; border-spacing: 0; box-sizing: border-box; border: 6px solid #D60000; -webkit-box-decoration-break: clone; box-decoration-break: clone; background-color: #f7f3ef; height: 100vh">
         
         <!-- Repeating Header on Every Printed Page -->
         <thead>
