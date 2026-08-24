@@ -242,23 +242,24 @@ function paginateAiReportToPages(aiHtml) {
   // Render each page wrapped in standard vastu-page template with border, header, and footer
   let resultHtml = "";
 
-  for (const page of pages) {
-    let cleanTitle = page.title;
-    if (cleanTitle.length > 40) {
-      cleanTitle = cleanTitle.substring(0, 37) + "...";
+  for (let i = 0; i < pages.length; i++) {
+    const page = pages[i];
+
+    // Only add page break between pages (kitchen/common.html already ends with a page break)
+    if (i > 0) {
+      resultHtml += `<div style="page-break-after: always;"></div>`;
     }
 
     resultHtml += `
-      <div style="page-break-after: always;"></div>
       <div class="vastu-page ai-report-page" style="border: 6px solid #D60000; background-color: #f7f3ef; height: 1123px; width: 100%; box-sizing: border-box; position: relative; padding: 25px 40px 100px 40px; overflow: hidden;">
         
-        <!-- Header (Logo on Left, Section Title on Right) -->
+        <!-- Header (Logo on Left, Main Heading on Right on all pages) -->
         <div class="effect-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #D60000; padding-bottom: 8px; margin-bottom: 15px;">
           <div>
             <img src="https://cdn.shopify.com/s/files/1/0758/2911/7240/files/vastu-site-logo.png" style="width: 120px; display: block;" alt="Live Vaastu">
           </div>
-          <h3 style="color: #D60000; font-family: 'Josefin Sans', sans-serif; font-size: 16px; font-weight: 700; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; text-align: right; max-width: 65%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-            ${cleanTitle}
+          <h3 style="color: #D60000; font-family: 'Josefin Sans', sans-serif; font-size: 16px; font-weight: 700; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; text-align: right;">
+            VASTU SHASTRA REPORT
           </h3>
         </div>
 
