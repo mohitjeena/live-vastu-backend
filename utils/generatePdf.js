@@ -116,26 +116,28 @@ function countWords(str) {
   return str.replace(/<[^>]*>/g, " ").trim().split(/\s+/).filter(Boolean).length;
 }
 
-function estimateHeight(block) {
-  if (/<h1[^>]*>/i.test(block)) return 55;
-  if (/<h2[^>]*>/i.test(block)) return 50;
-  if (/<h3[^>]*>/i.test(block)) return 40;
+// Calculate exact Physical Line Units for any block
+function getLineUnits(block) {
+  if (/<h1[^>]*>/i.test(block)) return 3.0;
+  if (/<h2[^>]*>/i.test(block)) return 2.5;
+  if (/<h3[^>]*>/i.test(block)) return 1.8;
+  if (/<hr[^>]*\/?>/i.test(block)) return 1.0;
   if (/<table[^>]*>/i.test(block)) {
     const rowCount = (block.match(/<tr[^>]*>/gi) || []).length;
-    return Math.max(rowCount * 32, 60);
+    return Math.max(rowCount * 1.5, 3.0);
   }
-  if (/<hr[^>]*\/?>/i.test(block)) return 20;
   if (/<li[^>]*>/i.test(block)) {
     const words = countWords(block);
-    const lines = Math.ceil(words / 12) || 1;
-    return (lines * 24) + 14;
+    const textLines = Math.ceil(words / 13) || 1;
+    return textLines + 0.8; // Text lines + bullet item vertical margin/padding
   }
+  // Paragraph (<p>) or other text
   const words = countWords(block);
-  const lines = Math.ceil(words / 14) || 1;
-  return (lines * 24) + 16;
+  const textLines = Math.ceil(words / 14) || 1;
+  return textLines + 0.8; // Text lines + paragraph vertical margin
 }
 
-function paginateSection(sectionHtml, maxSectionHeight = 680) {
+function paginateSection(sectionHtml, maxLinesPerPage = 28) {
   const blockRegex = /<(h[1-3]|p|ul|ol|table|hr)[^>]*>[\s\S]*?<\/\1>|<hr[^>]*\/?>/gi;
   const blocks = [];
   let match;
@@ -148,26 +150,26 @@ function paginateSection(sectionHtml, maxSectionHeight = 680) {
     return [sectionHtml];
   }
 
-  // Calculate total section height
-  let totalSectionHeight = 0;
+  // Calculate total section line units
+  let totalSectionLines = 0;
   for (const b of blocks) {
     if (/<(ul|ol)[^>]*>/i.test(b)) {
       const lis = b.match(/<li[^>]*>[\s\S]*?<\/li>/gi) || [];
-      for (const li of lis) totalSectionHeight += estimateHeight(li);
+      for (const li of lis) totalSectionLines += getLineUnits(li);
     } else {
-      totalSectionHeight += estimateHeight(b);
+      totalSectionLines += getLineUnits(b);
     }
   }
 
-  // If the whole section fits safely on 1 page (up to 720px), keep it as 1 single page!
-  if (totalSectionHeight <= 720) {
+  // If the whole section fits safely on 1 page (up to 30 lines), keep it as 1 single page!
+  if (totalSectionLines <= 30) {
     return [sectionHtml];
   }
 
   // Otherwise, split into sub-pages
   const subPages = [];
   let currentBlocks = [];
-  let currentHeight = 0;
+  let currentLines = 0;
 
   for (const block of blocks) {
     const listMatch = block.match(/<(ul|ol)[^>]*>([\s\S]*?)<\/\1>/i);
@@ -177,18 +179,18 @@ function paginateSection(sectionHtml, maxSectionHeight = 680) {
       let currentListItems = [];
 
       for (const li of liMatches) {
-        const liHeight = estimateHeight(li);
-        if (currentHeight + liHeight > maxSectionHeight && currentHeight > 180) {
+        const liLines = getLineUnits(li);
+        if (currentLines + liLines > maxLinesPerPage && currentLines > 8) {
           if (currentListItems.length > 0) {
             currentBlocks.push(`<${listTag} class="fix-list" style="list-style:none;padding-left:18px;margin:8px 0;">${currentListItems.join("\n")}</${listTag}>`);
             currentListItems = [];
           }
           subPages.push(currentBlocks.join("\n"));
           currentBlocks = [];
-          currentHeight = 0;
+          currentLines = 0;
         }
         currentListItems.push(li);
-        currentHeight += liHeight;
+        currentLines += liLines;
       }
 
       if (currentListItems.length > 0) {
@@ -197,15 +199,15 @@ function paginateSection(sectionHtml, maxSectionHeight = 680) {
       continue;
     }
 
-    const bHeight = estimateHeight(block);
-    if (currentHeight + bHeight > maxSectionHeight && currentHeight > 180) {
+    const bLines = getLineUnits(block);
+    if (currentLines + bLines > maxLinesPerPage && currentLines > 8) {
       subPages.push(currentBlocks.join("\n"));
       currentBlocks = [];
-      currentHeight = 0;
+      currentLines = 0;
     }
 
     currentBlocks.push(block);
-    currentHeight += bHeight;
+    currentLines += bLines;
   }
 
   if (currentBlocks.length > 0) {
@@ -248,17 +250,17 @@ function paginateAiReportToPages(aiHtml) {
   const finalPages = [];
 
   for (const section of rawSections) {
-    const sectionPages = paginateSection(section, 680);
+    const sectionPages = paginateSection(section, 28);
     for (const sp of sectionPages) {
       finalPages.push(sp);
     }
   }
 
-  // Merge any very short trailing page into previous page if combined <= 280 words
+  // Merge any very short trailing page into previous page if combined <= 28 lines
   for (let i = finalPages.length - 1; i > 0; i--) {
     const prevWords = countWords(finalPages[i - 1]);
     const currWords = countWords(finalPages[i]);
-    if (currWords < 80 && prevWords + currWords <= 280) {
+    if (currWords < 80 && prevWords + currWords <= 260) {
       finalPages[i - 1] += "\n<br>\n" + finalPages[i];
       finalPages.splice(i, 1);
     }
