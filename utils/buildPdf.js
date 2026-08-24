@@ -9,8 +9,7 @@ async function generatePdfFromUrl(pdfPageUrl) {
           goto: {
             url: pdfPageUrl,
             options: {
-              waitUntil: ["load", "domcontentloaded"],
-              timeout: 60000
+              waitUntil: ["load", "domcontentloaded"]
             }
           },
           pdf: {
