@@ -131,14 +131,14 @@ function getFastCloudinaryUrl(url) {
             font-size: 24px;
             margin-top: 0;
             margin-bottom: 12px;
-            border-bottom: 2px solid #D60000;
+            border-bottom: 2px solid #C88200;
             padding-bottom: 6px;
           }
           .ai-report-content h2 {
             font-size: 19px;
             margin-top: 15px;
             margin-bottom: 10px;
-            border-bottom: 1px solid #D60000;
+            border-bottom: 1px solid #C88200;
             padding-bottom: 4px;
           }
           .ai-report-content h3 {

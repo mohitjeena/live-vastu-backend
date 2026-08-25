@@ -248,10 +248,10 @@ function generateAiReportHtml(aiHtml) {
     /* Full Page 5px Red Border repeating on every page */
     .page-border-frame {
       position: fixed;
-      top: 10px;
-      bottom: 10px;
-      left: 10px;
-      right: 10px;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
       border: 5px solid #D60000;
       pointer-events: none;
       z-index: 9999;
@@ -343,7 +343,7 @@ function generateAiReportHtml(aiHtml) {
       margin-top: 10px;
       margin-bottom: 12px;
       padding-bottom: 8px;
-      border-bottom: 2px solid #D60000;
+      border-bottom: 2px solid #C88200;
       text-transform: capitalize;
       letter-spacing: -0.2px;
       page-break-after: avoid;
@@ -358,7 +358,7 @@ function generateAiReportHtml(aiHtml) {
       margin-top: 22px;
       margin-bottom: 10px;
       padding-bottom: 5px;
-      border-bottom: 1.5px solid #D60000;
+      border-bottom: 1.5px solid #C88200;
       letter-spacing: 0.2px;
       page-break-after: avoid;
       break-after: avoid;
@@ -399,13 +399,13 @@ function generateAiReportHtml(aiHtml) {
 
     .ai-report-flow ul, .ai-report-flow ol {
       margin: 10px 0 14px 0;
-      padding: 0;
+      padding-left: 20px;
       list-style: none;
     }
 
     .ai-report-flow ul li, .ai-report-flow ol li {
       position: relative;
-      padding-left: 24px;
+      padding-left: 22px;
       margin-bottom: 10px;
       font-size: 13.5px;
       line-height: 1.6;
@@ -420,8 +420,8 @@ function generateAiReportHtml(aiHtml) {
       position: absolute;
       left: 0;
       top: 0;
-      color: #D60000;
-      font-size: 14px;
+      color: #AC7F5E;
+      font-size: 15px;
       font-weight: bold;
       line-height: 1.5;
     }
@@ -439,7 +439,7 @@ function generateAiReportHtml(aiHtml) {
       position: absolute;
       left: 0;
       top: 0;
-      color: #D60000;
+      color: #AC7F5E;
       font-size: 13.5px;
       font-weight: 700;
     }
