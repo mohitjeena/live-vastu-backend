@@ -109,15 +109,7 @@ async function generateAiPdfFromUrl(aiPdfUrl) {
   return generatePdfFromUrl(aiPdfUrl, {
     printBackground: true,
     format: "A4",
-    displayHeaderFooter: true,
-    margin: {
-      top: "85px",
-      bottom: "75px",
-      left: "20px",
-      right: "20px"
-    },
-    headerTemplate: DEFAULT_AI_HEADER_TEMPLATE,
-    footerTemplate: DEFAULT_AI_FOOTER_TEMPLATE
+    margin: { top: "0px", bottom: "0px", left: "0px", right: "0px" }
   });
 }
 
