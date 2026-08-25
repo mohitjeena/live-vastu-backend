@@ -206,18 +206,18 @@ function generateAiReportHtml(aiHtml) {
   <title>Vastu AI Report</title>
   <style>
     * {
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
       box-sizing: border-box;
     }
     @page {
       size: A4;
-      margin-top: 80px;
+      margin-top: 85px;
       margin-bottom: 75px;
       margin-left: 25px;
       margin-right: 25px;
     }
-    body {
+    html, body {
       margin: 0;
       padding: 0;
       font-family: 'Josefin Sans', sans-serif;
