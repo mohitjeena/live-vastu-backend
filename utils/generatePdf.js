@@ -248,10 +248,10 @@ function generateAiReportHtml(aiHtml) {
     /* Full Page 5px Red Border repeating on every page */
     .page-border-frame {
       position: fixed;
-      top: 12px;
-      bottom: 12px;
-      left: 12px;
-      right: 12px;
+      top: 10px;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
       border: 5px solid #D60000;
       pointer-events: none;
       z-index: 9999;
@@ -260,9 +260,9 @@ function generateAiReportHtml(aiHtml) {
     /* Fixed Header repeating on every page */
     .page-header-fixed {
       position: fixed;
-      top: 12px;
-      left: 12px;
-      right: 12px;
+      top: 10px;
+      left: 10px;
+      right: 10px;
       height: 72px;
       background-color: #f7f3ef;
       padding: 16px 25px 8px 25px;
@@ -276,9 +276,9 @@ function generateAiReportHtml(aiHtml) {
     /* Fixed Footer repeating on every page */
     .page-footer-fixed {
       position: fixed;
-      bottom: 12px;
-      left: 12px;
-      right: 12px;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
       height: 68px;
       background-color: #f7f3ef;
       padding: 6px 25px 14px 25px;
@@ -322,11 +322,179 @@ function generateAiReportHtml(aiHtml) {
       vertical-align: top;
       border: none;
     }
+
+    /* AI Report Content Typography & Polish */
     .ai-report-flow {
       background-color: #f7f3ef;
       padding: 0;
       width: 100%;
       box-sizing: border-box;
+      font-family: 'Josefin Sans', sans-serif;
+      color: #2b2b2b;
+      font-size: 13.5px;
+      line-height: 1.65;
+    }
+
+    .ai-report-flow h1 {
+      color: #D60000;
+      font-size: 21px;
+      font-weight: 800;
+      line-height: 1.35;
+      margin-top: 10px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #D60000;
+      text-transform: capitalize;
+      letter-spacing: -0.2px;
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+
+    .ai-report-flow h2 {
+      color: #D60000;
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.35;
+      margin-top: 22px;
+      margin-bottom: 10px;
+      padding-bottom: 5px;
+      border-bottom: 1.5px solid #D60000;
+      letter-spacing: 0.2px;
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+
+    .ai-report-flow h3 {
+      color: #111111;
+      font-size: 14.5px;
+      font-weight: 700;
+      line-height: 1.4;
+      margin-top: 16px;
+      margin-bottom: 6px;
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+
+    .ai-report-flow h4 {
+      color: #AC7F5E;
+      font-size: 13.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 12px;
+      margin-bottom: 4px;
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+
+    .ai-report-flow p {
+      color: #2b2b2b;
+      font-size: 13.5px;
+      line-height: 1.65;
+      font-weight: 500;
+      margin: 10px 0;
+      text-align: justify;
+      text-justify: inter-word;
+    }
+
+    .ai-report-flow ul, .ai-report-flow ol {
+      margin: 10px 0 14px 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .ai-report-flow ul li, .ai-report-flow ol li {
+      position: relative;
+      padding-left: 24px;
+      margin-bottom: 10px;
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: #2b2b2b;
+      font-weight: 500;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .ai-report-flow ul li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: #D60000;
+      font-size: 14px;
+      font-weight: bold;
+      line-height: 1.5;
+    }
+
+    .ai-report-flow ol {
+      counter-reset: custom-counter;
+    }
+
+    .ai-report-flow ol li {
+      counter-increment: custom-counter;
+    }
+
+    .ai-report-flow ol li::before {
+      content: counter(custom-counter) ".";
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: #D60000;
+      font-size: 13.5px;
+      font-weight: 700;
+    }
+
+    .ai-report-flow strong, .ai-report-flow b {
+      font-weight: 700;
+      color: #111111;
+    }
+
+    .ai-report-flow blockquote {
+      margin: 14px 0;
+      padding: 10px 16px;
+      background-color: #f0eae1;
+      border-left: 4px solid #D60000;
+      border-radius: 0 6px 6px 0;
+      color: #333333;
+      font-size: 13px;
+      line-height: 1.6;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .ai-report-flow hr {
+      border: none;
+      border-top: 1px solid #dcd5cc;
+      margin: 16px 0;
+    }
+
+    .ai-report-flow table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      background: #ffffff;
+      border: 1px solid #dcd5cc;
+      border-radius: 4px;
+      overflow: hidden;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .ai-report-flow table th {
+      background-color: #f0eae1;
+      color: #D60000;
+      font-weight: 700;
+      font-size: 12.5px;
+      padding: 8px 12px;
+      border: 1px solid #dcd5cc;
+      text-align: left;
+    }
+
+    .ai-report-flow table td {
+      padding: 8px 12px;
+      border: 1px solid #dcd5cc;
+      font-size: 12.5px;
+      color: #333333;
     }
   </style>
 </head>
