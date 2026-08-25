@@ -14,7 +14,8 @@ async function generatePdfFromUrl(pdfPageUrl) {
           },
           pdf: {
             printBackground: true,
-            format: "A4"
+            format: "A4",
+            preferCSSPageSize: true
           }
         }
       },
