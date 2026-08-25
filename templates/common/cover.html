@@ -18,6 +18,72 @@ print-color-adjust: exact;
     margin: 0;
 }
 
+/* AI Section ke liye alag Page Margin define karein */
+@page aiReportPage {
+  size: A4 portrait;
+  /* Top aur Bottom margin Header aur Footer ke liye jagah banayega */
+  margin-top: 95px;
+  margin-bottom: 90px;
+  margin-left: 20px;
+  margin-right: 20px;
+  background-color: #f7f3ef;
+}
+
+/* AI Report container ko Named Page se bind karein */
+.ai-report-wrapper {
+  page: aiReportPage;
+  page-break-before: always;
+  break-before: page;
+}
+
+/* 1. Har Page par Red Border */
+.ai-report-wrapper .page-border {
+  position: fixed;
+  top: -95px;      /* Margin offset */
+  bottom: -90px;   /* Margin offset */
+  left: -10px;
+  right: -10px;
+  border: 5px solid #D60000;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+/* 2. Har Page par Header */
+.ai-report-wrapper .ai-header-fixed {
+  position: fixed;
+  top: -80px;
+  left: 0px;
+  right: 0px;
+  height: 65px;
+  background-color: #f7f3ef;
+}
+
+/* 3. Har Page par Footer */
+.ai-report-wrapper .ai-footer-fixed {
+  position: fixed;
+  bottom: -75px;
+  left: 0px;
+  right: 0px;
+  height: 60px;
+  background-color: #f7f3ef;
+}
+
+/* 4. Natural Flow Content Break Rules */
+.ai-report-wrapper tr,
+.ai-report-wrapper .point-row {
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+}
+
+.ai-report-wrapper h1, 
+.ai-report-wrapper h2, 
+.ai-report-wrapper h3 {
+  break-inside: avoid !important;
+  break-after: avoid !important;
+  page-break-inside: avoid !important;
+  page-break-after: avoid !important;
+}
+
 .ai-report::before {
  content: "";
     position: absolute;

@@ -125,11 +125,43 @@ function formatAiReportNaturalFlow(aiHtml) {
   clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-flow-body[^"']*["'][^>]*>/gi, "");
   clean = clean.replace(/<div[^>]*class=["']usage-content["'][^>]*>/gi, "");
 
-  return `
-    <div class="ai-report-flow" style="background-color: #f7f3ef; padding: 40px 45px; min-height: 1123px; box-sizing: border-box; width: 100%;">
-      ${clean}
+ return `<div class="ai-report-wrapper">
+      
+      <!-- Har page par repeat hone wala Border -->
+      <div class="page-border"></div>
+
+      <!-- Har page par repeat hone wala Header -->
+      <div class="ai-header-fixed">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #D60000; padding: 10px 20px 8px 20px;">
+          <div>
+            <img src="https://cdn.shopify.com/s/files/1/0758/2911/7240/files/vastu-site-logo.png" style="width: 120px; display: block;" alt="Live Vaastu">
+          </div>
+          <h3 style="color: #D60000; font-family: 'Josefin Sans', sans-serif; font-size: 16px; font-weight: 700; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+            VASTU SHASTRA REPORT
+          </h3>
+        </div>
+      </div>
+
+      <!-- Har page par repeat hone wala Footer -->
+      <div class="ai-footer-fixed">
+        <div style="padding: 0 20px;">
+          <div style="width: 100%; margin: 0 auto 8px auto; height: 1px; background: #ddd;"></div>
+          <div style="display: flex; justify-content: space-evenly; align-items: center; font-size: 13.5px; color: #777; font-family: 'Josefin Sans', sans-serif; width: 100%;">
+            <span style="font-size: 12.5px; color: #777;">WEB: <br><b style="font-size: 13.5px;"><a href="https://livevaastu.in/" target="_blank" style="color: #D60000; text-decoration: none;">livevaastu.in</a></b></span>
+            <span style="font-size: 12.5px; color: #777;">EMAIL: <br><b style="font-size: 13.5px;"><a href="mailto:contact@livevaastu.com" style="color: #D60000; text-decoration: none;">contact@livevaastu.com</a></b></span>
+            <span style="font-size: 12.5px; color: #777;">MOBILE: <br><b style="font-size: 13.5px;"><a href="tel:9555666667" style="color: #D60000; text-decoration: none;">95556 66667</a></b></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dynamic Flow Content -->
+      <div class="ai-report-body-content" style="padding: 0 20px;">
+        ${clean}
+      </div>
+
     </div>
   `;
+ 
 }
 
 
