@@ -214,14 +214,26 @@ function generateAiReportHtml(aiHtml) {
       size: A4;
       margin-top: 85px;
       margin-bottom: 75px;
-      margin-left: 25px;
-      margin-right: 25px;
+      margin-left: 28px;
+      margin-right: 28px;
+      background-color: #f7f3ef;
     }
     html, body {
       margin: 0;
       padding: 0;
       font-family: 'Josefin Sans', sans-serif;
       background-color: #f7f3ef;
+    }
+    .page-border-frame {
+      position: fixed;
+      top: 10px;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      border: 5px solid #D60000;
+      pointer-events: none;
+      z-index: 9999;
+      box-sizing: border-box;
     }
     .ai-report-flow {
       background-color: #f7f3ef;
@@ -232,6 +244,7 @@ function generateAiReportHtml(aiHtml) {
   </style>
 </head>
 <body>
+  <div class="page-border-frame"></div>
   <div class="ai-report-flow">
     ${clean}
   </div>
