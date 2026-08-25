@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 const DEFAULT_AI_HEADER_TEMPLATE = `
-  <div style="width:100%; background-color:#f7f3ef; margin:0 25px; padding:10px 10px 8px 10px; font-family:'Josefin Sans', Arial, sans-serif; border-bottom:2px solid #D60000; display:flex; justify-content:space-between; align-items:center; box-sizing:border-box;">
+  <div style="width:100%; background-color: #f7f3ef; margin:0 25px; padding:10px 10px 8px 10px; font-family:'Josefin Sans', Arial, sans-serif; border-bottom:2px solid #D60000; display:flex; justify-content:space-between; align-items:center; box-sizing:border-box;">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 196 63" style="height:36px; width:auto; display:block;">
       <path fill="#B12424" d="M118 22h7l3 17 1.496-3.465 1.941-4.472.987-2.288c2.463-5.662 2.463-5.662 3.576-6.775q3.5-.062 7 0 .506 2.625 1 5.25l.563 2.953C145 33 145 33 145 37c1.707-1.036 1.707-1.036 3-3l-.625-3.375C147 27 147 27 149 24.063c3.674-2.526 5.625-2.55 10-2.063l3 1 1-1a91 91 0 0 1 5.129-.098l3.135.01 3.298.026 3.311.013q4.064.018 8.127.049c.106 5.482-.531 9.767-2 15l3-1c1.037-3.254 1.037-3.254 1.688-7.062.25-1.29.502-2.581.761-3.91L190 22h6q-.387 3.345-.812 6.688l-.458 3.761c-.86 4.18-2.078 7.253-5.48 9.926-3.386.94-5.872.485-9.25-.375-2.247-2.237-2.982-3.38-3.074-6.578l.387-2.672.363-2.703L178 28h-5l-.148 2.012c-.743 8.77-.743 8.77-2.852 12.988h-6l2-14c-4.605-1.453-4.605-1.453-7 0l1.563 1.625C162 33 162 33 162.063 36c-1.063 3-1.063 3-3.625 5.438-4.507 2.048-6.626 1.43-11.438.562l-3 1c-2.687-.437-2.687-.437-5-1v-3h-5l-2 4-12-1v-3c-1.975.348-1.975.348-4 1l-1 2c-3.062.625-3.062.625-6 1 .616-4.96 2.798-8.937 5.063-13.312l1.142-2.245Q116.595 24.718 118 22m36 5v2l4-1zm-35 4 1 2Zm31 4v2h5l-2-2z"/>
       <path fill="#FDB813" d="M12 0h2c4.952 8.71 4.952 8.71 4 14-1.49 3.436-3.2 6.718-5 10l-1 2 3.25-.312C19 26 19 26 21.5 28.063c1.941 3.8 1.576 5.864.5 9.937-2 2-2 2-4.437 2.313C14.607 39.953 13.81 39.288 12 37c1.398 2.929 2.737 5.649 4.688 8.25C18 47 18 47 18 49h3l.813-1.687C23 45 23 45 24.625 42.937 26.812 38.266 26.947 34.055 26 29c-1.62-3.238-3.475-6.212-5.43-9.258C18.462 16.062 18.107 14.11 19 10l3-2 .563 3.375c1.187 4.872 3.8 8.363 6.78 12.328C33.013 28.79 33.934 32.788 33 39c-2.403 6.941-7.187 15.594-14 19-.656 2.527-.656 2.527-1 5-3.137-.321-4.693-.723-7.062-2.863C3.81 51.128-1.078 42.139-.626 30.379c1.404-7.59 5.47-14.259 9.813-20.547C11.312 6.512 11.688 3.892 12 0m-1 16 1 2Zm-1 2-1 4 2-4zm-2 4-1 4 2-4zm-2 4 1 4Zm-1 4v7h1v-7zm8 1-1 2c1.812 2.062 1.812 2.062 4 4h3v-5zm-7 7 1 2Zm1 3 1 2Zm2 4 1 2Zm5 7 1 2Z"/>
@@ -32,7 +32,7 @@ const DEFAULT_AI_HEADER_TEMPLATE = `
 `;
 
 const DEFAULT_AI_FOOTER_TEMPLATE = `
-  <div style="width:100%; background-color:#f7f3ef; margin:0 25px; padding:6px 10px 12px 10px; font-family:'Josefin Sans', Arial, sans-serif; box-sizing:border-box;">
+  <div style="width:100%; background-color: #f7f3ef; margin:0 25px; padding:6px 10px 12px 10px; font-family:'Josefin Sans', Arial, sans-serif; box-sizing:border-box;">
     <div style="border-top:1px solid #dcd5cc; margin-bottom:8px; width:100%;"></div>
     <div style="display:flex; justify-content:space-evenly; align-items:center; color:#555555; font-size:11px; text-align:center;">
       <span>WEB: <br><b style="color:#D60000; font-size:12.5px;"><a href="https://livevaastu.in/" target="_blank" style="color: #D60000;
