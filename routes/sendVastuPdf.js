@@ -5,12 +5,13 @@ const nodemailer = require("nodemailer");
 const pdf = require("html-pdf-node");
 // const transporter = require("../utils/email");
 const sendPdfMail = require("../services/mail");
-const { generateFinalHtml,extractAnswers } =require("../utils/generatePdf")
-const UserDetails = require("../models/userDetails")
-const generatePdfFromUrl = require("../utils/buildPdf")
+const { generateFinalHtml, generateStaticHtml, generateAiReportHtml, extractAnswers } = require("../utils/generatePdf");
+const UserDetails = require("../models/userDetails");
+const { generatePdfFromUrl, generateStaticPdfFromUrl, generateAiPdfFromUrl } = require("../utils/buildPdf");
 const uploadPdfToDrive = require("../utils/uploadPdfToDrive");
+const { PDFDocument } = require("pdf-lib");
 
-const axios = require('axios')
+const axios = require('axios');
 
 
 router.post("/send-vastu-pdf", async (req, res) => {
@@ -47,8 +48,49 @@ router.post("/send-vastu-pdf", async (req, res) => {
        }
 });
 
+// 1. Static Pages HTML Endpoint (Cover, Details, Intro, Direction Templates)
+router.get("/temp-pdf-static/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
 
-router.get("/temp-pdf/:id",async (req, res) => {
+        const user = await UserSubmission.findOne({ session_id: id });
+        if (!user) {
+            return res.status(404).send("User submission not found for session id: " + id);
+        }
+
+        const details = await UserDetails.findOne({ userId: user._id });
+        const userAnswers = extractAnswers(user.answers || []);
+        const staticHtml = generateStaticHtml(userAnswers, details?.toObject() || {});
+
+        res.send(staticHtml);
+    } catch (error) {
+        console.error("Error in /temp-pdf-static/:id:", error);
+        res.status(500).send("Error: " + error.message);
+    }
+});
+
+// 2. AI Report HTML Endpoint (Clean continuous AI report)
+router.get("/temp-pdf-ai/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const user = await UserSubmission.findOne({ session_id: id });
+        if (!user) {
+            return res.status(404).send("User submission not found for session id: " + id);
+        }
+
+        const aiHtml = user.vastu_report || "";
+        const formattedAiHtml = generateAiReportHtml(aiHtml);
+
+        res.send(formattedAiHtml);
+    } catch (error) {
+        console.error("Error in /temp-pdf-ai/:id:", error);
+        res.status(500).send("Error: " + error.message);
+    }
+});
+
+// 3. Unified HTML Endpoint (Full report for web preview or fallback)
+router.get("/temp-pdf/:id", async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -82,21 +124,69 @@ router.get("/temp-pdf/:id",async (req, res) => {
 
 router.post('/generate-report/:sessionId', async (req, res) => {
     try {
-        const {sessionId} = req.params;
+        const { sessionId } = req.params;
 
-        
         const user = await UserSubmission.findOne({ session_id: sessionId });
         if (!user) {
             return res.status(404).send('user not found');
         }
 
-         const pdfPageUrl = `https://live-vastu-backend.onrender.com/api/pdf/temp-pdf/${sessionId}`;
+        const isPaidPlanWithAi = ['silver', 'gold', 'platinum'].includes(user.plan_type) && !!user.vastu_report;
+        let finalPdfUploadData;
 
-    
-    const result = await generatePdfFromUrl(pdfPageUrl);
+        if (isPaidPlanWithAi) {
+            console.log(`[GENERATE-REPORT] Generating separate static & AI PDFs for ${sessionId} (${user.plan_type})...`);
+            
+            const staticPdfPageUrl = `https://live-vastu-backend.onrender.com/api/pdf/temp-pdf-static/${sessionId}`;
+            const aiPdfPageUrl = `https://live-vastu-backend.onrender.com/api/pdf/temp-pdf-ai/${sessionId}`;
 
-    if(result.renderStatus == 'SUCCESS')
-    {
+            // 1. Render both PDFs concurrently via Doppio
+            const [staticResult, aiResult] = await Promise.all([
+                generateStaticPdfFromUrl(staticPdfPageUrl),
+                generateAiPdfFromUrl(aiPdfPageUrl)
+            ]);
+
+            if (staticResult.renderStatus !== 'SUCCESS') {
+                throw new Error('Static PDF render failed: ' + JSON.stringify(staticResult));
+            }
+            if (aiResult.renderStatus !== 'SUCCESS') {
+                throw new Error('AI PDF render failed: ' + JSON.stringify(aiResult));
+            }
+
+            // 2. Fetch both PDF byte streams
+            const [staticBufferRes, aiBufferRes] = await Promise.all([
+                axios.get(staticResult.documentUrl, { responseType: 'arraybuffer' }),
+                axios.get(aiResult.documentUrl, { responseType: 'arraybuffer' })
+            ]);
+
+            // 3. Merge both PDFs using pdf-lib
+            const mergedPdfDoc = await PDFDocument.create();
+
+            const staticPdfDoc = await PDFDocument.load(staticBufferRes.data);
+            const staticPages = await mergedPdfDoc.copyPages(staticPdfDoc, staticPdfDoc.getPageIndices());
+            staticPages.forEach(page => mergedPdfDoc.addPage(page));
+
+            const aiPdfDoc = await PDFDocument.load(aiBufferRes.data);
+            const aiPages = await mergedPdfDoc.copyPages(aiPdfDoc, aiPdfDoc.getPageIndices());
+            aiPages.forEach(page => mergedPdfDoc.addPage(page));
+
+            const mergedPdfBytes = await mergedPdfDoc.save();
+            console.log(`[GENERATE-REPORT] PDFs merged successfully for ${sessionId}. Total pages: ${mergedPdfDoc.getPageCount()}`);
+
+            finalPdfUploadData = Buffer.from(mergedPdfBytes);
+        } else {
+            // Basic / Bronze fallback: Unified PDF
+            console.log(`[GENERATE-REPORT] Generating unified PDF for ${sessionId} (${user.plan_type})...`);
+            const pdfPageUrl = `https://live-vastu-backend.onrender.com/api/pdf/temp-pdf/${sessionId}`;
+            const result = await generatePdfFromUrl(pdfPageUrl);
+
+            if (result.renderStatus !== 'SUCCESS') {
+                throw new Error('PDF render failed: ' + JSON.stringify(result));
+            }
+
+            finalPdfUploadData = result.documentUrl;
+        }
+
         // Delete the old PDF from Google Drive if it exists
         if (user.pdf_report && user.pdf_report.file_id && !user.pdf_report.is_deleted) {
             try {
@@ -112,31 +202,23 @@ router.post('/generate-report/:sessionId', async (req, res) => {
             }
         }
 
-         const driveResult = await uploadPdfToDrive(
-      result.documentUrl,
-      sessionId
-    );
+        const driveResult = await uploadPdfToDrive(finalPdfUploadData, sessionId);
 
-      const expiresAt = new Date(Date.now() + 10 * 24 * 60 * 60 * 1000);
+        const expiresAt = new Date(Date.now() + 10 * 24 * 60 * 60 * 1000);
 
-      user.pdf_report = {
-      url: driveResult.url,
-      file_id: driveResult.file_id,
-      filename: driveResult.filename,
-      generated_at: new Date(),
-      expires_at: expiresAt,
-      is_deleted: false,
-      };
+        user.pdf_report = {
+            url: driveResult.url,
+            file_id: driveResult.file_id,
+            filename: driveResult.filename,
+            generated_at: new Date(),
+            expires_at: expiresAt,
+            is_deleted: false,
+        };
 
-      
-      user.pdf_url = driveResult.url;
+        user.pdf_url = driveResult.url;
+        await user.save();
 
-
-       user.save();
-        return res.status(200).json("pdf generated successfully")
-    }
-
-
+        return res.status(200).json("pdf generated successfully");
     } catch (err) {
         console.error(err);
         res.status(500).send('Failed to generate PDF');

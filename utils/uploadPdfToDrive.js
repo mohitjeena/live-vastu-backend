@@ -1,16 +1,25 @@
 const axios = require("axios");
 const drive = require("../config/googleDrive");
 
-async function uploadPdfToDrive(pdfUrl, sessionId) {
+const { Readable } = require("stream");
+
+async function uploadPdfToDrive(pdfInput, sessionId) {
   try {
     if (!process.env.GOOGLE_DRIVE_FOLDER_ID) {
       throw new Error("GOOGLE_DRIVE_FOLDER_ID is missing");
     }
 
-    const pdfResponse = await axios.get(pdfUrl, {
-      responseType: "stream",
-      timeout: 180000,
-    });
+    let pdfBodyStream;
+
+    if (typeof pdfInput === "string" && pdfInput.startsWith("http")) {
+      const pdfResponse = await axios.get(pdfInput, {
+        responseType: "stream",
+        timeout: 180000,
+      });
+      pdfBodyStream = pdfResponse.data;
+    } else {
+      pdfBodyStream = Readable.from(Buffer.from(pdfInput));
+    }
 
     const filename = `vastu-report-${sessionId}.pdf`;
 
@@ -22,7 +31,7 @@ async function uploadPdfToDrive(pdfUrl, sessionId) {
       },
       media: {
         mimeType: "application/pdf",
-        body: pdfResponse.data,
+        body: pdfBodyStream,
       },
       fields: "id,name,size,mimeType,webViewLink,webContentLink",
     });

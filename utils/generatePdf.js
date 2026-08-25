@@ -125,11 +125,116 @@ function formatAiReportNaturalFlow(aiHtml) {
   clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-flow-body[^"']*["'][^>]*>/gi, "");
   clean = clean.replace(/<div[^>]*class=["']usage-content["'][^>]*>/gi, "");
 
- return `<div class="ai-report-wrapper">
+  return `<div class="ai-report-wrapper">
       ${clean}
     </div>
   `;
- 
+}
+
+function generateStaticHtml(userAnswers, detailsData) {
+  let html = "";
+  
+  html += loadHtml(mapping.common.cover);
+
+  // 1️⃣ DETAILS PAGE
+  const detailsTemplate = loadHtml(mapping.common.details);
+  html += injectDetails(detailsTemplate, detailsData);
+
+  html += loadHtml(mapping.common.introduction);
+
+  // 2️⃣ MAIN DOOR
+  if (mapping.mainDoor[userAnswers.mainDoor]) {
+    html += loadHtml(mapping.mainDoor[userAnswers.mainDoor]);
+  }
+
+  // 3️⃣ BEDROOMS
+  if (userAnswers.bedrooms && userAnswers.bedrooms.length) {
+    userAnswers.bedrooms.forEach(dir => {
+      if (mapping.bedroom[dir]) {
+        html += loadHtml(mapping.bedroom[dir]);
+      }
+    });
+  }
+
+  // for-common-bedroom
+  if (mapping.bedroom.common) {
+    html += loadHtml(mapping.bedroom.common);
+  }
+
+  // 4️⃣ TOILETS
+  if (userAnswers.toilets && userAnswers.toilets.length) {
+    userAnswers.toilets.forEach(dir => {
+      if (mapping.toilet[dir]) {
+        html += loadHtml(mapping.toilet[dir]);
+      }
+    });
+  }
+
+  // 5️⃣ KITCHEN
+  if (mapping.kitchen[userAnswers.kitchen]) {
+    html += loadHtml(mapping.kitchen[userAnswers.kitchen]);
+  }
+  // KITCHEN-COMMON
+  html += loadHtml(mapping.kitchen.common);
+
+  html += "</body></html>";
+
+  return html;
+}
+
+function generateAiReportHtml(aiHtml) {
+  if (!aiHtml) return "<html><body></body></html>";
+
+  let clean = cleanHtml(aiHtml);
+  clean = extractBodyContent(clean);
+
+  // Clean old wrappers if present
+  clean = clean.replace(/<div[^>]*class=["'][^"']*vastu-page[^"']*["'][^>]*>/gi, "");
+  clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-page[^"']*["'][^>]*>/gi, "");
+  clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-container[^"']*["'][^>]*>/gi, "");
+  clean = clean.replace(/<div[^>]*class=["'][^"']*ai-report-flow-body[^"']*["'][^>]*>/gi, "");
+  clean = clean.replace(/<div[^>]*class=["']usage-content["'][^>]*>/gi, "");
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Vastu AI Report</title>
+  <style>
+    * {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      box-sizing: border-box;
+    }
+    @page {
+      size: A4;
+      margin: 0;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Josefin Sans', sans-serif;
+      background-color: #f7f3ef;
+    }
+    .ai-report-flow {
+      background-color: #f7f3ef;
+      padding: 10px 30px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body>
+  <div class="ai-report-flow">
+    ${clean}
+  </div>
+</body>
+</html>
+  `;
 }
 
 
@@ -203,4 +308,6 @@ function generateFinalHtml(userAnswers, detailsData, aiHtml, planType = 'basic')
 
 
 exports.generateFinalHtml = generateFinalHtml;
+exports.generateStaticHtml = generateStaticHtml;
+exports.generateAiReportHtml = generateAiReportHtml;
 exports.extractAnswers = extractAnswers;
