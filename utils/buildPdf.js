@@ -18,6 +18,11 @@ const DEFAULT_AI_FOOTER_TEMPLATE = `
   </div>
 `;
 
+function encodeBase64(str) {
+  if (!str) return str;
+  return Buffer.from(str.trim(), "utf-8").toString("base64");
+}
+
 async function generatePdfFromUrl(pdfPageUrl, customPdfOptions = {}) {
   try {
     const pdfConfig = {
@@ -25,6 +30,13 @@ async function generatePdfFromUrl(pdfPageUrl, customPdfOptions = {}) {
       format: "A4",
       ...customPdfOptions
     };
+
+    if (pdfConfig.headerTemplate) {
+      pdfConfig.headerTemplate = encodeBase64(pdfConfig.headerTemplate);
+    }
+    if (pdfConfig.footerTemplate) {
+      pdfConfig.footerTemplate = encodeBase64(pdfConfig.footerTemplate);
+    }
 
     const response = await axios.post(
       "https://api.doppio.sh/v1/render/pdf/sync",
