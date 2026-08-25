@@ -212,7 +212,10 @@ function generateAiReportHtml(aiHtml) {
     }
     @page {
       size: A4;
-      margin: 0;
+      margin-top: 80px;
+      margin-bottom: 75px;
+      margin-left: 25px;
+      margin-right: 25px;
     }
     body {
       margin: 0;
@@ -222,7 +225,7 @@ function generateAiReportHtml(aiHtml) {
     }
     .ai-report-flow {
       background-color: #f7f3ef;
-      padding: 10px 30px;
+      padding: 0;
       width: 100%;
       box-sizing: border-box;
     }
