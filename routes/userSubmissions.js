@@ -364,7 +364,7 @@ if (toiletCountAnswer) {
                     htmlContent: `
                     <table> <tr> </td>
                     <tr> 
-                    <td style="background:#2c3e50; padding:20px; text-align:center;"> <h1 style="color:#ffffff; margin:0; font-size:22px;"> Vastu Report Confirmation </h1> </td> 
+                    <td style="background:#b22222; padding:20px; text-align:center;"> <h1 style="color:#ffffff; margin:0; font-size:22px;"> Vastu Report Confirmation </h1> </td> 
                     </tr> 
                     
                    

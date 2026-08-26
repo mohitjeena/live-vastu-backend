@@ -29,7 +29,7 @@ const Brevo = require("@getbrevo/brevo");
         <table width="100%" cellpadding="0" cellspacing="0" style="max-width:870px; border:1px solid #eeeeee;">
           
           <tr>
-            <td style="background:#2f4156; color:#ffffff; text-align:center; padding:18px 20px; font-size:20px; font-weight:bold;">
+            <td style="background:#b22222; color:#ffffff; text-align:center; padding:18px 20px; font-size:20px; font-weight:bold;">
               Your Vastu Scan Report is Ready
             </td>
           </tr>
