@@ -69,6 +69,10 @@ router.post('/', async (req, res) => {
             vastu_task: true
         });
 
+        if (userDetails?.phone) {
+    userSubmission.mobile_number = userDetails.phone;
+}
+
         await userSubmission.save();
 
         console.log("userDetails ",userDetails)
