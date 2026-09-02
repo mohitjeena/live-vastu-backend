@@ -20,14 +20,6 @@ router.post('/', async (req, res) => {
         purpose
         } = userAnswers;
 
-        // Check if session already exists
-        const existingSubmission = await UserSubmission.findOne({ session_id });
-        if (existingSubmission) {
-            return res.status(400).json({
-                success: false,
-                message: 'Session already exists'
-            });
-        }
 
            let ai_score = 70;
         let ai_report = "Vastu analysis report will be available soon.";
@@ -55,25 +47,23 @@ router.post('/', async (req, res) => {
 
  
 
-        // Create new user submission
-        const userSubmission = new UserSubmission({
-            session_id,
-            customer_email: email,
-            property_type, 
-            purpose,
-            answers,
-            ai_score,
-            ai_report,
-            ai_free_report_txt,
-            is_verified: true ,
-            vastu_task: true
-        });
-
-        if (userDetails?.phone) {
-    userSubmission.mobile_number = userDetails.phone;
-}
-
-    userSubmission.payment_status = 'pending'
+        const userSubmission = await UserSubmission.findOneAndUpdate(
+    { session_id: session_id }, 
+    {
+        customer_email: email,
+        property_type, 
+        purpose,
+        answers,
+        ai_score,
+        ai_report,
+        ai_free_report_txt,
+        is_verified: true,
+        vastu_task: true,
+        payment_status: 'pending',
+        ...(userDetails?.phone && { mobile_number: userDetails.phone })
+    },
+    { new: true, upsert: true }
+);
 
         await userSubmission.save();
 
