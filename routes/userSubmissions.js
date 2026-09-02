@@ -73,6 +73,8 @@ router.post('/', async (req, res) => {
     userSubmission.mobile_number = userDetails.phone;
 }
 
+    userSubmission.payment_status = 'pending'
+
         await userSubmission.save();
 
         console.log("userDetails ",userDetails)

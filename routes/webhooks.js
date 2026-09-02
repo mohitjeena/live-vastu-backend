@@ -9,7 +9,7 @@ router.post('/orders-paid',async (req, res) => {
            const data = req.body;
 
     // 1. Vastu variant IDs
-    const vastuVariantIds = ['51401779773752', '51401792553272', '51401807462712'];
+    const vastuVariantIds = ['51401779773752', '51401792553272', '51401807462712', '52892586017080'];
 
     const lineItems = data?.line_items || [];
 
